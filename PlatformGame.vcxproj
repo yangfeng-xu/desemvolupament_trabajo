@@ -145,6 +145,7 @@
     <None Include="vcpkg.json" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Debug.cpp" />
     <ClCompile Include="src\Animation.cpp" />
     <ClCompile Include="src\Audio.cpp" />
     <ClCompile Include="src\Engine.cpp" />
@@ -165,6 +166,7 @@
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Debug.h" />
     <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Audio.h" />
     <ClInclude Include="src\Engine.h" />

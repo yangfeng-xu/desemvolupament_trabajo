@@ -92,6 +92,7 @@ void Player::Jump() {
 	}
 }
 
+
 void Player::ApplyPhysics() {
 	// Preserve vertical speed while jumping
 	if (isJumping == true) {
