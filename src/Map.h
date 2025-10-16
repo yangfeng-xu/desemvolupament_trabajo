@@ -10,33 +10,17 @@ struct Properties
     struct Property
     {
         std::string name;
-        bool value; //We assume that we are going to work only with bool for the moment
+        bool value;
+
     };
-
-    std::list<Property*> propertyList;
-
-    ~Properties()
-    {
-        for (const auto& property : propertyList)
-        {
-            delete property;
+    std::list<Property*>propertiesList;
+    // L09: TODO 7: Implement a method to get the value of a custom property
+    Property* GetProperty(const char* name) {
+        for (const auto& property : propertiesList) {
+            if (property->name == name) return property;
         }
-
-        propertyList.clear();
+        return NULL;
     }
-
-    // L09: DONE 7: Method to ask for the value of a custom property
-    Property* GetProperty(const char* name)
-    {
-        for (const auto& property : propertyList) {
-            if (property->name == name) {
-                return property;
-            }
-        }
-
-        return nullptr;
-    }
-
 };
 
 struct MapLayer
@@ -48,7 +32,6 @@ struct MapLayer
     int height;
     std::vector<int> tiles;
     Properties properties;
-
     // L07: TODO 6: Short function to get the gid value of i,j
     unsigned int Get(int i, int j) const
     {
