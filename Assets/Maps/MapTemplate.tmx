@@ -66,6 +66,9 @@
   <image source="Tiles.png" width="352" height="384"/>
  </tileset>
  <layer id="8" name="MapDentro" width="64" height="24">
+  <properties>
+   <property name="Draw" type="bool" value="true"/>
+  </properties>
   <data>
    <tile/>
    <tile/>
