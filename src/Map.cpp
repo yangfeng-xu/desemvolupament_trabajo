@@ -180,13 +180,13 @@ bool Map::Load(std::string path, std::string fileName)
         // L08 TODO 3: Create colliders
         // L08 TODO 7: Assign collider type
         // Later you can create a function here to load and create the colliders from the map
-		Vector2D posC1 = Vector2D(224, 544);
-		int widthC1 = 256;
-		int heightC1 = 64;
-        PhysBody* c1 = Engine::GetInstance().physics.get()->CreateRectangle((int)posC1.getX() + widthC1 / 2, (int)posC1.getY() + heightC1 / 2, widthC1, heightC1, STATIC);
-        c1->ctype = ColliderType::PLATFORM;
+		//Vector2D posC1 = Vector2D(224, 544);
+		//int widthC1 = 23;
+		//int heightC1 = 1;
+  //      PhysBody* c1 = Engine::GetInstance().physics.get()->CreateRectangle((int)posC1.getX() + widthC1 / 2, (int)posC1.getY() + heightC1 / 2, widthC1, heightC1, STATIC);
+  //      c1->ctype = ColliderType::PLATFORM;
 
-        Vector2D posC2 = Vector2D(352, 384);
+       /* Vector2D posC2 = Vector2D(352, 384);
         int widthC2 = 128;
         int heightC2 = 64;
         PhysBody* c2 = Engine::GetInstance().physics.get()->CreateRectangle((int)posC2.getX() + widthC2 / 2, (int)posC2.getY() + heightC2 / 2, widthC2, heightC1, STATIC);
@@ -196,8 +196,25 @@ bool Map::Load(std::string path, std::string fileName)
         int widthC3 = 544;
         int heightC3 = 64;
         PhysBody* c3 = Engine::GetInstance().physics.get()->CreateRectangle((int)posC3.getX() + widthC3 / 2, (int)posC3.getY() + heightC3 / 2, widthC3, heightC3, STATIC);
-        c3->ctype = ColliderType::PLATFORM; 
-
+        c3->ctype = ColliderType::PLATFORM; */
+        for (const auto& mapLayer : mapData.layers) {
+            if (mapLayer->name == "Collition") {
+                LOG("Generado coliciones para la capa:%s", mapLayer->name.c_str());
+                for (int i = 0; i < mapData.height; i++) {
+                    for (int j = 0; j < mapData.width; j++) {
+                        int gid = mapLayer->Get(i, j);//obtenimos id de los cuatros que hemos pintado en color rojo para identificar las coliciones, dende de
+                        if (gid == 49) {
+                            Vector2D pos = MapToWorld(i, j);//mapa en pixel
+                            PhysBody* colliderBody = Engine::GetInstance().physics.get()->CreateRectangle((int)pos.getX() + mapData.tileWidth / 2,
+                                (int)pos.getY() + mapData.tileHeight / 2, mapData.tileWidth, mapData.tileHeight, STATIC);
+                            colliderBody->ctype = ColliderType::PLATFORM;//para decir que es de tipo plataform donde el plater esta jugando sobre si
+                        }
+                        
+                    }
+                }
+                break;
+            }
+        }
         ret = true;
 
         // L06: TODO 5: LOG all the data loaded iterate all tilesetsand LOG everything
