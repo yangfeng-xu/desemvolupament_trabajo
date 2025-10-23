@@ -9,6 +9,7 @@
 #include "Physics.h"
 #include "EntityManager.h"
 #include"Map.h"
+#include"Animation.h"
 Player::Player() : Entity(EntityType::PLAYER)
 {
 	name = "Player";
@@ -28,7 +29,7 @@ bool Player::Awake() {
 bool Player::Start() {
 
 	//L03: TODO 2: Initialize Player parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/player1.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/Owlet_Monster.png");
 
 	// L08 TODO 5: Add physics to the player - initialize physics body
 	Engine::GetInstance().textures->GetSize(texture, texW, texH);
