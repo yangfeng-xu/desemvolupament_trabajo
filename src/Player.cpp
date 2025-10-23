@@ -29,8 +29,12 @@ bool Player::Awake() {
 bool Player::Start() {
 
 	//L03: TODO 2: Initialize Player parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/Owlet_Monster.png");
+	/*texture = Engine::GetInstance().textures->Load("Assets/Textures/Owlet_Monster.png");*/
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/player2_spritesheet.png");
 
+	std::unordered_map<int, std::string>animNames = { {0,"idle"},{11,"move"},{22,"jump"} };
+	anims.LoadFromTSX("Assets/Textures/player2_spritesheet.tsx", animNames);
+	anims.SetCurrent("idle");
 	// L08 TODO 5: Add physics to the player - initialize physics body
 	Engine::GetInstance().textures->GetSize(texture, texW, texH);
 	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
@@ -49,12 +53,12 @@ bool Player::Start() {
 
 bool Player::Update(float dt)
 {
+	
 	GetPhysicsValues();
 	Move();
 	Jump();
 	ApplyPhysics();
 	Draw();
-
 	Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();//coger tamaño de la mapa para ponerla un limite
 	float limitLeft = Engine::GetInstance().render->camera.w / 4;
 	float limitRight = mapSize.getX() - Engine::GetInstance().render->camera.w * 3 / 4;
@@ -76,9 +80,11 @@ void Player::Move() {
 		// Move left/right
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
 		velocity.x = -speed;
+		anims.SetCurrent("move");
 	}
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
 		velocity.x = speed;
+		anims.SetCurrent("move");
 	}
 }
 
@@ -86,6 +92,7 @@ void Player::Jump() {
 	// This function can be used for more complex jump logic if needed
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false) {
 		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
+		anims.SetCurrent("jump");
 		isJumping = true;
 	}
 }
@@ -103,10 +110,13 @@ void Player::ApplyPhysics() {
 void Player::Draw() {
 	// Update render position using your PhysBody helper
 	int x, y;
+	double dt = Engine::GetInstance().GetDt();
 	pbody->GetPosition(x, y);
 	position.setX((float)x);
 	position.setY((float)y);
-	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2);
+	anims.Update(dt);
+	const SDL_Rect& animFrame = anims.GetCurrentFrame();
+	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2,&animFrame);
 }
 
 bool Player::CleanUp()
