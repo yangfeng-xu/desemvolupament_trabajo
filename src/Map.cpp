@@ -209,6 +209,12 @@ bool Map::Load(std::string path, std::string fileName)
                                 (int)pos.getY() + mapData.tileHeight / 2, mapData.tileWidth, mapData.tileHeight, STATIC);
                             colliderBody->ctype = ColliderType::PLATFORM;//para decir que es de tipo plataform donde el plater esta jugando sobre si
                         }
+                        else if (gid == 50) {
+                            Vector2D pos = MapToWorld(i, j);
+                            PhysBody* colliderBody = Engine::GetInstance().physics.get()->CreateRectangle((int)pos.getX() + mapData.tileWidth / 2,
+                                (int)pos.getY() + mapData.tileHeight / 2, mapData.tileWidth, mapData.tileHeight, STATIC);
+                            colliderBody->ctype = ColliderType::DEATH;
+                        }
                         
                     }
                 }

@@ -30,13 +30,15 @@ bool Player::Start() {
 
 	//L03: TODO 2: Initialize Player parameters
 	/*texture = Engine::GetInstance().textures->Load("Assets/Textures/Owlet_Monster.png");*/
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/player2_spritesheet.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/player_sprite.png");
 
-	std::unordered_map<int, std::string>animNames = { {0,"idle"},{11,"move"},{22,"jump"} };
-	anims.LoadFromTSX("Assets/Textures/player2_spritesheet.tsx", animNames);
+	std::unordered_map<int, std::string>animNames = { {13,"death"},{21,"run"},{39,"idle"},{156,"jump"}};
+	anims.LoadFromTSX("Assets/Textures/player_sprite2.tsx", animNames);
 	anims.SetCurrent("idle");
 	// L08 TODO 5: Add physics to the player - initialize physics body
-	Engine::GetInstance().textures->GetSize(texture, texW, texH);
+	texW = 32;
+	texH = 32;
+	//Engine::GetInstance().textures->GetSize(texture, texW, texH);
 	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
 
 	// L08 TODO 6: Assign player class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
