@@ -817,72 +817,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile gid="49"/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile gid="49"/>
-   <tile gid="49"/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="397"/>
+   <tile gid="398"/>
    <tile/>
    <tile/>
    <tile/>
@@ -913,6 +849,70 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile gid="407"/>
+   <tile gid="408"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile gid="49"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile gid="49"/>
+   <tile gid="49"/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
+   <tile/>
    <tile gid="49"/>
    <tile gid="49"/>
    <tile gid="49"/>
@@ -945,8 +945,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="417"/>
+   <tile gid="418"/>
    <tile/>
    <tile/>
    <tile/>
@@ -1608,7 +1608,7 @@
    <tile gid="49"/>
   </data>
  </layer>
- <layer id="8" name="MapDentro" width="64" height="24" visible="0">
+ <layer id="8" name="MapDentro" width="64" height="24">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -3151,7 +3151,7 @@
    <tile gid="289"/>
   </data>
  </layer>
- <layer id="1" name="Map" width="64" height="24" visible="0">
+ <layer id="1" name="Map" width="64" height="24">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -3903,10 +3903,10 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="397"/>
+   <tile gid="398"/>
+   <tile gid="397"/>
+   <tile gid="398"/>
    <tile/>
    <tile/>
    <tile/>
@@ -3967,10 +3967,10 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="407"/>
+   <tile gid="408"/>
+   <tile gid="407"/>
+   <tile gid="408"/>
    <tile/>
    <tile/>
    <tile/>
@@ -4031,10 +4031,10 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile gid="516"/>
-   <tile gid="517"/>
-   <tile gid="518"/>
-   <tile gid="519"/>
+   <tile gid="417"/>
+   <tile gid="418"/>
+   <tile gid="417"/>
+   <tile gid="418"/>
    <tile/>
    <tile/>
    <tile/>
