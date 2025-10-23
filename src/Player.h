@@ -3,7 +3,7 @@
 #include "Entity.h"
 #include <box2d/box2d.h>
 #include <SDL3/SDL.h>
-
+#include"Animation.h"
 struct SDL_Texture;
 
 class Player : public Entity
