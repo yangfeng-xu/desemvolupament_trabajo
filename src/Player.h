@@ -51,4 +51,5 @@ public:
 	bool isJumping = false; // Flag to check if the player is currently jumping
 private: 
 	b2Vec2 velocity;
+	AnimationSet anims;
 };
