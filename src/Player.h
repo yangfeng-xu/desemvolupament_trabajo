@@ -25,7 +25,7 @@ public:
 	// L08 TODO 6: Define OnCollision function for the player. 
 	void OnCollision(PhysBody* physA, PhysBody* physB);
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
-
+	void Die();
 private:
 
 	void GetPhysicsValues();
@@ -52,4 +52,5 @@ public:
 private: 
 	b2Vec2 velocity;
 	AnimationSet anims;
+	Vector2D startPosition;
 };

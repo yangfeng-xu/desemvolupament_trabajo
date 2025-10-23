@@ -23,6 +23,7 @@ bool Player::Awake() {
 
 	//L03: TODO 2: Initialize Player parameters
 	position = Vector2D(100, 600);//donde esta player en la mapa
+	startPosition = position;
 	return true;
 }
 
@@ -68,6 +69,7 @@ bool Player::Update(float dt)
 		Engine::GetInstance().render->camera.x = -position.getX() + Engine::GetInstance().render->camera.w / 4;//se mueve contrario para solucionar lo, ponemos un - para invertirlo
 	}
 	return true;
+	
 }
 
 void Player::GetPhysicsValues() {
@@ -127,7 +129,25 @@ bool Player::CleanUp()
 	Engine::GetInstance().textures->UnLoad(texture);
 	return true;
 }
+void Player::Die()
+{
+	LOG("Player Died!");
 
+	// 1. Obtén el cuerpo de físicas
+	b2BodyId body = pbody->body;
+
+	// 2. Resetea la velocidad a cero
+	b2Vec2 vel = { 0.0f, 0.0f };
+	b2Body_SetLinearVelocity(body, vel);
+
+	// 3. Resetea la posición a la de inicio (convirtiendo de píxeles a metros)
+	b2Vec2 startPosMeters = { PIXEL_TO_METERS(startPosition.getX()), PIXEL_TO_METERS(startPosition.getY()) };
+	b2Body_SetTransform(body, startPosMeters, b2Rot_identity); // 0 es el ángulo
+	
+	// 4. Resetea el estado de salto
+	isJumping = false;
+	
+}
 // L08 TODO 6: Define OnCollision function for the player. 
 void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	switch (physB->ctype)
@@ -141,6 +161,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("Collision ITEM");
 		Engine::GetInstance().audio->PlayFx(pickCoinFxId);
 		physB->listener->Destroy();
+		break;
+	case ColliderType::DEATH: // <-- AÑADE ESTE CASO
+		LOG("Collision DEATH");
+		Die(); // Llama a la función de muerte
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
