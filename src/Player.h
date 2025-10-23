@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Entity.h"
-#include "Animation.h"
 #include <box2d/box2d.h>
 #include <SDL3/SDL.h>
 
@@ -32,9 +31,8 @@ private:
 	void GetPhysicsValues();
 	void Move();
 	void Jump();
-	
 	void ApplyPhysics();
-	void Draw(float dt);
+	void Draw();
 
 public:
 
@@ -51,9 +49,6 @@ public:
 	PhysBody* pbody;
 	float jumpForce = 2.5f; // The force to apply when jumping
 	bool isJumping = false; // Flag to check if the player is currently jumping
-
 private: 
 	b2Vec2 velocity;
-	AnimationSet anims;
-
 };

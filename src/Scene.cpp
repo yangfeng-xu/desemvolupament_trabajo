@@ -33,7 +33,7 @@ bool Scene::Awake()
 	//L08: TODO 4: Create a new item using the entity manager and set the position to (200, 672) to test
 	std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
 	item->position = Vector2D(200, 672);
-
+	
 	return ret;
 }
 
@@ -44,12 +44,7 @@ bool Scene::Start()
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level-iv-339695.wav");
 
 	//L06 TODO 3: Call the function to load the map. 
-	/*Engine::GetInstance().map->Load("Assets/Maps/","MapTemplate.tmx");*/
-	bool ret = Engine::GetInstance().map->Load("Assets/Maps/", "mapa_nivel_1.1");
-	if (!ret)
-	{
-		LOG("!!!!!!!! ERROR AL CARGAR EL MAPA !!!!!!!! ");
-	}
+	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
 	
 	return true;
 }

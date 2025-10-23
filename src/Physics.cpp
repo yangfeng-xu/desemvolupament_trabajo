@@ -13,7 +13,7 @@
 Physics::Physics() : Module()
 {
     world = b2_nullWorldId;
-    debug = false; // toggle with F9
+    debug = true; // toggle with F1
 }
 
 // Destructor
@@ -185,7 +185,7 @@ bool Physics::PostUpdate()
     bool ret = true;
 
     // Activate or deactivate debug mode
-    if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
+    if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
         debug = !debug;
 
     // Debug draw via Box2D 3.x callbacks
@@ -198,8 +198,8 @@ bool Physics::PostUpdate()
 
             // Enable only what you support (3.1 field names)
             dd.drawShapes = true;
-            dd.drawJoints = true;   // enable if you want joints drawn
-            dd.drawBounds = true;   // AABBs
+            //dd.drawJoints = true;   // enable if you want joints drawn
+            //dd.drawBounds = true;   // AABBs
             dd.drawContacts = true;   // contact points
 
             // Implemented callbacks

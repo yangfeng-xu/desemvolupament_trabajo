@@ -8,7 +8,7 @@
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
-
+#include"Map.h"
 Player::Player() : Entity(EntityType::PLAYER)
 {
 	name = "Player";
@@ -21,24 +21,17 @@ Player::~Player() {
 bool Player::Awake() {
 
 	//L03: TODO 2: Initialize Player parameters
-	position = Vector2D(96, 96);
+	position = Vector2D(100, 600);//donde esta player en la mapa
 	return true;
 }
 
 bool Player::Start() {
 
-	// load
-	std::unordered_map<int, std::string> aliases = { {0,"idle"},{11,"move"},{22,"jump"} };
-	anims.LoadFromTSX("Assets/Textures/PLayer2_Spritesheet.tsx", aliases);
-	anims.SetCurrent("idle");
-
 	//L03: TODO 2: Initialize Player parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/player2_spritesheet.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/player1.png");
 
 	// L08 TODO 5: Add physics to the player - initialize physics body
-	//Engine::GetInstance().textures->GetSize(texture, texW, texH);
-	texW = 32;
-	texH = 32;
+	Engine::GetInstance().textures->GetSize(texture, texW, texH);
 	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
 
 	// L08 TODO 6: Assign player class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
@@ -59,8 +52,14 @@ bool Player::Update(float dt)
 	Move();
 	Jump();
 	ApplyPhysics();
-	Draw(dt);
+	Draw();
 
+	Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();//coger tamaño de la mapa para ponerla un limite
+	float limitLeft = Engine::GetInstance().render->camera.w / 4;
+	float limitRight = mapSize.getX() - Engine::GetInstance().render->camera.w * 3 / 4;
+	if (position.getX() - limitLeft > 0 && position.getX() < limitRight) {//decir a donde empieza a mover la camara respectando el limite
+		Engine::GetInstance().render->camera.x = -position.getX() + Engine::GetInstance().render->camera.w / 4;//se mueve contrario para solucionar lo, ponemos un - para invertirlo
+	}
 	return true;
 }
 
@@ -71,15 +70,14 @@ void Player::GetPhysicsValues() {
 }
 
 void Player::Move() {
-	
-	// Move left/right
+	// This function can be used for more complex movement logic if needed
+
+		// Move left/right
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
 		velocity.x = -speed;
-		anims.SetCurrent("move");
 	}
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
 		velocity.x = speed;
-		anims.SetCurrent("move");
 	}
 }
 
@@ -87,11 +85,9 @@ void Player::Jump() {
 	// This function can be used for more complex jump logic if needed
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false) {
 		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
-		anims.SetCurrent("jump");
 		isJumping = true;
 	}
 }
-
 
 void Player::ApplyPhysics() {
 	// Preserve vertical speed while jumping
@@ -103,17 +99,13 @@ void Player::ApplyPhysics() {
 	Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
 }
 
-void Player::Draw(float dt) {
-
-	anims.Update(dt);
-	const SDL_Rect& animFrame = anims.GetCurrentFrame();
-
+void Player::Draw() {
 	// Update render position using your PhysBody helper
 	int x, y;
 	pbody->GetPosition(x, y);
 	position.setX((float)x);
 	position.setY((float)y);
-	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame);
+	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2);
 }
 
 bool Player::CleanUp()
@@ -131,7 +123,6 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("Collision PLATFORM");
 		//reset the jump flag when touching the ground
 		isJumping = false;
-		anims.SetCurrent("idle");
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
