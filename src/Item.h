@@ -25,7 +25,7 @@ public:
 public:
 
 	bool isPicked = false;
-
+	Vector2D startPosition;
 private:
 
 	SDL_Texture* texture;

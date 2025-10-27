@@ -71,6 +71,12 @@ bool Player::Update(float dt)
 			Engine::GetInstance().render->camera.x = 0;
 			Engine::GetInstance().render->camera.y = 0;
 			std::cout << "YOU ARE DEAD";
+
+			for (const auto& entity : Engine::GetInstance().entityManager->entities) {
+				if (entity->type == EntityType::ITEM) {
+					entity->Enable();
+				}
+			}
 		}
 		velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 		velocity.x = 0;
@@ -171,11 +177,6 @@ void Player::Die()
 	vel.x = 0.0f;
 	b2Body_SetLinearVelocity(body, vel);
 	
-	
- 
-	
-	
-
 	
 }
 // L08 TODO 6: Define OnCollision function for the player. 

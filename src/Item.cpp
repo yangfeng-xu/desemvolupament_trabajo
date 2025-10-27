@@ -22,6 +22,7 @@ bool Item::Awake() {
 
 bool Item::Start() {
 
+	position = startPosition;
 	//initilize textures
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/goldCoin.png");
 	
@@ -63,7 +64,6 @@ bool Item::CleanUp()
 bool Item::Destroy()
 {
 	LOG("Destroying item");
-	active = false;
-	Engine::GetInstance().entityManager->DestroyEntity(shared_from_this());
+	Disable();
 	return true;
 }
