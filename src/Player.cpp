@@ -94,6 +94,13 @@ bool Player::Update(float dt)
 		if (position.getX() - limitLeft > 0 && position.getX() < limitRight) {//decir a donde empieza a mover la camara respectando el limite
 			Engine::GetInstance().render->camera.x = -position.getX() + Engine::GetInstance().render->camera.w / 4;//se mueve contrario para solucionar lo, ponemos un - para invertirlo
 		}
+
+		//comprovamos si el player esta fuera de la tamaño de la mapa, es dacir se cae al hueco donde no es plataforma, si lo es player se muere
+		float mapBottom = mapSize.getY();
+		if (position.getY() > mapBottom + (texH)) {//lo sumamos texH para que asegurar de que el player esta absolutamente a fuera
+			LOG("player fell off the map");
+			Die();
+		}
 	}
 	Draw();
 	return true;
