@@ -174,7 +174,7 @@ void Player::Die()
 	
  
 	
-	// 4. Resetea el estado de salto
+	
 
 	
 }
