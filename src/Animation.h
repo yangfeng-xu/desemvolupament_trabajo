@@ -16,6 +16,7 @@ public:
     void SetLoop(bool v);
     void Reset();
     bool HasFinishedOnce() const;
+    
     void Update(float dt);
     const SDL_Rect& GetCurrentFrame() const;
     int GetFrameCount() const;
@@ -43,7 +44,7 @@ public:
     void Update(float dtSeconds);
     const SDL_Rect& GetCurrentFrame() const;
     const std::string& GetCurrentName() const;
-
+    bool HasFinishedOnce() const;
     bool Has(const std::string& name) const;
 
 private:

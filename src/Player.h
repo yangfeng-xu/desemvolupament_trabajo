@@ -53,4 +53,5 @@ private:
 	b2Vec2 velocity;
 	AnimationSet anims;
 	Vector2D startPosition;
+	bool IsDead;
 };

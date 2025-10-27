@@ -101,7 +101,12 @@ bool AnimationSet::LoadFromTSX(const char* tsxPath,
         }
 
         Animation clip;
-        clip.SetLoop(true);
+        if (name == "death") {
+            clip.SetLoop(false);
+        }
+        else {
+            clip.SetLoop(true);
+        }
 
         for (pugi::xml_node f = animNode.child("frame"); f; f = f.next_sibling("frame")) {
             int frameId = f.attribute("tileid").as_int();
@@ -143,4 +148,9 @@ const std::string& AnimationSet::GetCurrentName() const {
 
 bool AnimationSet::Has(const std::string& name) const {
     return clips_.find(name) != clips_.end();
+}
+
+bool AnimationSet::HasFinishedOnce() const {
+    if (Has(currentName_)) return clips_.at(currentName_).HasFinishedOnce();
+    return false;
 }

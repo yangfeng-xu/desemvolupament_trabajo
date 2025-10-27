@@ -10,7 +10,7 @@
 #include "EntityManager.h"
 #include"Map.h"
 #include"Animation.h"
-Player::Player() : Entity(EntityType::PLAYER)
+Player::Player() : Entity(EntityType::PLAYER),IsDead(false)
 {
 	name = "Player";
 }
@@ -56,18 +56,29 @@ bool Player::Start() {
 
 bool Player::Update(float dt)
 {
-	
-	GetPhysicsValues();
-	Move();
-	Jump();
-	ApplyPhysics();
-	Draw();
-	Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();//coger tamaño de la mapa para ponerla un limite
-	float limitLeft = Engine::GetInstance().render->camera.w / 4;
-	float limitRight = mapSize.getX() - Engine::GetInstance().render->camera.w * 3 / 4;
-	if (position.getX() - limitLeft > 0 && position.getX() < limitRight) {//decir a donde empieza a mover la camara respectando el limite
-		Engine::GetInstance().render->camera.x = -position.getX() + Engine::GetInstance().render->camera.w / 4;//se mueve contrario para solucionar lo, ponemos un - para invertirlo
+	anims.Update(dt);
+	if (IsDead) {
+		if (anims.HasFinishedOnce()) {
+			Engine::GetInstance().scene->RequestReload();
+		}
+		velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
+		velocity.x = 0;
+		Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
 	}
+	else {
+		GetPhysicsValues();
+		Move();
+		Jump();
+		ApplyPhysics();
+		
+		Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();//coger tamaño de la mapa para ponerla un limite
+		float limitLeft = Engine::GetInstance().render->camera.w / 4;
+		float limitRight = mapSize.getX() - Engine::GetInstance().render->camera.w * 3 / 4;
+		if (position.getX() - limitLeft > 0 && position.getX() < limitRight) {//decir a donde empieza a mover la camara respectando el limite
+			Engine::GetInstance().render->camera.x = -position.getX() + Engine::GetInstance().render->camera.w / 4;//se mueve contrario para solucionar lo, ponemos un - para invertirlo
+		}
+	}
+	Draw();
 	return true;
 	
 }
@@ -80,7 +91,10 @@ void Player::GetPhysicsValues() {
 
 void Player::Move() {
 	// This function can be used for more complex movement logic if needed
-
+	if (IsDead) {
+		velocity.x = 0;
+		return;
+	}
 		// Move left/right
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
 		velocity.x = -speed;
@@ -118,7 +132,7 @@ void Player::Draw() {
 	pbody->GetPosition(x, y);
 	position.setX((float)x);
 	position.setY((float)y);
-	anims.Update(dt);
+	
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2,&animFrame);
 }
@@ -131,21 +145,25 @@ bool Player::CleanUp()
 }
 void Player::Die()
 {
+	if (IsDead)return;
 	LOG("Player Died!");
 
 	// 1. Obtén el cuerpo de físicas
-	b2BodyId body = pbody->body;
+	IsDead = true;
+	anims.SetCurrent("death");
 
+	b2BodyId body = pbody->body;
 	// 2. Resetea la velocidad a cero
-	b2Vec2 vel = { 0.0f, 0.0f };
-	b2Body_SetLinearVelocity(body, vel);
+	b2Vec2 vel =b2Body_GetLinearVelocity(body);
 
 	// 3. Resetea la posición a la de inicio (convirtiendo de píxeles a metros)
-	b2Vec2 startPosMeters = { PIXEL_TO_METERS(startPosition.getX()), PIXEL_TO_METERS(startPosition.getY()) };
-	b2Body_SetTransform(body, startPosMeters, b2Rot_identity); // 0 es el ángulo
+	vel.x = 0.0f;
+	b2Body_SetLinearVelocity(body, vel);
+	
+ 
 	
 	// 4. Resetea el estado de salto
-	isJumping = false;
+
 	
 }
 // L08 TODO 6: Define OnCollision function for the player. 
