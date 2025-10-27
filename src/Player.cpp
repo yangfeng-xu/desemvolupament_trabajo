@@ -59,7 +59,18 @@ bool Player::Update(float dt)
 	anims.Update(dt);
 	if (IsDead) {
 		if (anims.HasFinishedOnce()) {
-			Engine::GetInstance().scene->RequestReload();
+			b2BodyId body = pbody->body;
+			b2Vec2 vel = { 0.0f, 0.0f };
+			b2Body_SetLinearVelocity(body, vel);
+			b2Vec2 startPosMeters = { PIXEL_TO_METERS(startPosition.getX()), PIXEL_TO_METERS(startPosition.getY()) };
+			b2Body_SetTransform(body, startPosMeters, b2Rot_identity);
+			isJumping = false;
+			IsDead = false;
+			anims.SetCurrent("idle");
+		//cuando player se muere y vulverá al principio del juego, reinicializar la camara
+			Engine::GetInstance().render->camera.x = 0;
+			Engine::GetInstance().render->camera.y = 0;
+			std::cout << "YOU ARE DEAD";
 		}
 		velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 		velocity.x = 0;
@@ -159,6 +170,7 @@ void Player::Die()
 	// 3. Resetea la posición a la de inicio (convirtiendo de píxeles a metros)
 	vel.x = 0.0f;
 	b2Body_SetLinearVelocity(body, vel);
+	
 	
  
 	
