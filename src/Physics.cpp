@@ -350,9 +350,7 @@ void Physics::ApplyLinearImpulseToCenter(PhysBody* p, float ix, float iy, bool w
     b2Body_ApplyLinearImpulseToCenter(p->body, imp, wake);
 }
 
-//
-//--------------- PhysBody --------------------
-//
+
 
 void PhysBody::GetPosition(int& x, int& y) const
 {
