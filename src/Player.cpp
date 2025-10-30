@@ -50,7 +50,7 @@ bool Player::Start() {
 
 	//initialize audio effect
 	pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
-
+	deathFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/out.wav");
 	return true;
 }
 
@@ -184,6 +184,7 @@ void Player::Die()
 
 	// 1. Obtén el cuerpo de físicas
 	IsDead = true;
+	Engine::GetInstance().audio->PlayFx(deathFxId);
 	anims.SetCurrent("death");
 
 	b2BodyId body = pbody->body;
