@@ -7,6 +7,10 @@ https://github.com/yangfeng-xu/desemvolupament_trabajo.git
 - [Yangfeng Xu](https://github.com/yangfeng-xu)
 - [Bole Wu](https://github.com/Bole05)
 
+## Description of the game
+
+The game involves you being a ghost and wanting to explore the forest you are in and see what happens.
+
 ## How to play
 
 - **WSDA KEYS**: Walk.
