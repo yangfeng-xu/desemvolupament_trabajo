@@ -119,15 +119,24 @@ void Player::Move() {
 		velocity.x = 0;
 		return;
 	}
+
 		// Move left/right
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
 		velocity.x = -speed;
-		anims.SetCurrent("move");
+		anims.SetCurrent("run");
+		
 	}
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
 		velocity.x = speed;
-		anims.SetCurrent("move");
+		anims.SetCurrent("run");
 	}
+	else {
+		velocity.x = 0.0f;
+		anims.SetCurrent("idle");
+	}
+	
+	
+
 }
 
 void Player::Jump() {
