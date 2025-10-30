@@ -52,6 +52,11 @@ bool Scene::Start()
 // Called each loop iteration
 bool Scene::PreUpdate()
 {
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_H) == KEY_DOWN)
+	{
+		showHelpMenu = !showHelpMenu;
+		LOG("Help Menu: %s", showHelpMenu ? "SHOWING" : "HIDING");
+	}
 	return true;
 }
 
@@ -80,6 +85,54 @@ bool Scene::Update(float dt)
 bool Scene::PostUpdate()
 {
 	bool ret = true;
+    if (showHelpMenu)
+    {
+        int windowWidth, windowHeight;
+        Engine::GetInstance().window->GetWindowSize(windowWidth, windowHeight);
+
+        // 1. Define el área para el menú de ayuda (centrado y dos tercios de la pantalla)
+        int menuWidth = windowWidth * 2 / 3;
+        int menuHeight = windowHeight * 2 / 3;
+
+        SDL_Rect helpRect = {
+            (windowWidth - menuWidth) / 2,
+            (windowHeight - menuHeight) / 2,
+            menuWidth,
+            menuHeight
+        };
+
+        // 2. Dibuja el fondo del menú (rectángulo semi-transparente: R, G, B, Alpha)
+        Engine::GetInstance().render->DrawRectangle(helpRect, 0, 0, 0, 200, true, false);
+
+        // 3. Dibuja el borde blanco
+        Engine::GetInstance().render->DrawRectangle(helpRect, 255, 255, 255, 255, false, false);
+
+        // 4. Dibuja un rectángulo para simular el TÍTULO (Blanco)
+        int paddingX = 40;
+        int startX = helpRect.x + paddingX;
+        int startY = helpRect.y + 40;
+        int textWidth = menuWidth - (paddingX * 2);
+
+        SDL_Rect titleRect = { startX, startY - 20, textWidth, 15 };
+        // Usamos blanco para el título (R:255, G:255, B:255)
+        Engine::GetInstance().render->DrawRectangle(titleRect, 255, 255, 255, 255, true, false);
+
+        // NOTA IMPORTANTE:
+        // ELIMINAMOS TODOS LOS DEMÁS RECTÁNGULOS DE LÍNEA.
+        // Si su motor tiene una función de dibujo de texto (DrawText),
+        // el código para dibujar las teclas debería ir aquí, justo encima del fondo.
+
+        // Mantenemos los LOGs para que la ayuda aparezca en la consola, que es
+        // el único lugar donde podemos confirmar la salida de texto:
+        LOG("--- H KEY PRESSED - TEXT OUTPUT VIA LOG ONLY ---");
+        LOG("H: WSAD / Arrows: Walk / Fly (God Mode)");
+        LOG("H: Spacebar: Jump");
+        LOG("H: Esc: Exit the game");
+        LOG("H: F1: Show / Hide Collisions (Debug)");
+        LOG("H: F10: God Mode (Fly/Invincible)");
+        LOG("H: H: Show / Hide this Help Menu (TITLE LINE IS WHITE)");
+        LOG("-----------------------------------------------");
+    }
 
 	if(Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
 		ret = false;

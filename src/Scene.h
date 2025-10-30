@@ -36,4 +36,6 @@ private:
 
 	//L03: TODO 3b: Declare a Player attribute
 	std::shared_ptr<Player> player;
+
+	bool showHelpMenu = false;
 };

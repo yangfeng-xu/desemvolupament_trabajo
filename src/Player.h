@@ -40,6 +40,8 @@ public:
 	float speed = 4.0f;
 	SDL_Texture* texture = NULL;
 
+	bool isGodMode = false;
+
 	int texW = 0;
     int texH = 0;
 

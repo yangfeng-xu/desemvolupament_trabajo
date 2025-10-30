@@ -10,7 +10,9 @@
 #include "EntityManager.h"
 #include"Map.h"
 #include"Animation.h"
-Player::Player() : Entity(EntityType::PLAYER),IsDead(false)
+#include <box2d/box2d.h> // Necesario para manipular la escala de gravedad
+
+Player::Player() : Entity(EntityType::PLAYER), IsDead(false)
 {
 	name = "Player";
 }
@@ -33,7 +35,7 @@ bool Player::Start() {
 	/*texture = Engine::GetInstance().textures->Load("Assets/Textures/Owlet_Monster.png");*/
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/player_sprite.png");
 
-	std::unordered_map<int, std::string>animNames = { {13,"death"},{21,"run"},{39,"idle"},{156,"jump"}};
+	std::unordered_map<int, std::string>animNames = { {13,"death"},{21,"run"},{39,"idle"},{156,"jump"} };
 	anims.LoadFromTSX("Assets/Textures/player_sprite2.tsx", animNames);
 	anims.SetCurrent("idle");
 	// L08 TODO 5: Add physics to the player - initialize physics body
@@ -57,6 +59,25 @@ bool Player::Start() {
 bool Player::Update(float dt)
 {
 	anims.Update(dt);
+
+	// LOGICA MODO DIOS (F10)
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN) {
+		isGodMode = !isGodMode;
+		if (isGodMode) {
+			LOG("God Mode ENABLED: Fly and Invincibility");
+			// Desactiva la gravedad (escala de gravedad 0.0)
+			b2Body_SetGravityScale(pbody->body, 0.0f);
+			isJumping = false;
+			IsDead = false;
+			anims.SetCurrent("idle");
+		}
+		else {
+			LOG("God Mode DISABLED");
+			// Restaura la gravedad normal (escala de gravedad 1.0)
+			b2Body_SetGravityScale(pbody->body, 1.0f);
+		}
+	}
+
 	if (IsDead) {
 		if (anims.HasFinishedOnce()) {
 			b2BodyId body = pbody->body;
@@ -67,7 +88,9 @@ bool Player::Update(float dt)
 			isJumping = false;
 			IsDead = false;
 			anims.SetCurrent("idle");
-		//cuando player se muere y vulverá al principio del juego, reinicializar la camara
+
+			Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Level.wav");
+			//cuando player se muere y vulverá al principio del juego, reinicializar la camara
 			Engine::GetInstance().render->camera.x = 0;
 			Engine::GetInstance().render->camera.y = 0;
 			std::cout << "YOU ARE DEAD";
@@ -85,9 +108,14 @@ bool Player::Update(float dt)
 	else {
 		GetPhysicsValues();
 		Move();
-		Jump();
+
+		// Solo salta si NO está en God Mode
+		if (!isGodMode) {
+			Jump();
+		}
+
 		ApplyPhysics();
-		
+
 		Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();//coger tamaño de la mapa para ponerla un limite
 		float limitLeft = Engine::GetInstance().render->camera.w / 4;
 		float limitRight = mapSize.getX() - Engine::GetInstance().render->camera.w * 3 / 4;
@@ -97,20 +125,29 @@ bool Player::Update(float dt)
 
 		//comprovamos si el player esta fuera de la tamaño de la mapa, es dacir se cae al hueco donde no es plataforma, si lo es player se muere
 		float mapBottom = mapSize.getY();
-		if (position.getY() > mapBottom + (texH)) {//lo sumamos texH para que asegurar de que el player esta absolutamente a fuera
+		// Solo muere por caída si NO está en God Mode
+		if (!isGodMode && position.getY() > mapBottom + (texH)) {
 			LOG("player fell off the map");
 			Die();
 		}
 	}
 	Draw();
 	return true;
-	
+
 }
 
 void Player::GetPhysicsValues() {
 	// Read current velocity
 	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
-	velocity = { 0, velocity.y }; // Reset horizontal velocity by default, this way the player stops when no key is pressed
+
+	// Si está en God Mode, resetea ambas velocidades para un control total del vuelo
+	if (isGodMode) {
+		velocity = { 0.0f, 0.0f };
+	}
+	else {
+		// Comportamiento normal: Resetea la velocidad horizontal
+		velocity = { 0, velocity.y };
+	}
 }
 
 void Player::Move() {
@@ -120,7 +157,20 @@ void Player::Move() {
 		return;
 	}
 
-		// Move left/right
+	// Movimiento vertical para God Mode (volar)
+	if (isGodMode) {
+		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT || Engine::GetInstance().input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT) {
+			velocity.y = -speed;
+		}
+		else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT || Engine::GetInstance().input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT) {
+			velocity.y = speed;
+		}
+		else {
+			velocity.y = 0.0f;
+		}
+	}
+
+	// Move left/right
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
 		velocity.x = -speed;
 		anims.SetCurrent("run");
@@ -131,16 +181,24 @@ void Player::Move() {
 		anims.SetCurrent("run");
 		flipState = SDL_FLIP_NONE;
 	}
-	else {
+	// Lógica para ir a 'idle'
+	else if (!isGodMode || (velocity.x == 0.0f && velocity.y == 0.0f)) {
 		velocity.x = 0.0f;
 		anims.SetCurrent("idle");
 	}
-	
-	
 
+	// En God Mode, si el jugador se mueve (horizontal o vertical), usa la animación de correr
+	if (isGodMode && (velocity.x != 0.0f || velocity.y != 0.0f)) {
+		if (anims.GetCurrentName() == "idle" || anims.GetCurrentName() == "jump") {
+			anims.SetCurrent("run");
+		}
+	}
 }
 
 void Player::Jump() {
+	// Si está en God Mode, no puede saltar
+	if (isGodMode) return;
+
 	// This function can be used for more complex jump logic if needed
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false) {
 		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
@@ -150,8 +208,8 @@ void Player::Jump() {
 }
 
 void Player::ApplyPhysics() {
-	// Preserve vertical speed while jumping
-	if (isJumping == true) {
+	// Preserve vertical speed while jumping (solo aplica si NO está en God Mode, en God Mode ya se calcula en Move())
+	if (isJumping == true && !isGodMode) {
 		velocity.y = Engine::GetInstance().physics->GetYVelocity(pbody);
 	}
 
@@ -166,9 +224,9 @@ void Player::Draw() {
 	pbody->GetPosition(x, y);
 	position.setX((float)x);
 	position.setY((float)y);
-	
+
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
-	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2,&animFrame, 1.0f, 0.0, INT_MAX, INT_MAX, flipState);
+	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame, 1.0f, 0.0, INT_MAX, INT_MAX, flipState);
 }
 
 bool Player::CleanUp()
@@ -177,9 +235,12 @@ bool Player::CleanUp()
 	Engine::GetInstance().textures->UnLoad(texture);
 	return true;
 }
+
 void Player::Die()
 {
-	if (IsDead)return;
+	// Invencibilidad: no muere si ya está muerto o si está en God Mode
+	if (IsDead || isGodMode) return;
+
 	LOG("Player Died!");
 
 	// 1. Obtén el cuerpo de físicas
@@ -189,17 +250,20 @@ void Player::Die()
 
 	b2BodyId body = pbody->body;
 	// 2. Resetea la velocidad a cero
-	b2Vec2 vel =b2Body_GetLinearVelocity(body);
+	b2Vec2 vel = b2Body_GetLinearVelocity(body);
 
 	// 3. Resetea la posición a la de inicio (convirtiendo de píxeles a metros)
 	vel.x = 0.0f;
 	vel.y = 0.0f;
 	b2Body_SetLinearVelocity(body, vel);
-	
-	
+
+
 }
 // L08 TODO 6: Define OnCollision function for the player. 
 void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
+	// Invencibilidad: ignora todas las colisiones en God Mode
+	if (isGodMode) return;
+
 	switch (physB->ctype)
 	{
 	case ColliderType::PLATFORM:
@@ -214,7 +278,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::DEATH: // <-- AÑADE ESTE CASO
 		LOG("Collision DEATH");
-		Die(); // Llama a la función de muerte
+		Die(); // Llama a la función de muerte (ya tiene la comprobación de God Mode)
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
@@ -241,4 +305,3 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 		break;
 	}
 }
-
