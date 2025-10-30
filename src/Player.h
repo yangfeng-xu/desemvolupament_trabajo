@@ -55,5 +55,5 @@ private:
 	AnimationSet anims;
 	Vector2D startPosition;
 	bool IsDead;
-	SDL_FlipMode flipState = SDL_FLIP_NONE;
+	SDL_FlipMode flipState = SDL_FLIP_NONE;//FlipMode para invertir imagen
 };
