@@ -193,6 +193,7 @@ void Player::Die()
 
 	// 3. Resetea la posición a la de inicio (convirtiendo de píxeles a metros)
 	vel.x = 0.0f;
+	vel.y = 0.0f;
 	b2Body_SetLinearVelocity(body, vel);
 	
 	

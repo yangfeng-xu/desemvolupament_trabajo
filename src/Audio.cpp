@@ -106,7 +106,27 @@ bool Audio::Awake() {
 
     return true;
 }
+bool Audio::Update(float dt)
+{
+    // Si el audio no está activo, o no hay stream, o no hay datos de música cargados, no hagas nada.
+    if (!active || !music_stream_ || !music_data_.buf) {
+        return true;
+    }
 
+    // Comprueba cuántos bytes quedan en la cola del stream
+    int bytesQueued = SDL_GetAudioStreamQueued(music_stream_);
+
+    // Si el stream se ha vaciado (0 bytes en cola), volvemos a encolar los datos
+    if (bytesQueued == 0)
+    {
+        // Volvemos a poner TODOS los datos de la música en el stream para que se repita
+        if (!SDL_PutAudioStreamData(music_stream_, music_data_.buf, music_data_.len)) {
+            LOG("Audio: Error al re-encolar música para loop: %s", SDL_GetError());
+        }
+    }
+
+    return true;
+}
 bool Audio::CleanUp() {
     // If audio is inactive or already quit elsewhere, don't touch SDL objects.
     if (!active || !SDL_WasInit(SDL_INIT_AUDIO)) {
