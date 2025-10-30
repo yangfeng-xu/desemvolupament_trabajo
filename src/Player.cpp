@@ -124,11 +124,12 @@ void Player::Move() {
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
 		velocity.x = -speed;
 		anims.SetCurrent("run");
-		
+		flipState = SDL_FLIP_HORIZONTAL;
 	}
 	else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
 		velocity.x = speed;
 		anims.SetCurrent("run");
+		flipState = SDL_FLIP_NONE;
 	}
 	else {
 		velocity.x = 0.0f;
@@ -167,7 +168,7 @@ void Player::Draw() {
 	position.setY((float)y);
 	
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
-	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2,&animFrame);
+	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2,&animFrame, 1.0f, 0.0, INT_MAX, INT_MAX, flipState);
 }
 
 bool Player::CleanUp()

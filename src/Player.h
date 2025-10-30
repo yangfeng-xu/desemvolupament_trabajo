@@ -40,18 +40,20 @@ public:
 	float speed = 4.0f;
 	SDL_Texture* texture = NULL;
 
-	int texW, texH;
+	int texW = 0;
+    int texH = 0;
 
 	//Audio fx
-	int pickCoinFxId;
+	int pickCoinFxId=0;
 
 	// L08 TODO 5: Add physics to the player - declare a Physics body
-	PhysBody* pbody;
+	PhysBody* pbody=nullptr;
 	float jumpForce = 2.5f; // The force to apply when jumping
 	bool isJumping = false; // Flag to check if the player is currently jumping
 private: 
-	b2Vec2 velocity;
+	b2Vec2 velocity = {0.0f,0.0f};
 	AnimationSet anims;
 	Vector2D startPosition;
 	bool IsDead;
+	SDL_FlipMode flipState = SDL_FLIP_NONE;
 };

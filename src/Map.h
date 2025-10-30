@@ -72,10 +72,10 @@ struct TileSet
 // L06: TODO 1: Create a struct needed to hold the information to Map node
 struct MapData
 {
-	int width;
-	int height;
-	int tileWidth;
-	int tileHeight;
+	int width=0;
+	int height=0;
+	int tileWidth=0;
+	int tileHeight=0;
     std::list<TileSet*> tilesets;
 
     // L07: TODO 2: Add the info to the MapLayer Struct
