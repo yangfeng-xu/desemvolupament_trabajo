@@ -31,11 +31,18 @@ public:
 
 	// Called before quitting
 	bool CleanUp();
+	// Return the player position
+	Vector2D GetPlayerPosition();
 
+	// Get tilePosDebug value
+	std::string GetTilePosDebug() {
+		return tilePosDebug;
+	}
 private:
 
 	//L03: TODO 3b: Declare a Player attribute
 	std::shared_ptr<Player> player;
-
+	SDL_Texture* mouseTileTex = nullptr;
+	std::string tilePosDebug = "[0,0]";
 	bool showHelpMenu = false;
 };

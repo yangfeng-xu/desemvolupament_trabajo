@@ -21,11 +21,16 @@ public:
 	bool Update(float dt);
 
 	bool CleanUp();
-
+	
 	// L08 TODO 6: Define OnCollision function for the player. 
 	void OnCollision(PhysBody* physA, PhysBody* physB);
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
+
+	Vector2D GetPosition();
+	void SetPosition(Vector2D pos);
+
 	void Die();
+
 private:
 
 	void GetPhysicsValues();
