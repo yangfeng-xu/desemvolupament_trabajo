@@ -2,6 +2,7 @@
 //
 
 #include <iostream>
+#include <SDL3/SDL.h>
 #include "Engine.h"
 #include "Log.h"
 
