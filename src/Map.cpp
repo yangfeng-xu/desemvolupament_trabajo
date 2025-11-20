@@ -41,8 +41,8 @@ bool Map::Update(float dt)
         // iterate all tiles in a layer
         for (const auto& mapLayer : mapData.layers) {
             if (mapLayer->properties.GetProperty("Draw") != NULL && mapLayer->properties.GetProperty("Draw")->value) {
-                for (int i = 0; i < mapData.height; i++) {
-                    for (int j = 0; j < mapData.width; j++) {
+                for (int i = 0; i < mapData.width; i++) {
+                    for (int j = 0; j < mapData.height; j++) {
                         // L07 TODO 9: Complete the draw function
 
                         //Get the gid from tile
@@ -200,8 +200,8 @@ bool Map::Load(std::string path, std::string fileName)
         for (const auto& mapLayer : mapData.layers) {
             if (mapLayer->name == "Collition") {
                 LOG("Generado coliciones para la capa:%s", mapLayer->name.c_str());
-                for (int i = 0; i < mapData.height; i++) {
-                    for (int j = 0; j < mapData.width; j++) {
+                for (int i = 0; i < mapData.width; i++) {
+                    for (int j = 0; j < mapData.height; j++) {
                         int gid = mapLayer->Get(i, j);//obtenimos id de los cuatros que hemos pintado en color rojo para identificar las coliciones, dende de
                         if (gid == 49) {
                             Vector2D pos = MapToWorld(i, j);//mapa en pixel
@@ -262,8 +262,8 @@ Vector2D Map::MapToWorld(int i, int j) const
 {
     Vector2D ret;
 
-    ret.setX((float)(j * mapData.tileWidth));
-    ret.setY((float)(i * mapData.tileHeight));
+    ret.setX((float)(i * mapData.tileWidth));
+    ret.setY((float)(j * mapData.tileHeight));
 
     return ret;
 }

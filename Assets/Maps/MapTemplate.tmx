@@ -65,7 +65,7 @@
  <tileset firstgid="437" name="Tiles" tilewidth="32" tileheight="32" tilecount="132" columns="11">
   <image source="Tiles.png" width="352" height="384"/>
  </tileset>
- <layer id="6" name="Collition" width="64" height="24" visible="0">
+ <layer id="6" name="Collition" width="64" height="24">
   <properties>
    <property name="Draw" type="bool" value="false"/>
   </properties>
@@ -1608,7 +1608,7 @@
    <tile gid="49"/>
   </data>
  </layer>
- <layer id="8" name="MapDentro" width="64" height="24" visible="0">
+ <layer id="8" name="MapDentro" width="64" height="24">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
