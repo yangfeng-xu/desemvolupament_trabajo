@@ -135,4 +135,5 @@ private:
     bool mapLoaded;
     // L06: DONE 1: Declare a variable data of the struct MapData
     MapData mapData;
+    pugi::xml_document mapFileXML;
 };
