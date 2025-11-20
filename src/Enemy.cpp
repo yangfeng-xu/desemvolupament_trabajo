@@ -27,7 +27,7 @@ bool Enemy::Start() {
 	/*position = startPosition;*/
 	// load
 	std::unordered_map<int, std::string> aliases = { {0,"idle"} };
-	anims.LoadFromTSX("Assets/Textures/enemy_Spritesheet.tsx", aliases);
+	anims.LoadFromTSX("Assets/Textures/enemy_spritesheet.tsx", aliases);
 	anims.SetCurrent("idle");
 	
 	//Initialize Player parameters
@@ -36,7 +36,9 @@ bool Enemy::Start() {
 	//Add physics to the enemy - initialize physics body
 	texW = 32;
 	texH = 32;
-	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX()+texW/2, (int)position.getY()+texH/2, texW / 2, bodyType::DYNAMIC);
+	/*pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX()+texW/2, (int)position.getY()+texH/2, texW / 2, bodyType::DYNAMIC);*/
+
+	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
 
 	//Assign enemy class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
@@ -72,15 +74,16 @@ void Enemy::PerformPathfinding() {
 	// Pathfinding testing inputs
 
 	// Reset pathfinding with R key
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {
-		//Get the position of the enemy
-		Vector2D pos = GetPosition();
-		//Convert to tile coordinates
-		Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap((int)pos.getX(), (int)pos.getY()+1);
-		//Reset pathfinding
-		pathfinding->ResetPath(tilePos);
-	}
+	Vector2D playerPos = Engine::GetInstance().scene->GetPlayerPosition();
+	Vector2D playerTile = Engine::GetInstance().map->WorldToMap((int)playerPos.getX(), (int)playerPos.getY());
 
+	// 2. Obtener mi posición (Origen)
+	Vector2D myPos = GetPosition();
+	Vector2D myTile = Engine::GetInstance().map->WorldToMap((int)myPos.getX(), (int)myPos.getY());
+
+	// 3. Calcular el camino automáticamente
+	// Usamos MANHATTAN como heurística por defecto
+	pathfinding->ComputeFullPathAStar(myTile, MANHATTAN);
 	// Propagate BFS with J key
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_J) == KEY_DOWN) {
 		pathfinding->PropagateBFS();
@@ -139,7 +142,31 @@ void Enemy::GetPhysicsValues() {
 }
 
 void Enemy::Move() {
+	if (pathfinding->pathTiles.size() > 1) {
 
+		// El camino se guarda desde el Final hasta el Inicio.
+		// El último elemento es donde estamos (Inicio).
+		// El penúltimo elemento es el Siguiente Paso.
+
+		// Iteramos para coger el penúltimo
+		auto it = pathfinding->pathTiles.rbegin(); // Apunta al final (Inicio)
+		it++; // Avanzamos uno (Siguiente Paso)
+
+		Vector2D nextTile = *it;
+
+		// Convertimos la tile destino a pixeles (Centro del tile)
+		Vector2D nextPos = Engine::GetInstance().map->MapToWorld((int)nextTile.getX(), (int)nextTile.getY());
+		// Ajustamos al centro de la baldosa (32/2 = 16)
+		nextPos.setX(nextPos.getX() + 16);
+
+		// Decidimos dirección
+		if (GetPosition().getX() < nextPos.getX()) {
+			velocity.x = speed; // Ir derecha
+		}
+		else if (GetPosition().getX() > nextPos.getX()) {
+			velocity.x = -speed; // Ir izquierda
+		}
+	}
 	// Move 
 }
 
@@ -156,6 +183,7 @@ void Enemy::Draw(float dt) {
 
 	// Update render position using your PhysBody helper
 	int x, y;
+	
 	pbody->GetPosition(x, y);
 	position.setX((float)x);
 	position.setY((float)y);
@@ -183,7 +211,8 @@ Vector2D Enemy::GetPosition() {
 	int x, y;
 	pbody->GetPosition(x, y);
 	// Adjust for center
-	return Vector2D((float)x-texW/2,(float)y-texH/2);
+	//return Vector2D((float)x-texW/2,(float)y-texH/2);
+	return Vector2D((float)x, (float)y);
 }
 
 //Define OnCollision function for the enemy. 

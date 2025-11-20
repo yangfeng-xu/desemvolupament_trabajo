@@ -115,7 +115,6 @@ bool Map::Load(std::string path, std::string fileName)
     mapPath = path;
     std::string mapPathName = mapPath + mapFileName;
 
-    pugi::xml_document mapFileXML;
     pugi::xml_parse_result result = mapFileXML.load_file(mapPathName.c_str());
 
     if(result == NULL)
@@ -249,7 +248,7 @@ bool Map::Load(std::string path, std::string fileName)
             LOG("Error while parsing map file: %s", mapPathName.c_str());
         }
 
-        if (mapFileXML) mapFileXML.reset();
+       
 
     }
 
