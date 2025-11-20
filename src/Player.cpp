@@ -189,7 +189,7 @@ void Player::Move() {
 
 	// En God Mode, si el jugador se mueve (horizontal o vertical), usa la animación de correr
 	if (isGodMode && (velocity.x != 0.0f || velocity.y != 0.0f)) {
-		if (anims.GetCurrentName() == "idle" || anims.GetCurrentName() == "jump") {
+		if (anims.GetCurrentName() == "idle" || anims.GetCurrentName() == "jump") {  
 			anims.SetCurrent("run");
 		}
 	}
