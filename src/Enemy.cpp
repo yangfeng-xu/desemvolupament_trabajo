@@ -74,15 +74,6 @@ void Enemy::PerformPathfinding() {
 	// Pathfinding testing inputs
 
 	// Reset pathfinding with R key
-	/*if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {*/
-		//Get the position of the enemy
-		//Vector2D pos = GetPosition();
-		////Convert to tile coordinates
-		///*Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap((int)pos.getX(), (int)pos.getY()+1);*/
-		//Vector2D tilePos = Engine::GetInstance().map->WorldToMap((int)pos.getX(), (int)pos.getY());
-		////Reset pathfinding
-		//pathfinding->ResetPath(tilePos);
-	/*}*/
 	Vector2D playerPos = Engine::GetInstance().scene->GetPlayerPosition();
 	Vector2D playerTile = Engine::GetInstance().map->WorldToMap((int)playerPos.getX(), (int)playerPos.getY());
 
