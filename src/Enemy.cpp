@@ -24,12 +24,12 @@ bool Enemy::Awake() {
 }
 
 bool Enemy::Start() {
-
+	/*position = startPosition;*/
 	// load
 	std::unordered_map<int, std::string> aliases = { {0,"idle"} };
 	anims.LoadFromTSX("Assets/Textures/enemy_Spritesheet.tsx", aliases);
 	anims.SetCurrent("idle");
-
+	
 	//Initialize Player parameters
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/enemy_spritesheet.png");
 

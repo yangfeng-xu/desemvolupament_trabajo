@@ -3,7 +3,7 @@
 #include "Module.h"
 #include "Entity.h"
 #include <list>
-
+#include"Enemy.h"
 class EntityManager : public Module
 {
 public:

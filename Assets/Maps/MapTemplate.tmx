@@ -4695,6 +4695,10 @@
   </data>
  </layer>
  <layer id="9" name="Navigation" width="64" height="24">
+  <properties>
+   <property name="Draw" type="bool" value="false"/>
+   <property name="Navigation" type="bool" value="true"/>
+  </properties>
   <data>
    <tile/>
    <tile/>

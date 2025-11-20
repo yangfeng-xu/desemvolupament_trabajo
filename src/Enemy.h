@@ -38,6 +38,7 @@ public:
 	int texW, texH;
 	PhysBody* pbody;
 
+	Vector2D startPosition;
 private:
 	b2Vec2 velocity;
 	AnimationSet anims;
