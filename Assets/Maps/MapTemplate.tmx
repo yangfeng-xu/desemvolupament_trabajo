@@ -4695,6 +4695,9 @@
   </data>
  </layer>
  <layer id="10" name="Trampa" width="64" height="24">
+  <properties>
+   <property name="Draw" type="bool" value="true"/>
+  </properties>
   <data>
    <tile/>
    <tile/>
