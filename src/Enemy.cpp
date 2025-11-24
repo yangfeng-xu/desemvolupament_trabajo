@@ -139,12 +139,73 @@ void Enemy::PerformPathfinding() {
 void Enemy::GetPhysicsValues() {
 	// Read current velocity
 	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
-	velocity = { 0, velocity.y }; 
+	// ERROR ANTERIOR: velocity = { 0, velocity.y };
+	if (isGrounded) {
+		velocity.x = 0;
+	}
 }
 
 
 // En src/Enemy.cpp
 
+// En src/Enemy.cpp
+
+//void Enemy::MoveAndJump() {
+//	if (pathfinding->pathTiles.size() > 1) {
+//		auto it = pathfinding->pathTiles.rbegin();
+//		it++; // Primer objetivo (inmediato)
+//		Vector2D nextTile = *it;
+//		Vector2D targetPos = Engine::GetInstance().map->MapToWorld((int)nextTile.getX(), (int)nextTile.getY());
+//
+//		// Centramos el objetivo en el tile
+//		targetPos.setX(targetPos.getX() + 16);
+//		targetPos.setY(targetPos.getY() + 16);
+//
+//		// --- TRUCO DE "LOOKAHEAD" PARA SALTOS ---
+//		// Si el siguiente tile está justo encima (salto vertical), miramos un paso más allá
+//		// para ver si hay que avanzar horizontalmente TAMBIÉN.
+//		if (pathfinding->pathTiles.size() > 2) {
+//			Vector2D currentTilePos = Engine::GetInstance().map->WorldToMap((int)GetPosition().getX(), (int)GetPosition().getY());
+//
+//			// Si el siguiente tile tiene la misma X que yo (es un salto vertical)...
+//			if ((int)nextTile.getX() == (int)currentTilePos.getX() && nextTile.getY() < currentTilePos.getY()) {
+//				it++; // Miramos el siguiente del siguiente
+//				Vector2D futureTile = *it;
+//				// Usamos la X del futuro tile como objetivo horizontal
+//				Vector2D futurePos = Engine::GetInstance().map->MapToWorld((int)futureTile.getX(), (int)futureTile.getY());
+//				targetPos.setX(futurePos.getX() + 16);
+//			}
+//		}
+//
+//		Vector2D currentPos = GetPosition();
+//
+//		// --- MOVIMIENTO HORIZONTAL ---
+//		// Ahora 'targetPos' contiene la X del futuro tile si estamos saltando
+//		float xTolerance = 4.0f;
+//
+//		if (currentPos.getX() < targetPos.getX() - xTolerance) {
+//			velocity.x = speed;
+//			anims.SetCurrent("run");
+//			// flipState = SDL_FLIP_NONE; 
+//		}
+//		else if (currentPos.getX() > targetPos.getX() + xTolerance) {
+//			velocity.x = -speed;
+//			anims.SetCurrent("run");
+//			// flipState = SDL_FLIP_HORIZONTAL;
+//		}
+//		// Nota: No ponemos velocity.x = 0 en el 'else' para mantener inercia en el aire si ya la tiene.
+//
+//		// --- MOVIMIENTO VERTICAL (SALTO) ---
+//		// Usamos el tile inmediato (nextTile) para decidir si saltar
+//		Vector2D nextTileWorld = Engine::GetInstance().map->MapToWorld((int)nextTile.getX(), (int)nextTile.getY());
+//		bool targetIsAbove = nextTileWorld.getY() < (currentPos.getY() - 16.0f);
+//
+//		if (targetIsAbove && isGrounded) {
+//			velocity.y = -jumpForce;
+//			isGrounded = false;
+//		}
+//	}
+//}
 void Enemy::MoveAndJump() {
 	// Solo nos movemos si hay un camino trazado con al menos un paso más allá del origen
 	if (pathfinding->pathTiles.size() > 1) {
