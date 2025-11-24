@@ -36,6 +36,8 @@ bool Scene::Awake()
 
 	std::shared_ptr<Enemy> enemy1 = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
 	enemy1->position = Vector2D(220, 672);
+	std::shared_ptr<Enemy> enemy2 = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
+	enemy2->position = Vector2D(400, 672);
 	
 	return ret;
 }
