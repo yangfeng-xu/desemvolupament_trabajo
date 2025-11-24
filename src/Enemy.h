@@ -40,7 +40,7 @@ public:
 	PhysBody* pbody;
 
 	Vector2D startPosition;
-	float jumpForce = 4.0f;
+	float jumpForce = 8.0f;
 private:
 	b2Vec2 velocity;
 	AnimationSet anims;
