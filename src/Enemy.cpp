@@ -143,32 +143,55 @@ void Enemy::GetPhysicsValues() {
 }
 
 void Enemy::MoveAndJump() {
+	// Solo nos movemos si hay un camino trazado con al menos un paso más allá del origen
 	if (pathfinding->pathTiles.size() > 1) {
-		// 1. Obtener el siguiente nodo del camino
+
+		// --- 1. OBTENER EL SIGUIENTE OBJETIVO ---
+		// 'rbegin' es el inicio (donde está el enemigo), así que el siguiente paso es rbegin() + 1
 		auto it = pathfinding->pathTiles.rbegin();
 		it++;
 		Vector2D nextTile = *it;
 
-		// 2. Convertir a coordenadas de mundo (pixel central del tile)
+		// Convertir coordenadas de mapa (tiles) a mundo (pixels) + offset para centrar
 		Vector2D nextPos = Engine::GetInstance().map->MapToWorld((int)nextTile.getX(), (int)nextTile.getY());
-		nextPos.setX(nextPos.getX() + 16);
+		nextPos.setX(nextPos.getX() + 16); // +16 para centrar en el tile de 32x32
 		nextPos.setY(nextPos.getY() + 16);
 
 		Vector2D currentPos = GetPosition();
-		const float TILE_HEIGHT = 32.0f;
 
-		float xTolerance = 2.5f;
+		// --- 2. MOVIMIENTO HORIZONTAL (Walk) ---
+		float xTolerance = 2.5f; // Margen para no "vibrar" al llegar a la X exacta
 
 		if (currentPos.getX() < nextPos.getX() - xTolerance) {
-			velocity.x = speed; // Mover Derecha
-			anims.SetCurrent("run"); // Opcional: setear animación
+			velocity.x = speed; // Mover derecha
+			anims.SetCurrent("run");
+			// flipState = SDL_FLIP_NONE; // Descomentar si tu sprite necesita voltearse
 		}
 		else if (currentPos.getX() > nextPos.getX() + xTolerance) {
-			velocity.x = -speed; // Mover Izquierda
+			velocity.x = -speed; // Mover izquierda
 			anims.SetCurrent("run");
+			// flipState = SDL_FLIP_HORIZONTAL;
+		}
+		else {
+			// Si ya estamos en la X correcta, mantenemos la velocidad que traíamos o paramos si es destino final
+			// Pero para saltos, a veces conviene mantener un poco de inercia.
 		}
 
+		// --- 3. MOVIMIENTO VERTICAL (Jump Automático) ---
 
+		// En SDL, Y disminuye hacia arriba. 
+		// Si la 'nextPos.y' es menor que 'currentPos.y' (con un margen), significa que el destino está arriba.
+		// Usamos un margen de 32px (un tile) para decidir si vale la pena saltar.
+		bool targetIsAbove = nextPos.getY() < (currentPos.getY() - 10.0f);
+
+		// Si el objetivo está arriba Y estamos tocando el suelo (isGrounded) -> SALTAMOS
+		if (targetIsAbove && isGrounded) {
+			// Aplicar impulso hacia arriba (Y negativo)
+			Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0, -jumpForce, true);
+
+			isGrounded = false; // Marcar que ya no estamos en el suelo para evitar dobles impulsos inmediatos
+			// anims.SetCurrent("jump"); // Opcional: cambiar animación
+		}
 	}
 }
 
