@@ -194,13 +194,13 @@ void Enemy::MoveAndJump() {
 
 		// --- MOVIMIENTO VERTICAL (SALTO) ---
 		// Usamos el tile inmediato (nextTile) para decidir si saltar
-		Vector2D nextTileWorld = Engine::GetInstance().map->MapToWorld((int)nextTile.getX(), (int)nextTile.getY());
+	/*	Vector2D nextTileWorld = Engine::GetInstance().map->MapToWorld((int)nextTile.getX(), (int)nextTile.getY());
 		bool targetIsAbove = nextTileWorld.getY() < (currentPos.getY() - 16.0f);
 
 		if (targetIsAbove && isGrounded) {
 			velocity.y = -jumpForce;
 			isGrounded = false;
-		}
+		}*/
 	}
 }
 //void Enemy::MoveAndJump() {
