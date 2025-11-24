@@ -45,4 +45,5 @@ private:
 	b2Vec2 velocity;
 	AnimationSet anims;
 	std::shared_ptr<Pathfinding> pathfinding;
+	bool isGrounded = false;
 };

@@ -142,67 +142,14 @@ void Enemy::GetPhysicsValues() {
 	velocity = { 0, velocity.y }; 
 }
 
-//void Enemy::MoveAndJump() {
-//	if (pathfinding->pathTiles.size() > 1) {
-//
-//		// El camino se guarda desde el Final hasta el Inicio.
-//		// El último elemento es donde estamos (Inicio).
-//		// El penúltimo elemento es el Siguiente Paso.
-//
-//		// Iteramos para coger el penúltimo
-//		auto it = pathfinding->pathTiles.rbegin(); // Apunta al final (Inicio)
-//		it++; // Avanzamos uno (Siguiente Paso)
-//
-//		Vector2D nextTile = *it;
-//
-//		// Convertimos la tile destino a pixeles (Centro del tile)
-//		Vector2D nextPos = Engine::GetInstance().map->MapToWorld((int)nextTile.getX(), (int)nextTile.getY());
-//		// Ajustamos al centro de la baldosa (32/2 = 16)
-//		nextPos.setX(nextPos.getX() + 16);
-//		nextPos.setY(nextPos.getY() + 16);
-//
-//		//necesitamos un auxiliar para guardar el posición del enemigo actualmente
-//		Vector2D currentPos = GetPosition();
-//
-//
-//		//Jump
-//		const float TILE_HEIGHT = 32.0f;
-//		if (nextPos.getY() < (currentPos.getY() - TILE_HEIGHT * 0.5f) && Engine::GetInstance().physics->isOnGround(pbody)) {
-//			Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
-//		}
-//
-//
-//		// Decidimos dirección
-//		if (GetPosition().getX() < nextPos.getX()) {
-//			velocity.x = speed; // Ir derecha
-//		}
-//		else if (GetPosition().getX() > nextPos.getX()) {
-//			velocity.x = -speed; // Ir izquierda
-//		}
-//		
-//
-//		float distX = std::abs(currentPos.getX() - nextPos.getX());
-//		float distY = std::abs(currentPos.getY() - nextPos.getY());
-//
-//		float TILE_TOLERANCE = 5.0f;
-//		// Si estamos cerca en X y (cerca en Y O ya hemos superado la altura destino hacia arriba)
-//		if (distX < TILE_TOLERANCE && (distY < TILE_TOLERANCE || currentPos.getY() < nextPos.getY())) {
-//			pathfinding->pathTiles.pop_back();
-//		}
-//
-//
-//	}
-//	// Move 
-//}
 void Enemy::MoveAndJump() {
 	if (pathfinding->pathTiles.size() > 1) {
-
-		// --- Tu estructura original ---
+		// 1. Obtener el siguiente nodo del camino
 		auto it = pathfinding->pathTiles.rbegin();
 		it++;
-
 		Vector2D nextTile = *it;
 
+		// 2. Convertir a coordenadas de mundo (pixel central del tile)
 		Vector2D nextPos = Engine::GetInstance().map->MapToWorld((int)nextTile.getX(), (int)nextTile.getY());
 		nextPos.setX(nextPos.getX() + 16);
 		nextPos.setY(nextPos.getY() + 16);
@@ -210,54 +157,17 @@ void Enemy::MoveAndJump() {
 		Vector2D currentPos = GetPosition();
 		const float TILE_HEIGHT = 32.0f;
 
+		float xTolerance = 2.5f;
 
-		// --- Jump (Igual que tu código) ---
-		// Detectamos si hay que saltar
-		bool targetIsAbove = nextPos.getY() < (currentPos.getY() - TILE_HEIGHT * 0.5f);
-
-		if (targetIsAbove && Engine::GetInstance().physics->isOnGround(pbody)) {
-			Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
+		if (currentPos.getX() < nextPos.getX() - xTolerance) {
+			velocity.x = speed; // Mover Derecha
+			anims.SetCurrent("run"); // Opcional: setear animación
+		}
+		else if (currentPos.getX() > nextPos.getX() + xTolerance) {
+			velocity.x = -speed; // Mover Izquierda
+			anims.SetCurrent("run");
 		}
 
-
-		// --- Decidimos dirección (AQUÍ ESTÁ LA CORRECCIÓN) ---
-
-		// Añadimos una pequeña tolerancia (2.0f) para que no vibre al alinearse
-		if (GetPosition().getX() < nextPos.getX() - 2.0f) {
-			velocity.x = speed; // Ir derecha
-		}
-		else if (GetPosition().getX() > nextPos.getX() + 2.0f) {
-			velocity.x = -speed; // Ir izquierda
-		}
-		else {
-			// CAMBIO IMPORTANTE:
-			// Si la X está alineada, normalmente pararíamos (velocity.x = 0).
-			// PERO si el objetivo está ARRIBA (targetIsAbove), NO debemos parar,
-			// o el enemigo saltará recto como un muelle y no avanzará.
-
-			if (targetIsAbove) {
-				// Si hay que subir, forzamos movimiento hacia donde esté el Player real
-				float playerX = Engine::GetInstance().player->GetPosition().getX();
-				if (playerX > currentPos.getX()) velocity.x = speed;
-				else velocity.x = -speed;
-			}
-			else {
-				velocity.x = 0; // Solo paramos si NO hay que subir
-			}
-		}
-
-
-		// --- Tu lógica de limpieza (Pop Back) ---
-		const float TILE_TOLERANCE = 5.0f;
-
-		// Usamos abs para distancias positivas
-		bool nearX = std::abs(currentPos.getX() - nextPos.getX()) < TILE_TOLERANCE;
-		// Corregido ligeramente: si ya superamos la altura (estamos más arriba o igual en Y)
-		bool nearYorAbove = (currentPos.getY() <= nextPos.getY() + TILE_TOLERANCE);
-
-		if (nearX && nearYorAbove) {
-			pathfinding->pathTiles.pop_back();
-		}
 
 	}
 }
@@ -309,10 +219,14 @@ Vector2D Enemy::GetPosition() {
 
 //Define OnCollision function for the enemy. 
 void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
-
+	if (physB->ctype == ColliderType::PLATFORM) {
+		isGrounded = true;
+	}
 }
 
 void Enemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 {
-
+	if (physB->ctype == ColliderType::PLATFORM) {
+		isGrounded = false;
+	}
 }
