@@ -65,7 +65,7 @@
  <tileset firstgid="437" name="Tiles" tilewidth="32" tileheight="32" tilecount="132" columns="11">
   <image source="Tiles.png" width="352" height="384"/>
  </tileset>
- <layer id="6" name="Collition" width="64" height="24" visible="0">
+ <layer id="6" name="Collition" width="64" height="24" locked="1">
   <properties>
    <property name="Draw" type="bool" value="false"/>
   </properties>
@@ -1608,7 +1608,7 @@
    <tile/>
   </data>
  </layer>
- <layer id="8" name="MapDentro" width="64" height="24" visible="0">
+ <layer id="8" name="MapDentro" width="64" height="24" visible="0" locked="1">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -3151,7 +3151,7 @@
    <tile gid="289"/>
   </data>
  </layer>
- <layer id="1" name="Map" width="64" height="24" visible="0">
+ <layer id="1" name="Map" width="64" height="24" visible="0" locked="1">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -4694,7 +4694,7 @@
    <tile gid="456"/>
   </data>
  </layer>
- <layer id="10" name="Trampa" width="64" height="24" visible="0">
+ <layer id="10" name="Trampa" width="64" height="24" visible="0" locked="1">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -6765,8 +6765,8 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="50"/>
    <tile/>
-   <tile/>
    <tile gid="49"/>
    <tile gid="49"/>
    <tile gid="49"/>
@@ -6820,7 +6820,6 @@
    <tile/>
    <tile/>
    <tile gid="49"/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -6830,6 +6829,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="50"/>
    <tile/>
    <tile gid="49"/>
    <tile gid="49"/>
@@ -7012,9 +7012,9 @@
    <tile/>
    <tile/>
    <tile gid="49"/>
-   <tile/>
-   <tile/>
    <tile/>
+   <tile gid="50"/>
+   <tile gid="50"/>
    <tile/>
    <tile/>
    <tile/>
@@ -7077,6 +7077,8 @@
    <tile/>
    <tile gid="49"/>
    <tile/>
+   <tile gid="50"/>
+   <tile gid="50"/>
    <tile/>
    <tile/>
    <tile/>
@@ -7091,8 +7093,6 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
    <tile gid="49"/>
    <tile gid="49"/>
    <tile gid="49"/>
@@ -7146,7 +7146,6 @@
    <tile gid="49"/>
    <tile gid="49"/>
    <tile gid="49"/>
-   <tile gid="49"/>
    <tile/>
    <tile/>
    <tile/>
@@ -7157,6 +7156,7 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile/>
    <tile gid="49"/>
    <tile gid="49"/>
    <tile gid="49"/>
@@ -7204,7 +7204,6 @@
    <tile/>
    <tile/>
    <tile gid="49"/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -7218,9 +7217,10 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="50"/>
+   <tile gid="50"/>
    <tile/>
    <tile/>
-   <tile/>
    <tile gid="49"/>
    <tile gid="49"/>
    <tile gid="49"/>
@@ -7268,7 +7268,6 @@
    <tile gid="49"/>
    <tile/>
    <tile gid="49"/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -7282,9 +7281,10 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="50"/>
+   <tile gid="50"/>
    <tile/>
    <tile/>
-   <tile/>
    <tile gid="49"/>
    <tile gid="49"/>
    <tile gid="49"/>
@@ -7652,7 +7652,6 @@
    <tile/>
    <tile/>
    <tile gid="49"/>
-   <tile/>
    <tile/>
    <tile/>
    <tile/>
@@ -7667,8 +7666,9 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
    <tile gid="49"/>
    <tile gid="49"/>
    <tile gid="49"/>
@@ -7730,9 +7730,9 @@
    <tile gid="49"/>
    <tile gid="49"/>
    <tile gid="49"/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
    <tile gid="49"/>
    <tile gid="49"/>
    <tile gid="49"/>
