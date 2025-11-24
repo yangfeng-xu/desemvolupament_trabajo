@@ -6,7 +6,7 @@
 #include "Timer.h"
 #include "PerfTimer.h"
 #include "pugixml.hpp"
-
+#include "Player.h"
 // Modules
 class Window;
 class Input;

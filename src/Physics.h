@@ -94,6 +94,7 @@ public:
     // --- Impulse helper (handy for jumps/dashes)
     void   ApplyLinearImpulseToCenter(PhysBody* p, float ix, float iy, bool wake = true) const;
 
+    bool isOnGround(PhysBody* pbody);
 private:
     // helpers
     static b2BodyType ToB2Type(bodyType t);

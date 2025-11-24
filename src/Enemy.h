@@ -5,6 +5,7 @@
 #include <box2d/box2d.h>
 #include <SDL3/SDL.h>
 #include "Pathfinding.h"
+#include "Player.h"
 
 struct SDL_Texture;
 
@@ -26,7 +27,7 @@ public:
 private:
 	void PerformPathfinding();
 	void GetPhysicsValues();
-	void Move();
+	void MoveAndJump();
 	void ApplyPhysics();
 	void Draw(float dt);
 
@@ -39,6 +40,7 @@ public:
 	PhysBody* pbody;
 
 	Vector2D startPosition;
+	float jumpForce = 50.0f;
 private:
 	b2Vec2 velocity;
 	AnimationSet anims;

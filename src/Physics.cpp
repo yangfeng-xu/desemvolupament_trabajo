@@ -413,6 +413,11 @@ int PhysBody::RayCast(int x1, int y1, int x2, int y2, float& normal_x, float& no
     return int(floorf(res.fraction * distPixels));
 }
 
+bool Physics::isOnGround(PhysBody* pbody) {
+    return false; 
+}
+
+
 // --- helpers
 
 b2BodyType Physics::ToB2Type(bodyType t)
@@ -425,6 +430,7 @@ b2BodyType Physics::ToB2Type(bodyType t)
     default:        return b2_staticBody;
     }
 }
+
 
 // --- Debug draw callbacks (map to your Render)
 
