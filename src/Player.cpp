@@ -10,7 +10,7 @@
 #include "EntityManager.h"
 #include"Map.h"
 #include"Animation.h"
-#include <box2d/box2d.h> // Necesario para manipular la escala de gravedad
+#include <box2d/box2d.h> 
 
 Player::Player() : Entity(EntityType::PLAYER), IsDead(false)
 {
