@@ -349,6 +349,6 @@ void Map::SaveEntities(std::shared_ptr<Player>player) {
         }
     }
     //guardar los modificación
-    std::string mapPathName = mapPath + mapFileName;
-    mapFileXML.save_file(mapPathName.c_str());
+  /*  std::string mapPathName = mapPath + mapFileName;
+    mapFileXML.save_file(mapPathName.c_str());*/
 }
