@@ -45,4 +45,5 @@ private:
 	SDL_Texture* mouseTileTex = nullptr;
 	std::string tilePosDebug = "[0,0]";
 	bool showHelpMenu = false;
+	bool once = false;
 };

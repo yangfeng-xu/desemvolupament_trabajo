@@ -5,7 +5,6 @@
 #include "Map.h"
 #include "Log.h"
 #include "Physics.h"
-#include"Player.h"
 #include"EntityManager.h"
 #include <math.h>
 
@@ -327,4 +326,29 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
         }
     }
 
+}
+
+void Map::SaveEntities(std::shared_ptr<Player>player) {
+
+    for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup");
+        objectGroupNode != NULL;
+        objectGroupNode = objectGroupNode.next_sibling("objectgroup")) {
+        if (objectGroupNode.attribute("name").as_string() == std::string("Entities")) {
+            for (pugi::xml_node objectNode = objectGroupNode.child("object");
+                objectNode != NULL;
+                objectNode = objectNode.next_sibling("object")) {
+                std::string entityType = objectNode.attribute("type").as_string();
+                //Leer o modificar la informacion del Player
+                if (entityType == std::string("Player")) {
+                    Vector2D playerPos = player->GetPosition();
+                    objectNode.attribute("x").set_value(playerPos.getX());
+                    objectNode.attribute("y").set_value(playerPos.getY());
+
+                }
+            }
+        }
+    }
+    //guardar los modificación
+    std::string mapPathName = mapPath + mapFileName;
+    mapFileXML.save_file(mapPathName.c_str());
 }

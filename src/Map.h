@@ -3,10 +3,9 @@
 #include "Module.h"
 #include <list>
 #include <vector>
+#include "Player.h"
 
 // L09: TODO 5: Add attributes to the property structure
-class Player;
-struct SDL_Texture;
 struct Properties
 {
     struct Property
@@ -131,6 +130,7 @@ public:
     }
 
     void LoadEntities(std::shared_ptr<Player>& player);
+    void SaveEntities(std::shared_ptr<Player>player);
 public: 
     std::string mapFileName;
     std::string mapPath;
