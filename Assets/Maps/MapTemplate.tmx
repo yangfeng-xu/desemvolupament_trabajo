@@ -7782,7 +7782,7 @@
 		</data>
 	</layer>
 	<objectgroup id="13" name="Entities">
-		<object id="25" name="Player" type="Player" x="-16" y="-32">
+		<object id="25" name="Player" type="Player" x="159" y="703">
 			<point />
 		</object>
 		<object id="26" x="1941.26" y="-617.435">

@@ -208,17 +208,7 @@ void Enemy::MoveAndJump() {
 			anims.SetCurrent("run");
 			// flipState = SDL_FLIP_HORIZONTAL;
 		}
-		// Nota: No ponemos velocity.x = 0 en el 'else' para mantener inercia en el aire si ya la tiene.
-
-		// --- MOVIMIENTO VERTICAL (SALTO) ---
-		// Usamos el tile inmediato (nextTile) para decidir si saltar
-	/*	Vector2D nextTileWorld = Engine::GetInstance().map->MapToWorld((int)nextTile.getX(), (int)nextTile.getY());
-		bool targetIsAbove = nextTileWorld.getY() < (currentPos.getY() - 16.0f);
-
-		if (targetIsAbove && isGrounded) {
-			velocity.y = -jumpForce;
-			isGrounded = false;
-		}*/
+	
 	}
 }
 
@@ -285,7 +275,9 @@ void Enemy::Draw(float dt) {
 
 	// Draw pathfinding debug
 	
-	pathfinding->DrawPath();
+	if (Engine::GetInstance().physics->IsDebug()) {
+		pathfinding->DrawPath();
+	}
 	//Draw the player using the texture and the current animation frame
 	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame);
 	

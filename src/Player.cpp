@@ -39,6 +39,8 @@ bool Player::Start() {
 	anims.LoadFromTSX("Assets/Textures/player_sprite2.tsx", animNames);
 	anims.SetCurrent("idle");
 	// L08 TODO 5: Add physics to the player - initialize physics body
+
+	startPosition = position;
 	texW = 32;
 	texH = 32;
 	//Engine::GetInstance().textures->GetSize(texture, texW, texH);
