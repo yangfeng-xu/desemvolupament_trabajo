@@ -5,6 +5,8 @@
 #include <vector>
 
 // L09: TODO 5: Add attributes to the property structure
+class Player;
+struct SDL_Texture;
 struct Properties
 {
     struct Property

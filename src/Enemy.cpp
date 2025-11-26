@@ -11,13 +11,15 @@
 #include "Map.h"
 #include "Player.h"
 
-Enemy::Enemy() : Entity(EntityType::ENEMY),
-pbody(nullptr),
-texW(0), texH(0),
-velocity({ 0,0 }), // Inicializa el Vector2D
-enemyType(EnemyType::GROUND) // Inicializa el tipo
-{
+Enemy::Enemy() : Entity(EntityType::ENEMY) {
 	name = "Enemy";
+	
+	pbody = nullptr;
+	texture = nullptr;
+	texW = 0;
+	texH = 0;
+	velocity = { 0.0f, 0.0f };
+	isGrounded = false;
 }
 
 Enemy::~Enemy() {

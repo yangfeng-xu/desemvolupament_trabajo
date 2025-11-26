@@ -5,7 +5,8 @@
 #include "Map.h"
 #include "Log.h"
 #include "Physics.h"
-
+#include"Player.h"
+#include"EntityManager.h"
 #include <math.h>
 
 Map::Map() : Module(), mapLoaded(false)
