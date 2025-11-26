@@ -61,7 +61,7 @@ bool Scene::Start()
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Level.wav");
 	
 	//L06 TODO 3: Call the function to load the map. 
-	/*Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");*/
+	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
 
 	//L15 TODO 3: Call the function to load entities from the map
 	Engine::GetInstance().map->LoadEntities(player);
