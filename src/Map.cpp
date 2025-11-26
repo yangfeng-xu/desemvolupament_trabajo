@@ -300,3 +300,30 @@ MapLayer* Map::GetNavigationLayer() {
 }
 
 
+void Map::LoadEntities(std::shared_ptr<Player>& player) {
+    for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup");
+        objectGroupNode != NULL;
+        objectGroupNode = objectGroupNode.next_sibling("objectgroup")) {
+        if (objectGroupNode.attribute("name").as_string() == std::string("Entities")) {
+            for (pugi::xml_node objectNode = objectGroupNode.child("object");
+                objectNode != NULL;
+                objectNode = objectNode.next_sibling("object")) {
+                std::string entityType = objectNode.attribute("type").as_string();
+                //sacar la informacion del Player
+                if (entityType == std::string("Player")) {
+                    float x = objectNode.attribute("x").as_float();
+                    float y = objectNode.attribute("y").as_float();
+                    //if player not exist
+                    if (player == NULL) {
+                        player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
+                        player->position = Vector2D(x, y);
+                    }
+                    else {
+                        player->SetPosition(Vector2D(x, y));
+                    }
+                }
+            }
+        }
+    }
+
+}

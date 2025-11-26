@@ -9,6 +9,10 @@
 
 struct SDL_Texture;
 
+enum class EnemyType {
+	GROUND,
+	FLYING
+};
 class Enemy : public Entity
 {
 public:
@@ -23,11 +27,13 @@ public:
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
 	void SetPosition(Vector2D pos);
 	Vector2D GetPosition();
+	void SetEnemyType(EnemyType type);
 
 private:
 	void PerformPathfinding();
 	void GetPhysicsValues();
 	void MoveAndJump();
+	void MoveFlying();
 	void ApplyPhysics();
 	void Draw(float dt);
 
@@ -41,6 +47,8 @@ public:
 
 	Vector2D startPosition;
 	float jumpForce = 8.0f;
+
+	EnemyType enemyType = EnemyType::GROUND;
 private:
 	b2Vec2 velocity;
 	AnimationSet anims;

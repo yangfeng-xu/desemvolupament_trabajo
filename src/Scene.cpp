@@ -34,10 +34,21 @@ bool Scene::Awake()
 	std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
 	item->startPosition = Vector2D(200, 672);
 
-	std::shared_ptr<Enemy> enemy1 = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
-	enemy1->position = Vector2D(220, 672);
+
+    std::shared_ptr<Enemy> enemy1 = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
+
+	if (enemy1 != nullptr) {
+		enemy1->SetEnemyType(EnemyType::FLYING); // <--- IMPORTANTE: Definir tipo
+		enemy1->position = Vector2D(220, 672);   // Se usará esta posición cuando se cree el cuerpo físico en Enemy::Start()
+	}
+
+	// --- Enemigo 2: TERRESTRE ---
 	std::shared_ptr<Enemy> enemy2 = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
-	enemy2->position = Vector2D(400, 672);
+
+	if (enemy2 != nullptr) {
+		enemy2->SetEnemyType(EnemyType::GROUND); // Opcional si GROUND es el default
+		enemy2->position = Vector2D(400, 672);
+	}
 	
 	return ret;
 }
@@ -49,7 +60,12 @@ bool Scene::Start()
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Level.wav");
 	
 	//L06 TODO 3: Call the function to load the map. 
-	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
+	/*Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");*/
+
+	//L15 TODO 3: Call the function to load entities from the map
+	Engine::GetInstance().map->LoadEntities(player);
+	// Texture to highligh mouse position 
+	mouseTileTex = Engine::GetInstance().textures->Load("Assets/Maps/MapMetadata.png");
 	
 	return true;
 }
@@ -90,6 +106,12 @@ bool Scene::Update(float dt)
 bool Scene::PostUpdate()
 {
 	bool ret = true;
+
+
+	//L15 TODO 3: Call the function to load entities from the map
+	Engine::GetInstance().map->LoadEntities(player);
+	// Texture to highligh mouse position 
+	mouseTileTex = Engine::GetInstance().textures->Load("Assets/Maps/MapMetadata.png");
     if (showHelpMenu)
     {
         int windowWidth, windowHeight;

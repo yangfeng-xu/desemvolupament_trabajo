@@ -127,6 +127,8 @@ public:
     int GetTileHeight() {
         return mapData.tileHeight;
     }
+
+    void LoadEntities(std::shared_ptr<Player>& player);
 public: 
     std::string mapFileName;
     std::string mapPath;

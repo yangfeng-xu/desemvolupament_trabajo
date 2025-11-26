@@ -11,7 +11,11 @@
 #include "Map.h"
 #include "Player.h"
 
-Enemy::Enemy() : Entity(EntityType::ENEMY)
+Enemy::Enemy() : Entity(EntityType::ENEMY),
+pbody(nullptr),
+texW(0), texH(0),
+velocity({ 0,0 }), // Inicializa el Vector2D
+enemyType(EnemyType::GROUND) // Inicializa el tipo
 {
 	name = "Enemy";
 }
@@ -24,6 +28,9 @@ bool Enemy::Awake() {
 	return true;
 }
 
+void Enemy::SetEnemyType(EnemyType type) {
+	enemyType = type;
+}
 bool Enemy::Start() {
 	/*position = startPosition;*/
 	// load
@@ -47,13 +54,17 @@ bool Enemy::Start() {
 	//ssign collider type
 	pbody->ctype = ColliderType::ENEMY;
 
-	// Initialize pathfinding
+	if (enemyType == EnemyType::FLYING) {
+		b2Body_SetGravityScale(pbody->body, 0.0f);
+	}
+	else {
+		b2Body_SetGravityScale(pbody->body, 1.0f);
+	}
+
+	// Inicializar pathfinding (igual que antes)
 	pathfinding = std::make_shared<Pathfinding>();
-	//Get the position of the enemy
 	Vector2D pos = GetPosition();
-	//Convert to tile coordinates
-	Vector2D tilePos = Engine::GetInstance().map->WorldToMap((int)pos.getX(), (int)pos.getY()+1);
-	//Reset pathfinding
+	Vector2D tilePos = Engine::GetInstance().map->WorldToMap((int)pos.getX(), (int)pos.getY() + 1);
 	pathfinding->ResetPath(tilePos);
 
 	return true;
@@ -63,7 +74,12 @@ bool Enemy::Update(float dt)
 {
 	PerformPathfinding();
 	GetPhysicsValues();
-	MoveAndJump();
+	if (enemyType == EnemyType::GROUND) {
+		MoveAndJump();
+	}
+	else if (enemyType == EnemyType::FLYING) {
+		MoveFlying();
+	}
 	ApplyPhysics();
 	Draw(dt);
 
@@ -140,7 +156,7 @@ void Enemy::GetPhysicsValues() {
 	// Read current velocity
 	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 	// ERROR ANTERIOR: velocity = { 0, velocity.y };
-	if (isGrounded) {
+	if (enemyType == EnemyType::GROUND && isGrounded) {
 		velocity.x = 0;
 	}
 }
@@ -203,47 +219,50 @@ void Enemy::MoveAndJump() {
 		}*/
 	}
 }
-//void Enemy::MoveAndJump() {
-//	// Solo nos movemos si hay un camino trazado con al menos un paso más allá del origen
-//	if (pathfinding->pathTiles.size() > 1) {
-//
-//		// ... (código de obtención de nextPos igual que antes) ...
-//		auto it = pathfinding->pathTiles.rbegin();
-//		it++;
-//		Vector2D nextTile = *it;
-//		Vector2D nextPos = Engine::GetInstance().map->MapToWorld((int)nextTile.getX(), (int)nextTile.getY());
-//		nextPos.setX(nextPos.getX() + 16);
-//		nextPos.setY(nextPos.getY() + 16);
-//
-//		Vector2D currentPos = GetPosition();
-//
-//		// --- MOVIMIENTO HORIZONTAL ---
-//		float xTolerance = 2.5f;
-//
-//		if (currentPos.getX() < nextPos.getX() - xTolerance) {
-//			velocity.x = speed;
-//			anims.SetCurrent("run");
-//		}
-//		else if (currentPos.getX() > nextPos.getX() + xTolerance) {
-//			velocity.x = -speed;
-//			anims.SetCurrent("run");
-//		}
-//		// (Nota: No resetees velocity.x a 0 aquí si no hay movimiento, 
-//		//  o perderás inercia en el aire, pero para este estilo de juego está bien así)
-//
-//		// --- MOVIMIENTO VERTICAL (CORRECCIÓN AQUÍ) ---
-//		bool targetIsAbove = nextPos.getY() < (currentPos.getY() - 16.0f); // Ajusté el margen a 16 (mitad de tile)
-//
-//		if (targetIsAbove && isGrounded) {
-//			// CAMBIO: En lugar de ApplyLinearImpulse, modificamos la variable velocity.y directamente.
-//			// Como ApplyPhysics() usa esta variable al final del frame, el salto se aplicará correctamente.
-//			velocity.y = -jumpForce;
-//
-//			isGrounded = false;
-//		}
-//	}
-//}
-      
+
+
+void Enemy::MoveFlying() {
+	// Si no hay camino, frenar
+	if (pathfinding->pathTiles.size() < 2) {
+		velocity.x = 0;
+		velocity.y = 0;
+		return;
+	}
+
+	// 1. Obtener destino (siguiente tile)
+	auto it = pathfinding->pathTiles.rbegin();
+	it++;
+	Vector2D nextTile = *it;
+	Vector2D targetPos = Engine::GetInstance().map->MapToWorld((int)nextTile.getX(), (int)nextTile.getY());
+
+	// Centrar objetivo (+16 asumiendo tiles de 32)
+	targetPos.setX(targetPos.getX() + 16);
+	targetPos.setY(targetPos.getY() + 16);
+
+	Vector2D currentPos = GetPosition();
+
+	// 2. Calcular vector dirección (Destino - Origen)
+	float dirX = targetPos.getX() - currentPos.getX();
+	float dirY = targetPos.getY() - currentPos.getY();
+
+	// 3. Normalizar (Teorema de Pitágoras)
+	float length = sqrt(dirX * dirX + dirY * dirY);
+
+	if (length > 0) {
+		// Normalizamos y aplicamos velocidad
+		velocity.x = (dirX / length) * speed;
+		velocity.y = (dirY / length) * speed;
+
+		// Animación básica
+		if (velocity.x > 0) anims.SetCurrent("fly_right"); // O usa flip
+		else anims.SetCurrent("fly_left");
+	}
+	else {
+		velocity.x = 0;
+		velocity.y = 0;
+	}
+}
+   
 void Enemy::ApplyPhysics() {
 
 	// Apply velocity via helper
