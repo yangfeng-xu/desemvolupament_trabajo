@@ -62,6 +62,7 @@ private:
 	b2Vec2 velocity = {0.0f,0.0f};
 	AnimationSet anims;
 	Vector2D startPosition;
+	Vector2D savePosition;
 	bool IsDead;
 	float shootCooldown = 0.0f;
 	SDL_FlipMode flipState = SDL_FLIP_NONE;//FlipMode para invertir imagen

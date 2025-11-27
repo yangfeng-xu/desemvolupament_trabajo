@@ -134,10 +134,14 @@ public:
 public: 
     std::string mapFileName;
     std::string mapPath;
+    SDL_Texture* texture = NULL;
 
 private:
     bool mapLoaded;
+    AnimationSet anims;
     // L06: DONE 1: Declare a variable data of the struct MapData
     MapData mapData;
     pugi::xml_document mapFileXML;
+    SDL_Texture* savepointTexture = nullptr; // Textura
+    Vector2D savepointDrawPosition = { -1.0f, -1.0f };
 };

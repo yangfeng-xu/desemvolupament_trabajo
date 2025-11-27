@@ -43,6 +43,7 @@ bool Player::Start() {
 	// L08 TODO 5: Add physics to the player - initialize physics body
 
 	startPosition = position;
+	savePosition = position;
 	texW = 32;
 	texH = 32;
 	//Engine::GetInstance().textures->GetSize(texture, texW, texH);
@@ -111,8 +112,15 @@ bool Player::Update(float dt)
 			b2BodyId body = pbody->body;
 			b2Vec2 vel = { 0.0f, 0.0f };
 			b2Body_SetLinearVelocity(body, vel);
-			b2Vec2 startPosMeters = { PIXEL_TO_METERS(startPosition.getX()), PIXEL_TO_METERS(startPosition.getY()) };
-			b2Body_SetTransform(body, startPosMeters, b2Rot_identity);
+
+			//b2Vec2 startPosMeters = { PIXEL_TO_METERS(startPosition.getX()), PIXEL_TO_METERS(startPosition.getY()) };
+			//b2Body_SetTransform(body, startPosMeters, b2Rot_identity);
+			b2Vec2 respawnPosMeters = {
+				PIXEL_TO_METERS(savePosition.getX() + texW / 2),
+				PIXEL_TO_METERS(savePosition.getY() + texH / 2)
+			};
+			b2Body_SetTransform(body, respawnPosMeters, b2Rot_identity);
+
 			isJumping = false;
 			IsDead = false;
 			anims.SetCurrent("idle");
@@ -307,6 +315,16 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	case ColliderType::DEATH: // <-- AÑADE ESTE CASO
 		LOG("Collision DEATH");
 		Die(); // Llama a la función de muerte (ya tiene la comprobación de God Mode)
+		break;
+	case ColliderType::SAVEPOINT: // <--- NUEVO CASO
+		// Cuando colisiona con el Savepoint, actualiza la posición de guardado
+		// Obtenemos la posición del centro del savepoint para que el respawn sea más preciso
+		int spX, spY;
+		physB->GetPosition(spX, spY);
+		// El cuerpo del savepoint es el centro. La posición del player se ajusta en Die/Update.
+		savePosition.setX((float)spX - texW / 2); // Ajustamos para que sea la esquina superior izquierda (Entity::position)
+		savePosition.setY((float)spY - texH / 2); // Usando texW/2 como ajuste de píxeles para el tamaño del player.
+		LOG("Collision SAVEPOINT. Position updated to (%.2f, %.2f)", savePosition.getX(), savePosition.getY());
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
