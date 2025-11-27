@@ -86,9 +86,28 @@ bool Enemy::Start() {
 
 bool Enemy::Update(float dt)
 {
+	// 1. COMPROBACIÓN DE MUERTE
+	if (isDead) {
+		// Actualizamos la animación (que debería ser la de "death")
+		anims.Update(dt);
+
+		// Si la animación de muerte ha terminado de reproducirse
+		if (anims.HasFinishedOnce()) {
+			// Destruimos la entidad del juego
+			Engine::GetInstance().entityManager->DestroyEntity(shared_from_this());
+		}
+
+		// Dibujamos al enemigo (muriendo) en la posición actual
+		Draw(dt);
+
+		// Retornamos true para salir de la función y NO ejecutar movimiento ni físicas
+		return true;
+	}
+
+	// 2. COMPORTAMIENTO NORMAL (Si sigue vivo)
 	GetPhysicsValues();
 	PerformPathfinding();
-	
+
 	if (enemyType == EnemyType::GROUND) {
 		Move();
 	}
@@ -332,6 +351,19 @@ Vector2D Enemy::GetPosition() {
 void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 	if (physB->ctype == ColliderType::PLATFORM) {
 		isGrounded = true;
+	}
+	if (physB->ctype == ColliderType::PROJECTILE) {
+		if (!isDead) {
+			isDead = true;
+
+			// Desactiva físicas para que no siga chocando ni se mueva
+			Engine::GetInstance().physics->DeletePhysBody(pbody);
+			pbody = nullptr;
+
+			// Reproducir animación de muerte
+			// Según tu código actual, ya cargas "death" en el Start()
+			anims.SetCurrent("death");
+		}
 	}
 }
 

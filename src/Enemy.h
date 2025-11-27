@@ -56,4 +56,5 @@ private:
 	AnimationSet anims;
 	std::shared_ptr<Pathfinding> pathfinding;
 	bool isGrounded = false;
+	bool isDead = false;
 };

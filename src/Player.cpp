@@ -10,7 +10,9 @@
 #include "EntityManager.h"
 #include"Map.h"
 #include"Animation.h"
+#include"Projectile.h"
 #include <box2d/box2d.h> 
+
 
 Player::Player() : Entity(EntityType::PLAYER), IsDead(false)
 {
@@ -79,7 +81,31 @@ bool Player::Update(float dt)
 			b2Body_SetGravityScale(pbody->body, 1.0f);
 		}
 	}
+	if (shootCooldown > 0) shootCooldown -= dt;
 
+	// Disparar con tecla F (por ejemplo)
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && shootCooldown <= 0) {
+
+		// Crear proyectil
+		auto projectile = std::dynamic_pointer_cast<Projectile>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PROJECTILE));
+
+		// Configurar posición inicial (centro del jugador)
+		projectile->SetPosition(position);
+
+		// Determinar dirección basada en hacia dónde mira el jugador (flipState)
+		if (flipState == SDL_FLIP_NONE) {
+			projectile->SetVelocity(Vector2D(1, 0)); // Derecha
+		}
+		else {
+			projectile->SetVelocity(Vector2D(-1, 0)); // Izquierda
+		}
+
+		// Inicializar el proyectil
+		projectile->Awake(); // Ojo: EntityManager suele llamar awake, pero si lo creas en runtime asegúrate de su ciclo.
+		projectile->Start(); // Importante llamarlo para crear su cuerpo físico
+
+		shootCooldown = 500.0f;
+	}// 0.5 segundos de espera
 	if (IsDead) {
 		if (anims.HasFinishedOnce()) {
 			b2BodyId body = pbody->body;

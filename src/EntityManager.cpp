@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "Log.h"
 #include "Item.h"
+#include "Projectile.h"
 
 EntityManager::EntityManager() : Module()
 {
@@ -78,7 +79,9 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 	case EntityType::ENEMY:
 		entity = std::make_shared<Enemy>();
 		break;
-
+	case EntityType::PROJECTILE:
+		entity = std::make_shared<Projectile>();
+		break;
 	default:
 		break;
 	}

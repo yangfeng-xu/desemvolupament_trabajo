@@ -8,7 +8,10 @@ enum class EntityType
 	PLAYER,
 	ITEM,
 	ENEMY,
+	PROJECTILE,
 	UNKNOWN
+
+
 };
 
 class PhysBody;
