@@ -322,6 +322,55 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
                         player->SetPosition(Vector2D(x, y));
                     }
                 }
+
+                // --- Carga de ENEMIGOS --- [NUEVO CÓDIGO]
+                else if (entityType == std::string("Enemy")) {
+                    float x = objectNode.attribute("x").as_float();
+                    float y = objectNode.attribute("y").as_float();
+
+                    // Crear la entidad Enemigo a través del EntityManager
+                    std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
+
+                    // Asignar la posición leída del mapa
+                    enemy->position = Vector2D(x, y);
+
+                    // Cargar propiedades personalizadas (por ejemplo, para saber si vuela)
+                    Properties props;
+                    LoadProperties(objectNode, props);
+                    enemy->SetEnemyType(EnemyType::GROUND);
+                  
+                }
+
+                else if (entityType == std::string("Enemy Flying")) {
+                    float x = objectNode.attribute("x").as_float();
+                    float y = objectNode.attribute("y").as_float();
+
+                     //Crear la entidad Enemigo a través del EntityManager
+                    std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
+
+                     //Asignar la posición leída del mapa
+                    enemy->position = Vector2D(x, y);
+
+                     //Cargar propiedades personalizadas (por ejemplo, para saber si vuela)
+                    Properties props;
+                    LoadProperties(objectNode, props);
+
+     
+                    
+                    /*Properties::Property* flyingProp = props.GetProperty("isFlying");*/
+                   /* if (flyingProp != nullptr && flyingProp->value == true) {*/
+                        enemy->SetEnemyType(EnemyType::FLYING);
+                    /*}*/
+            
+                }
+
+
+
+
+
+
+
+
             }
         }
     }

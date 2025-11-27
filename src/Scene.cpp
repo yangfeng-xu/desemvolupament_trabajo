@@ -23,6 +23,7 @@ Scene::~Scene()
 {}
 
 // Called before render is available
+//en awake si no creamos una capa llamando entities en el maptxt, decidimos el posición en aqui
 bool Scene::Awake()
 {
 	LOG("Loading Scene");
@@ -35,22 +36,6 @@ bool Scene::Awake()
 	std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
 	item->startPosition = Vector2D(200, 672);
 
-
-    std::shared_ptr<Enemy> enemy1 = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
-
-	if (enemy1 != nullptr) {
-		enemy1->SetEnemyType(EnemyType::FLYING); // <--- IMPORTANTE: Definir tipo
-		enemy1->position = Vector2D(220, 672);   // Se usará esta posición cuando se cree el cuerpo físico en Enemy::Start()
-	}
-
-	// --- Enemigo 2: TERRESTRE ---
-	std::shared_ptr<Enemy> enemy2 = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
-
-	if (enemy2 != nullptr) {
-		enemy2->SetEnemyType(EnemyType::GROUND); // Opcional si GROUND es el default
-		enemy2->position = Vector2D(400, 672);
-	}
-	
 	return ret;
 }
 
