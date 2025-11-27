@@ -167,6 +167,11 @@ bool Scene::PostUpdate()
 	}
 
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
+
+		// 1. Limpiamos las entidades viejas para evitar duplicados y crasheos
+		Engine::GetInstance().entityManager->DestroyEntitiesForReload();
+
+		// 2. Cargamos las entidades (esto creará nuevas y moverá al Player)
 		Engine::GetInstance().map->LoadEntities(player);
 	}
 	//L15 TODO 5: Call the function to save entities from the map

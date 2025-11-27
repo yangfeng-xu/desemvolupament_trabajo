@@ -311,7 +311,7 @@ MapLayer* Map::GetNavigationLayer() {
 void Map::LoadEntities(std::shared_ptr<Player>& player) {
 
     // ELIMINADO: Carga de textura y animación global del savepoint
-
+    Engine::GetInstance().entityManager->DestroyEntitiesForReload();
     for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup");
         objectGroupNode != NULL;
         objectGroupNode = objectGroupNode.next_sibling("objectgroup")) {

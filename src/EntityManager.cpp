@@ -121,3 +121,14 @@ bool EntityManager::PostUpdate()
 
     return true;
 }
+void EntityManager::DestroyEntitiesForReload()
+{
+    // Recorre la lista y destruye todo lo que NO sea el jugador
+    for (const auto& entity : entities)
+    {
+        if (entity->type != EntityType::PLAYER)
+        {
+            DestroyEntity(entity);
+        }
+    }
+}
