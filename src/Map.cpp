@@ -361,7 +361,8 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
                         enemy->SetEnemyType(EnemyType::GROUND);
                         LOG("Created Default Enemy (Ground) at x:%.2f y:%.2f", x, y);
                     }
-
+                    enemy->Awake();
+                    enemy->Start();
                 }
 
                 // --- Carga de SAVEPOINTS ---
@@ -382,6 +383,9 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
                     savepoint->startPosition = Vector2D(x, y - mapData.tileHeight);
 
                     LOG("Created Savepoint Entity at x:%.2f y:%.2f", x, y);
+
+                    savepoint->Awake();
+                    savepoint->Start();
                 }
 
             }

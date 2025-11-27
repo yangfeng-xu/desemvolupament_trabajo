@@ -36,6 +36,7 @@ void Enemy::SetEnemyType(EnemyType type) {
 bool Enemy::Start() {
 	/*position = startPosition;*/
 	// load
+	if (pbody != nullptr) return true;
 
 	if (enemyType == EnemyType::FLYING) {
 		std::unordered_map<int, std::string>EnemyFlying = { {0,"idleflying"},{4,"fly-right"},{8,"fly-down"},{12,"fly-left"} };

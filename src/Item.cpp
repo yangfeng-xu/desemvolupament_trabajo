@@ -13,6 +13,7 @@
 Item::Item() : Entity(EntityType::ITEM) // Se crea inicialmente como ITEM
 {
     name = "item";
+    pbody = nullptr;
 }
 
 Item::~Item() {}
@@ -23,6 +24,7 @@ bool Item::Awake() {
 
 bool Item::Start() {
 
+    if (pbody != nullptr) return true;
     position = startPosition;
 
     // 1. Detección de tipo y carga de ASSETS/PHYSICS
