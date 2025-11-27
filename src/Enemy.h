@@ -32,7 +32,7 @@ public:
 private:
 	void PerformPathfinding();
 	void GetPhysicsValues();
-	void MoveAndJump();
+	void Move();
 	void MoveFlying();
 	void ApplyPhysics();
 	void Draw(float dt);
@@ -40,7 +40,7 @@ private:
 public:
 
 	//Declare enemy parameters
-	float speed = 2.0f;
+	float speed = 3.0f;
 	SDL_Texture* texture = NULL;
 	int texW, texH;
 	PhysBody* pbody;

@@ -77,7 +77,7 @@ bool Enemy::Update(float dt)
 	PerformPathfinding();
 	GetPhysicsValues();
 	if (enemyType == EnemyType::GROUND) {
-		MoveAndJump();
+		Move();
 	}
 	else if (enemyType == EnemyType::FLYING) {
 		MoveFlying();
@@ -178,7 +178,7 @@ void Enemy::GetPhysicsValues() {
 
 
 
-void Enemy::MoveAndJump() {
+void Enemy::Move() {
 	if (pathfinding->pathTiles.size() > 1) {
 		auto it = pathfinding->pathTiles.rbegin();
 		it++; // Primer objetivo (inmediato)
