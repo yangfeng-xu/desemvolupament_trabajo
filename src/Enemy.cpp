@@ -339,7 +339,7 @@ void Enemy::Draw(float dt) {
 bool Enemy::CleanUp()
 {
 	LOG("Cleanup enemy");
-	Engine::GetInstance().textures->UnLoad(texture);
+
 	return true;
 }
 
@@ -370,7 +370,14 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 			// Reproducir animación de muerte
 			// Según tu código actual, ya cargas "death" en el Start()
-			anims.SetCurrent("death");
+			if (enemyType == EnemyType::FLYING) {
+				// El murciélago no tiene animación de muerte, lo destruimos ya.
+				Engine::GetInstance().entityManager->DestroyEntity(shared_from_this());
+			}
+			else {
+				// El Slime sí tiene animación "death", dejamos que se reproduzca.
+				anims.SetCurrent("death");
+			}
 		}
 	}
 }
