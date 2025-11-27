@@ -279,14 +279,23 @@ void Physics::EndContact(b2ShapeId shapeA, b2ShapeId shapeB)
 
 void Physics::DeletePhysBody(PhysBody* physBody)
 {
-	if (B2_IS_NULL(world)) return; // world already destroyed
-    if (physBody && !B2_IS_NULL(physBody->body) && physBody->listener->active)
+    if (B2_IS_NULL(world)) return; // world already destroyed
+
+    // Si el cuerpo físico existe y no está marcado como nulo por Box2D:
+    if (physBody && !B2_IS_NULL(physBody->body))
     {
-        // Don’t change contact/sensor flags here (can mismatch event buffers).
-        // Just clear user data so late events won’t dereference a dangling PhysBody*.
+        // 1. Limpia el puntero a Entity (UserData) antes de encolar.
         b2Body_SetUserData(physBody->body, nullptr);
+
+        // 2. [CRÍTICO] Anula el identificador del cuerpo en el PhysBody. 
+        // Esto hace que las comprobaciones de GetXVelocity sean seguras.
+        physBody->body = b2_nullBodyId;
+
+        // 3. Añadir a la cola solo si no está ya pendiente de eliminación
+        if (!IsPendingToDelete(physBody)) {
+            bodiesToDelete.push_back(physBody);
+        }
     }
-    bodiesToDelete.push_back(physBody);
 }
 
 
@@ -305,32 +314,52 @@ bool Physics::IsPendingToDelete(PhysBody* physBody) {
 // --- Velocity helpers
 b2Vec2 Physics::GetLinearVelocity(const PhysBody* p) const
 {
-    return b2Body_GetLinearVelocity(p->body);
+    if (B2_IS_NULL(p->body)) { // Línea 317: Aquí se comprueba si el campo 'body' es nulo.
+        return { 0.0f, 0.0f };
+    }
+    return b2Body_GetLinearVelocity(p->body); // Línea 320
 }
 
 float Physics::GetXVelocity(const PhysBody* p) const
 {
-    return b2Body_GetLinearVelocity(p->body).x;
+    // [MODIFICACIÓN CLAVE]
+    // Usamos GetLinearVelocity que ya tiene la comprobación segura (líneas 316-320)
+
+    // Antes:
+    // if (B2_IS_NULL(p->body)) { return 0.0f; }
+    // return b2Body_GetLinearVelocity(p->body).x; // <-- Aquí fallaba
+
+    return GetLinearVelocity(p).x; // <-- Sustituimos por la llamada a la función segura.
 }
 
 float Physics::GetYVelocity(const PhysBody* p) const
 {
-    return b2Body_GetLinearVelocity(p->body).y;
+    // [MODIFICACIÓN CLAVE]
+    // Usamos GetLinearVelocity que ya tiene la comprobación segura.
+    return GetLinearVelocity(p).y;
 }
 
 void Physics::SetLinearVelocity(PhysBody* p, const b2Vec2& v) const
 {
+    // [MODIFICACIÓN CLAVE]
+    if (B2_IS_NULL(p->body)) return;
+
     b2Body_SetLinearVelocity(p->body, v);
 }
 
 void Physics::SetLinearVelocity(PhysBody* p, float vx, float vy) const
 {
+    // [MODIFICACIÓN CLAVE]
+    if (B2_IS_NULL(p->body)) return;
+
     b2Vec2 v = { vx, vy };
     b2Body_SetLinearVelocity(p->body, v);
 }
 
 void Physics::SetXVelocity(PhysBody* p, float vx) const
 {
+    if (B2_IS_NULL(p->body)) return;
+
     b2Vec2 v = b2Body_GetLinearVelocity(p->body);
     v.x = vx;
     b2Body_SetLinearVelocity(p->body, v);
@@ -338,6 +367,8 @@ void Physics::SetXVelocity(PhysBody* p, float vx) const
 
 void Physics::SetYVelocity(PhysBody* p, float vy) const
 {
+    if (B2_IS_NULL(p->body)) return;
+
     b2Vec2 v = b2Body_GetLinearVelocity(p->body);
     v.y = vy;
     b2Body_SetLinearVelocity(p->body, v);
@@ -346,6 +377,8 @@ void Physics::SetYVelocity(PhysBody* p, float vy) const
 // --- Impulse helper
 void Physics::ApplyLinearImpulseToCenter(PhysBody* p, float ix, float iy, bool wake) const
 {
+    if (B2_IS_NULL(p->body)) return;
+
     b2Vec2 imp = { ix, iy };
     b2Body_ApplyLinearImpulseToCenter(p->body, imp, wake);
 }
