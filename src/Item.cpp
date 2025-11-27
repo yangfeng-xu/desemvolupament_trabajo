@@ -14,6 +14,13 @@ Item::Item() : Entity(EntityType::ITEM) // Se crea inicialmente como ITEM
 {
     name = "item";
     pbody = nullptr;
+
+    texture = nullptr;
+    texW = 0;
+    texH = 0;
+    isPicked = false;
+    texturePath = nullptr;
+    texH_offset = 0;
 }
 
 Item::~Item() {}

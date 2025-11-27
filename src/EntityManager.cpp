@@ -123,20 +123,16 @@ bool EntityManager::PostUpdate()
 }
 void EntityManager::DestroyEntitiesForReload()
 {
-    // PASO 1: Crear una lista aparte con los condenados a muerte
     std::vector<std::shared_ptr<Entity>> entitiesToDestroy;
 
     for (const auto& entity : entities)
     {
-        // Añadimos a la lista temporal todo lo que NO sea el Jugador
         if (entity->type != EntityType::PLAYER)
         {
             entitiesToDestroy.push_back(entity);
         }
     }
 
-    // PASO 2: Recorrer LA OTRA lista y eliminar las entidades de verdad
-    // (Esto es seguro porque no estamos modificando 'entitiesToDestroy' mientras la leemos)
     for (const auto& entity : entitiesToDestroy)
     {
         DestroyEntity(entity);

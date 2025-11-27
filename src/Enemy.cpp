@@ -15,6 +15,7 @@ Enemy::Enemy() : Entity(EntityType::ENEMY) {
 	name = "Enemy";
 
 	pbody = nullptr;
+	pathfinding = nullptr;
 	texture = nullptr;
 	texW = 0;
 	texH = 0;
@@ -87,40 +88,31 @@ bool Enemy::Start() {
 
 bool Enemy::Update(float dt)
 {
-	// 1. COMPROBACIÓN DE MUERTE
 	if (isDead) {
-		// Actualizamos la animación (que debería ser la de "death")
 		anims.Update(dt);
-
-		// Si la animación de muerte ha terminado de reproducirse
 		if (anims.HasFinishedOnce()) {
-			// Destruimos la entidad del juego
 			Engine::GetInstance().entityManager->DestroyEntity(shared_from_this());
 		}
-
-		// Dibujamos al enemigo (muriendo) en la posición actual
 		Draw(dt);
-
-		// Retornamos true para salir de la función y NO ejecutar movimiento ni físicas
 		return true;
 	}
 
-	// 2. COMPORTAMIENTO NORMAL (Si sigue vivo)
 	GetPhysicsValues();
-	PerformPathfinding();
 
-	if (enemyType == EnemyType::GROUND) {
-		Move();
+	if (pathfinding != nullptr) {
+		PerformPathfinding();
+		// CAMBIO: Usamos la constante MANHATTAN que sí existe en tu Pathfinding.h
+		pathfinding->PropagateAStar(MANHATTAN);
 	}
-	else if (enemyType == EnemyType::FLYING) {
-		MoveFlying();
-	}
+
+	if (enemyType == EnemyType::GROUND) Move();
+	else if (enemyType == EnemyType::FLYING) MoveFlying();
+
 	ApplyPhysics();
 	Draw(dt);
 
 	return true;
 }
-
 void Enemy::PerformPathfinding() {
 
 	// Pathfinding testing inputs
@@ -340,6 +332,21 @@ void Enemy::Draw(float dt) {
 bool Enemy::CleanUp()
 {
 	LOG("Cleanup enemy");
+
+	// 1. Borrar física (ya lo tenías)
+	if (pbody != nullptr) {
+		Engine::GetInstance().physics->DeletePhysBody(pbody);
+		pbody = nullptr;
+	}
+
+	// 2. Borrar Pathfinding (NUEVO E IMPORTANTE)
+	pathfinding = nullptr;
+
+	// 3. Descargar textura
+	if (texture != nullptr) {
+		Engine::GetInstance().textures->UnLoad(texture);
+		texture = nullptr;
+	}
 
 	return true;
 }

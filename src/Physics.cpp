@@ -19,6 +19,7 @@ Physics::Physics() : Module()
 // Destructor
 Physics::~Physics()
 {
+   
     // You should do some memory cleaning here, if required
 }
 
@@ -279,14 +280,23 @@ void Physics::EndContact(b2ShapeId shapeA, b2ShapeId shapeB)
 
 void Physics::DeletePhysBody(PhysBody* physBody)
 {
-    if (B2_IS_NULL(world)) return; // world already destroyed
-    if (physBody && !B2_IS_NULL(physBody->body) && physBody->listener && physBody->listener->active)
+    // 1. Seguridad básica
+    if (physBody == nullptr) return;
+
+    // 2. Si el cuerpo de Box2D es válido, lo destruimos
+    if (!B2_IS_NULL(physBody->body) && b2Body_IsValid(physBody->body))
     {
-        // Don’t change contact/sensor flags here (can mismatch event buffers).
-        // Just clear user data so late events won’t dereference a dangling PhysBody*.
-        b2Body_SetUserData(physBody->body, nullptr);
+        b2DestroyBody(physBody->body);
+
+        // --- LA CLAVE ESTÁ AQUÍ ---
+        // Marcamos el ID como nulo inmediatamente.
+        // Esto evita que el destructor (~PhysBody) intente destruirlo de nuevo
+        // cuando llamemos a 'delete physBody' abajo.
+        physBody->body = b2_nullBodyId;
     }
-    bodiesToDelete.push_back(physBody);
+
+    // 3. Ahora borramos el contenedor (wrapper) de memoria
+    delete physBody;
 }
 
 

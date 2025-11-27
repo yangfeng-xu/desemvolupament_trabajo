@@ -11,7 +11,7 @@ struct Properties
     struct Property
     {
         std::string name;
-        bool value;
+        bool value=false;
 
     };
     std::list<Property*>propertiesList;
@@ -27,10 +27,10 @@ struct Properties
 struct MapLayer
 {
     // L07: TODO 1: Add the info to the MapLayer Struct
-    int id;
+    int id=0;
     std::string name;
-    int width;
-    int height;
+    int width=0;
+    int height=0;
     std::vector<int> tiles;
     Properties properties;
     // L07: TODO 6: Short function to get the gid value of i,j
@@ -45,15 +45,15 @@ struct MapLayer
 
 struct TileSet
 {
-    int firstGid;
+    int firstGid=0;
     std::string name;
-    int tileWidth;
-    int tileHeight;
-    int spacing;
-    int margin;
-    int tileCount;
-    int columns;
-    SDL_Texture* texture;
+    int tileWidth=0;
+    int tileHeight=0;
+    int spacing=0;
+    int margin=0;
+    int tileCount=0;
+    int columns=0;
+    SDL_Texture* texture=nullptr;
 
     // L07: TODO 7: Implement the method that receives the gid and returns a Rect
     SDL_Rect GetRect(unsigned int gid) {
