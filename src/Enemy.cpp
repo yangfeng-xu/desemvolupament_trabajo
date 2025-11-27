@@ -86,8 +86,9 @@ bool Enemy::Start() {
 
 bool Enemy::Update(float dt)
 {
-	PerformPathfinding();
 	GetPhysicsValues();
+	PerformPathfinding();
+	
 	if (enemyType == EnemyType::GROUND) {
 		Move();
 	}
