@@ -19,11 +19,13 @@ The game involves you being a ghost and wanting to explore the forest you are in
 
 ## Debug keys
 
-- F1 : Show collisions
+- F1 : Show collisions/Pathfinding routes
 - F10 : God mod
+- F5 : Save the current game state
+- F6 : Load the previous state
 
 ### Game Objective:
-DODGE TRAPS, JUMP OVER PITS, EXPLORE THE MAP!!!
+DODGE TRAPS AND ENEMYS, JUMP OVER PITS, EXPLORE THE MAP!!!
 
 ## Features Implemented
 
@@ -31,6 +33,9 @@ DODGE TRAPS, JUMP OVER PITS, EXPLORE THE MAP!!!
 - Movement system.
 - Jumping system.
 - Background music during gameplay.
+- Ground enemy
+- Flying Enemy
+- Savepoints
 
 ## License
 
