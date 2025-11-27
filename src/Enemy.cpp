@@ -36,12 +36,12 @@ void Enemy::SetEnemyType(EnemyType type) {
 bool Enemy::Start() {
 	/*position = startPosition;*/
 	// load
-	std::unordered_map<int, std::string> aliases = { {0,"idle"} };
-	anims.LoadFromTSX("Assets/Textures/enemy_spritesheet.tsx", aliases);
+	std::unordered_map<int, std::string> aliases = { {13,"move"},{24,"idle"},{35,"death"}};
+	anims.LoadFromTSX("Assets/Textures/slime-Sheet2.tsx", aliases);
 	anims.SetCurrent("idle");
 	
 	//Initialize Player parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/enemy_spritesheet.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/slime-Sheet2.png");
 
 	//Add physics to the enemy - initialize physics body
 	texW = 32;
@@ -213,12 +213,12 @@ void Enemy::Move() {
 
 		if (currentPos.getX() < targetPos.getX() - xTolerance) {
 			velocity.x = speed;
-			anims.SetCurrent("run");
+			anims.SetCurrent("move");
 			// flipState = SDL_FLIP_NONE; 
 		}
 		else if (currentPos.getX() > targetPos.getX() + xTolerance) {
 			velocity.x = -speed;
-			anims.SetCurrent("run");
+			anims.SetCurrent("move");
 			// flipState = SDL_FLIP_HORIZONTAL;
 		}
 	
