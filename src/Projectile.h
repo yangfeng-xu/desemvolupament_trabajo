@@ -21,11 +21,11 @@ public:
     PhysBody* pbody;
     Vector2D velocity;
     float speed = 10.0f;
-    int lifeTime = 2000; // Milisegundos antes de desaparecer si no choca
+    float lifeTime = 2000.0f; // Milisegundos antes de desaparecer si no choca
 
 private:
-    SDL_Texture* texture;
-    int texW, texH;
+    SDL_Texture* texture = nullptr; // Inicialización directa
+    int texW = 0, texH = 0;
 }; 
 
 #pragma once

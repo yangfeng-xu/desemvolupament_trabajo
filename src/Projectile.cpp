@@ -8,6 +8,10 @@
 Projectile::Projectile() : Entity(EntityType::PROJECTILE) {
     name = "projectile";
     pbody = nullptr;
+    texture = nullptr;
+    texW = 0;
+    texH = 0;
+    velocity = Vector2D(0, 0);
 }
 
 Projectile::~Projectile() {}

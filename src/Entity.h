@@ -19,8 +19,7 @@ class PhysBody;
 class Entity : public std::enable_shared_from_this<Entity>
 {
 public:
-
-	Entity() {}
+	Entity() : type(EntityType::UNKNOWN), active(true) {}
 	Entity(EntityType type) : type(type), active(true) {}
 
 	virtual bool Awake()

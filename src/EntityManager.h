@@ -21,6 +21,7 @@ public:
 
 	// Called every frame
 	bool Update(float dt);
+	bool PostUpdate() override;
 
 	// Called before quitting
 	bool CleanUp();
@@ -35,5 +36,6 @@ public:
 public:
 
 	std::list<std::shared_ptr<Entity>> entities;
+	std::list<std::shared_ptr<Entity>> entitiesToDestroy;
 
 };
