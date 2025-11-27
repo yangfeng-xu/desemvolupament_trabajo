@@ -20,7 +20,8 @@ Scene::Scene() : Module()
 
 // Destructor
 Scene::~Scene()
-{}
+{
+}
 
 // Called before render is available
 //en awake si no creamos una capa llamando entities en el maptxt, decidimos el posición en aqui
@@ -31,7 +32,7 @@ bool Scene::Awake()
 
 	//L04: TODO 3b: Instantiate the player using the entity manager
 	/*player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));*/
-	
+
 	//L08: TODO 4: Create a new item using the entity manager and set the position to (200, 672) to test
 	std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
 	item->startPosition = Vector2D(200, 672);
@@ -42,9 +43,9 @@ bool Scene::Awake()
 // Called before the first frame
 bool Scene::Start()
 {
-	
+
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Level.wav");
-	
+
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
 
@@ -52,7 +53,7 @@ bool Scene::Start()
 	Engine::GetInstance().map->LoadEntities(player);
 	// Texture to highligh mouse position 
 	mouseTileTex = Engine::GetInstance().textures->Load("Assets/Maps/MapMetadata.png");
-	
+
 	return true;
 }
 
@@ -73,16 +74,16 @@ bool Scene::Update(float dt)
 	//L03 TODO 3: Make the camera movement independent of framerate
 	float camSpeed = 1;
 
-	if(Engine::GetInstance().input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
 		Engine::GetInstance().render->camera.y -= (int)ceil(camSpeed * dt);
 
-	if(Engine::GetInstance().input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
 		Engine::GetInstance().render->camera.y += (int)ceil(camSpeed * dt);
 
-	if(Engine::GetInstance().input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
 		Engine::GetInstance().render->camera.x -= (int)ceil(camSpeed * dt);
-	
-	if(Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
+
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 		Engine::GetInstance().render.get()->camera.x += (int)ceil(camSpeed * dt);
 
 	//Get mouse position and obtain the map coordinate
@@ -116,65 +117,65 @@ bool Scene::PostUpdate()
 	//Engine::GetInstance().map->LoadEntities(player);
 	// Texture to highligh mouse position 
 	//mouseTileTex = Engine::GetInstance().textures->Load("Assets/Maps/MapMetadata.png");
-    if (showHelpMenu)
-    {
-        int windowWidth, windowHeight;
-        Engine::GetInstance().window->GetWindowSize(windowWidth, windowHeight);
+	if (showHelpMenu)
+	{
+		int windowWidth, windowHeight;
+		Engine::GetInstance().window->GetWindowSize(windowWidth, windowHeight);
 
-        // 1. Define el área para el menú de ayuda (centrado y dos tercios de la pantalla)
-        int menuWidth = windowWidth * 2 / 3;
-        int menuHeight = windowHeight * 2 / 3;
+		// 1. Define el área para el menú de ayuda (centrado y dos tercios de la pantalla)
+		int menuWidth = windowWidth * 2 / 3;
+		int menuHeight = windowHeight * 2 / 3;
 
-        SDL_Rect helpRect = {
-            (windowWidth - menuWidth) / 2,
-            (windowHeight - menuHeight) / 2,
-            menuWidth,
-            menuHeight
-        };
+		SDL_Rect helpRect = {
+			(windowWidth - menuWidth) / 2,
+			(windowHeight - menuHeight) / 2,
+			menuWidth,
+			menuHeight
+		};
 
-        // 2. Dibuja el fondo del menú (rectángulo semi-transparente: R, G, B, Alpha)
-        Engine::GetInstance().render->DrawRectangle(helpRect, 0, 0, 0, 200, true, false);
+		// 2. Dibuja el fondo del menú (rectángulo semi-transparente: R, G, B, Alpha)
+		Engine::GetInstance().render->DrawRectangle(helpRect, 0, 0, 0, 200, true, false);
 
-        // 3. Dibuja el borde blanco
-        Engine::GetInstance().render->DrawRectangle(helpRect, 255, 255, 255, 255, false, false);
+		// 3. Dibuja el borde blanco
+		Engine::GetInstance().render->DrawRectangle(helpRect, 255, 255, 255, 255, false, false);
 
-        // 4. Dibuja un rectángulo para simular el TÍTULO (Blanco)
-        int paddingX = 40;
-        int startX = helpRect.x + paddingX;
-        int startY = helpRect.y + 40;
-        int textWidth = menuWidth - (paddingX * 2);
+		// 4. Dibuja un rectángulo para simular el TÍTULO (Blanco)
+		int paddingX = 40;
+		int startX = helpRect.x + paddingX;
+		int startY = helpRect.y + 40;
+		int textWidth = menuWidth - (paddingX * 2);
 
-        SDL_Rect titleRect = { startX, startY - 20, textWidth, 15 };
-        // Usamos blanco para el título (R:255, G:255, B:255)
-        Engine::GetInstance().render->DrawRectangle(titleRect, 255, 255, 255, 255, true, false);
+		SDL_Rect titleRect = { startX, startY - 20, textWidth, 15 };
+		// Usamos blanco para el título (R:255, G:255, B:255)
+		Engine::GetInstance().render->DrawRectangle(titleRect, 255, 255, 255, 255, true, false);
 
-        // NOTA IMPORTANTE:
-        // ELIMINAMOS TODOS LOS DEMÁS RECTÁNGULOS DE LÍNEA.
-        // Si su motor tiene una función de dibujo de texto (DrawText),
-        // el código para dibujar las teclas debería ir aquí, justo encima del fondo.
+		// NOTA IMPORTANTE:
+		// ELIMINAMOS TODOS LOS DEMÁS RECTÁNGULOS DE LÍNEA.
+		// Si su motor tiene una función de dibujo de texto (DrawText),
+		// el código para dibujar las teclas debería ir aquí, justo encima del fondo.
 
-        // Mantenemos los LOGs para que la ayuda aparezca en la consola, que es
-        // el único lugar donde podemos confirmar la salida de texto:
-        LOG("--- H KEY PRESSED - TEXT OUTPUT VIA LOG ONLY ---");
-        LOG("H: WSAD / Arrows: Walk / Fly (God Mode)");
-        LOG("H: Spacebar: Jump");
-        LOG("H: Esc: Exit the game");
-        LOG("H: F1: Show / Hide Collisions (Debug)");
-        LOG("H: F10: God Mode (Fly/Invincible)");
-        LOG("H: H: Show / Hide this Help Menu (TITLE LINE IS WHITE)");
-        LOG("-----------------------------------------------");
-    }
+		// Mantenemos los LOGs para que la ayuda aparezca en la consola, que es
+		// el único lugar donde podemos confirmar la salida de texto:
+		LOG("--- H KEY PRESSED - TEXT OUTPUT VIA LOG ONLY ---");
+		LOG("H: WSAD / Arrows: Walk / Fly (God Mode)");
+		LOG("H: Spacebar: Jump");
+		LOG("H: Esc: Exit the game");
+		LOG("H: F1: Show / Hide Collisions (Debug)");
+		LOG("H: F10: God Mode (Fly/Invincible)");
+		LOG("H: H: Show / Hide this Help Menu (TITLE LINE IS WHITE)");
+		LOG("-----------------------------------------------");
+	}
 
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
 		Engine::GetInstance().map->LoadEntities(player);
 	}
 	//L15 TODO 5: Call the function to save entities from the map
 	//pulso f6 para guardar donde quiero que el player se vuelve,luego pulsamos f5 para valve ese punto
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
 		Engine::GetInstance().map->SaveEntities(player);
 
 	}
-	if(Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
 		ret = false;
 
 	return ret;

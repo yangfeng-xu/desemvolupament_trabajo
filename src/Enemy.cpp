@@ -13,7 +13,7 @@
 
 Enemy::Enemy() : Entity(EntityType::ENEMY) {
 	name = "Enemy";
-	
+
 	pbody = nullptr;
 	texture = nullptr;
 	texW = 0;
@@ -52,8 +52,8 @@ bool Enemy::Start() {
 		//Initialize Player parameters
 		texture = Engine::GetInstance().textures->Load("Assets/Textures/slime-Sheet2.png");
 	}
-	
-	
+
+
 
 	//Add physics to the enemy - initialize physics body
 	texW = 32;
@@ -253,7 +253,7 @@ void Enemy::Move() {
 			anims.SetCurrent("move");
 			// flipState = SDL_FLIP_HORIZONTAL;
 		}
-	
+
 	}
 }
 
@@ -299,7 +299,7 @@ void Enemy::MoveFlying() {
 		velocity.y = 0;
 	}
 }
-   
+
 void Enemy::ApplyPhysics() {
 
 	// Apply velocity via helper
@@ -313,7 +313,7 @@ void Enemy::Draw(float dt) {
 
 	// Update render position using your PhysBody helper
 	/*int x, y;
-	
+
 	pbody->GetPosition(x, y);
 	position.setX((float)x);
 	position.setY((float)y);*/
@@ -326,14 +326,14 @@ void Enemy::Draw(float dt) {
 	}
 
 	// Draw pathfinding debug
-	
+
 	if (Engine::GetInstance().physics->IsDebug()) {
 		pathfinding->DrawPath();
 	}
 	//Draw the player using the texture and the current animation frame
 	/*Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame);*/
 	Engine::GetInstance().render->DrawTexture(texture, (int)position.getX() - texW / 2, (int)position.getY() - texH / 2, &animFrame);
-	
+
 }
 
 bool Enemy::CleanUp()

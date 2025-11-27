@@ -11,7 +11,7 @@ class Player : public Entity
 public:
 
 	Player();
-	
+
 	virtual ~Player();
 
 	bool Awake();
@@ -21,14 +21,13 @@ public:
 	bool Update(float dt);
 
 	bool CleanUp();
-	
+
 	// L08 TODO 6: Define OnCollision function for the player. 
 	void OnCollision(PhysBody* physA, PhysBody* physB);
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
 
 	Vector2D GetPosition();
 	void SetPosition(Vector2D pos);
-	Vector2D GetSavePosition() const;
 
 	void Die();
 
@@ -49,24 +48,23 @@ public:
 	bool isGodMode = false;
 
 	int texW = 0;
-    int texH = 0;
+	int texH = 0;
 
 	//Audio fx
-	int pickCoinFxId=0;
+	int pickCoinFxId = 0;
 	int deathFxId = 0;
 
 	// L08 TODO 5: Add physics to the player - declare a Physics body
-	PhysBody* pbody=nullptr;
+	PhysBody* pbody = nullptr;
 	float jumpForce = 2.5f; // The force to apply when jumping
 	bool isJumping = false; // Flag to check if the player is currently jumping
-private: 
-	b2Vec2 velocity = {0.0f,0.0f};
+private:
+	b2Vec2 velocity = { 0.0f,0.0f };
 	AnimationSet anims;
 	Vector2D startPosition;
 	Vector2D savePosition;
-	
 	bool IsDead;
 	float shootCooldown = 0.0f;
 	SDL_FlipMode flipState = SDL_FLIP_NONE;//FlipMode para invertir imagen
-	
+
 };

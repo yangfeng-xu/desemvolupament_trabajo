@@ -65,7 +65,6 @@ bool Player::Update(float dt)
 {
 	anims.Update(dt);
 
-	// [NUEVO CÓDIGO - TECLA F9 para volver al inicio]
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN) {
 		LOG("Debug: Returning to Start Position (F9)");
 
@@ -156,16 +155,12 @@ bool Player::Update(float dt)
 			anims.SetCurrent("idle");
 
 			Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Level.wav");
-			//cuando player se muere y vulverá al principio del juego, reinicializar la camara
 			float limitLeft = Engine::GetInstance().render->camera.w / 4;
 			float cameraX = -(savePosition.getX() - limitLeft);
 
 			// 2. Aplicar la nueva posición de la cámara
 			Engine::GetInstance().render->camera.x = (int)cameraX;
 			Engine::GetInstance().render->camera.y = 0;
-
-			//Engine::GetInstance().render->camera.x = 0;
-			//Engine::GetInstance().render->camera.y = 0;
 			std::cout << "YOU ARE DEAD";
 
 			for (const auto& entity : Engine::GetInstance().entityManager->entities) {
@@ -262,7 +257,7 @@ void Player::Move() {
 
 	// En God Mode, si el jugador se mueve (horizontal o vertical), usa la animación de correr
 	if (isGodMode && (velocity.x != 0.0f || velocity.y != 0.0f)) {
-		if (anims.GetCurrentName() == "idle" || anims.GetCurrentName() == "jump") {  
+		if (anims.GetCurrentName() == "idle" || anims.GetCurrentName() == "jump") {
 			anims.SetCurrent("run");
 		}
 	}
@@ -401,8 +396,4 @@ Vector2D Player::GetPosition() {
 
 void Player::SetPosition(Vector2D pos) {
 	pbody->SetPosition((int)(pos.getX() + texW / 2), (int)(pos.getY() + texH / 2));
-}
-
-Vector2D Player::GetSavePosition() const {
-	return savePosition;
 }

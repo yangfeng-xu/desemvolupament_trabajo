@@ -7,17 +7,17 @@
 #include"EntityManager.h"
 #include <math.h>
 #include "Item.h" // AÑADIDO
-#include"Player.h"
 
 Map::Map() : Module(), mapLoaded(false)
 {
-// ... (resto de Map::Map, Awake, Start, etc. se mantiene igual)
+    // ... (resto de Map::Map, Awake, Start, etc. se mantiene igual)
     name = "map";
 }
 
 // Destructor
 Map::~Map()
-{}
+{
+}
 
 // Called before render is available
 bool Map::Awake()
@@ -39,8 +39,8 @@ bool Map::Update(float dt)
 
     if (mapLoaded) {
 
-         // L07 TODO 5: Prepare the loop to draw all tiles in a layer + DrawTexture
-        // iterate all tiles in a layer
+        // L07 TODO 5: Prepare the loop to draw all tiles in a layer + DrawTexture
+       // iterate all tiles in a layer
         for (const auto& mapLayer : mapData.layers) {
             if (mapLayer->properties.GetProperty("Draw") != NULL && mapLayer->properties.GetProperty("Draw")->value) {
                 for (int i = 0; i < mapData.width; i++) {
@@ -67,21 +67,21 @@ bool Map::Update(float dt)
                 }
             }
         }
-        
+
         // ELIMINADO: El dibujo y la actualización del savepoint global. Ahora lo hacen las entidades Item.
     }
-        
-    
+
+
     return ret;
 }
 
 // L09: TODO 2: Implement function to the Tileset based on a tile id
 TileSet* Map::GetTilesetFromTileId(int gid) const
 {
-	TileSet* set = nullptr;
+    TileSet* set = nullptr;
     for (const auto& tileset : mapData.tilesets) {
         set = tileset;
-        if (gid >= tileset->firstGid && gid < (tileset->firstGid+tileset->tileCount)) {
+        if (gid >= tileset->firstGid && gid < (tileset->firstGid + tileset->tileCount)) {
             break;
         }
     }
@@ -115,9 +115,9 @@ bool Map::CleanUp()
 // Load new map
 bool Map::Load(std::string path, std::string fileName)
 {
-// ... (código de Load se mantiene igual hasta el final)
+    // ... (código de Load se mantiene igual hasta el final)
     bool ret = false;
-   
+
     // Assigns the name of the map file and the path
     mapFileName = fileName;
     mapPath = path;
@@ -125,10 +125,10 @@ bool Map::Load(std::string path, std::string fileName)
 
     pugi::xml_parse_result result = mapFileXML.load_file(mapPathName.c_str());
 
-    if(result == NULL)
-	{
-		LOG("Could not load map xml file %s. pugi error: %s", mapPathName.c_str(), result.description());
-		ret = false;
+    if (result == NULL)
+    {
+        LOG("Could not load map xml file %s. pugi error: %s", mapPathName.c_str(), result.description());
+        ret = false;
     }
     else {
 
@@ -140,12 +140,12 @@ bool Map::Load(std::string path, std::string fileName)
         mapData.tileHeight = mapFileXML.child("map").attribute("tileheight").as_int();
 
         // L06: TODO 4: Implement the LoadTileSet function to load the tileset properties
-       
+
         //Iterate the Tileset
-        for(pugi::xml_node tilesetNode = mapFileXML.child("map").child("tileset"); tilesetNode!=NULL; tilesetNode = tilesetNode.next_sibling("tileset"))
-		{
+        for (pugi::xml_node tilesetNode = mapFileXML.child("map").child("tileset"); tilesetNode != NULL; tilesetNode = tilesetNode.next_sibling("tileset"))
+        {
             //Load Tileset attributes
-			TileSet* tileSet = new TileSet();
+            TileSet* tileSet = new TileSet();
             tileSet->firstGid = tilesetNode.attribute("firstgid").as_int();
             tileSet->name = tilesetNode.attribute("name").as_string();
             tileSet->tileWidth = tilesetNode.attribute("tilewidth").as_int();
@@ -155,12 +155,12 @@ bool Map::Load(std::string path, std::string fileName)
             tileSet->tileCount = tilesetNode.attribute("tilecount").as_int();
             tileSet->columns = tilesetNode.attribute("columns").as_int();
 
-			//Load the tileset image
-			std::string imgName = tilesetNode.child("image").attribute("source").as_string();
-            tileSet->texture = Engine::GetInstance().textures->Load((mapPath+imgName).c_str());
+            //Load the tileset image
+            std::string imgName = tilesetNode.child("image").attribute("source").as_string();
+            tileSet->texture = Engine::GetInstance().textures->Load((mapPath + imgName).c_str());
 
-			mapData.tilesets.push_back(tileSet);
-		}
+            mapData.tilesets.push_back(tileSet);
+        }
 
         // L07: TODO 3: Iterate all layers in the TMX and load each of them
         for (pugi::xml_node layerNode = mapFileXML.child("map").child("layer"); layerNode != NULL; layerNode = layerNode.next_sibling("layer")) {
@@ -186,7 +186,7 @@ bool Map::Load(std::string path, std::string fileName)
 
         // L08 TODO 3: Create colliders
         // L08 TODO 7: Assign collider type
-    
+
         for (const auto& mapLayer : mapData.layers) {
             if (mapLayer->name == "Collition") {
                 LOG("Generado coliciones para la capa:%s", mapLayer->name.c_str());
@@ -205,7 +205,7 @@ bool Map::Load(std::string path, std::string fileName)
                                 (int)pos.getY() + mapData.tileHeight / 2, mapData.tileWidth, mapData.tileHeight, STATIC);
                             colliderBody->ctype = ColliderType::DEATH;
                         }
-                        
+
                     }
                 }
                 break;
@@ -227,19 +227,19 @@ bool Map::Load(std::string path, std::string fileName)
                 LOG("tile width : %d tile height : %d", tileset->tileWidth, tileset->tileHeight);
                 LOG("spacing : %d margin : %d", tileset->spacing, tileset->margin);
             }
-            			
+
             LOG("Layers----");
 
             for (const auto& layer : mapData.layers) {
                 LOG("id : %d name : %s", layer->id, layer->name.c_str());
-				LOG("Layer width : %d Layer height : %d", layer->width, layer->height);
-            }   
+                LOG("Layer width : %d Layer height : %d", layer->width, layer->height);
+            }
         }
         else {
             LOG("Error while parsing map file: %s", mapPathName.c_str());
         }
 
-       
+
 
     }
 
@@ -281,7 +281,7 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
     return ret;
 }
 
-Vector2D Map::GetMapSizeInPixels() 
+Vector2D Map::GetMapSizeInPixels()
 {
     Vector2D sizeInPixels;
     sizeInPixels.setX((float)(mapData.width * mapData.tileWidth));
@@ -308,136 +308,7 @@ MapLayer* Map::GetNavigationLayer() {
 }
 
 
-//void Map::LoadEntities(std::shared_ptr<Player>& player) {
-//    
-//    // ELIMINADO: Carga de textura y animación global del savepoint
-//
-//    for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup");
-//        objectGroupNode != NULL;
-//        objectGroupNode = objectGroupNode.next_sibling("objectgroup")) {
-//        if (objectGroupNode.attribute("name").as_string() == std::string("Entities")) {
-//            for (pugi::xml_node objectNode = objectGroupNode.child("object");
-//                objectNode != NULL;
-//                objectNode = objectNode.next_sibling("object")) {
-//                std::string entityType = objectNode.attribute("type").as_string();
-//                std::string name = objectNode.attribute("name").as_string(); // Obtenemos el nombre del objeto
-//
-//                //sacar la informacion del Player
-//                if (entityType == std::string("Player")) {
-//                    float x = objectNode.attribute("x").as_float();
-//                    float y = objectNode.attribute("y").as_float();
-//                    //if player not exist
-//                    if (player == NULL) {
-//                        player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
-//                        player->position = Vector2D(x, y);
-//                    }
-//                    else {
-//                        player->SetPosition(Vector2D(x, y));
-//                    }
-//                }
-//
-//                // --- Carga de ENEMIGOS --- 
-//                else if (entityType == std::string("Enemy")) {
-//                    float x = objectNode.attribute("x").as_float();
-//                    float y = objectNode.attribute("y").as_float();
-//
-//                    // Crear la entidad Enemigo a través del EntityManager
-//                    std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
-//
-//                    // Asignar la posición leída del mapa
-//                    enemy->position = Vector2D(x, y);
-//
-//                    // Cargar propiedades personalizadas (por ejemplo, para saber si vuela)
-//                    if (name == "EnemyGround") {
-//                        enemy->SetEnemyType(EnemyType::GROUND);
-//                        LOG("Created Ground Enemy at x:%.2f y:%.2f", x, y);
-//                    }
-//                    else if (name == "EnemyFlying") { // Asumiendo que llamarás así al otro
-//                        enemy->SetEnemyType(EnemyType::FLYING);
-//                        LOG("Created Flying Enemy at x:%.2f y:%.2f", x, y);
-//                    }
-//                    else {
-//                        // Por defecto si no coincide el nombre
-//                        enemy->SetEnemyType(EnemyType::GROUND);
-//                        LOG("Created Default Enemy (Ground) at x:%.2f y:%.2f", x, y);
-//                    }
-//                  
-//                }
-//         
-//                // --- Carga de SAVEPOINTS ---
-//                // Se cargan como entidades ITEM para aprovechar el sistema de entidades y colisionadores.
-//                else if (name == "Save" && entityType == "Map") {
-//                    float x = objectNode.attribute("x").as_float();
-//                    float y = objectNode.attribute("y").as_float();
-//
-//                    // 1. Crear una entidad Item
-//                    std::shared_ptr<Item> savepoint = 
-//                        std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
-//
-//                    // 2. Establecer el tipo como SAVEPOINT (CRÍTICO para que Item::Start() lo inicialice correctamente)
-//                    savepoint->type = EntityType::SAVEPOINT;
-//                    
-//                    // 3. Asignar la posición con corrección de TMX: TMX da la base, ajustamos a la esquina superior izquierda.
-//                    // Esto corrige que el dibujo aparezca más abajo.
-//                    savepoint->startPosition = Vector2D(x, y - mapData.tileHeight);
-//                    
-//                    LOG("Created Savepoint Entity at x:%.2f y:%.2f", x, y);
-//                }
-//
-//            }
-//        }
-//    }
-//
-//}
-//
-//void Map::SaveEntities(std::shared_ptr<Player>player) {
-//
-//    for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup");
-//        objectGroupNode != NULL;
-//        objectGroupNode = objectGroupNode.next_sibling("objectgroup")) {
-//        if (objectGroupNode.attribute("name").as_string() == std::string("Entities")) {
-//            for (pugi::xml_node objectNode = objectGroupNode.child("object");
-//                objectNode != NULL;
-//                objectNode = objectNode.next_sibling("object")) {
-//                std::string entityType = objectNode.attribute("type").as_string();
-//                //Leer o modificar la informacion del Player
-//                if (entityType == std::string("Player")) {
-//                    Vector2D playerPos = player->GetPosition();
-//                    objectNode.attribute("x").set_value(playerPos.getX());
-//                    objectNode.attribute("y").set_value(playerPos.getY());
-//
-//                }
-//            }
-//        }
-//    }
-//    //guardar los modificación
-//  /* std::string mapPathName = mapPath + mapFileName;
-//    mapFileXML.save_file(mapPathName.c_str());*/
-//}
-
-void Map::ResetEntities() {
-    auto& entityManager = Engine::GetInstance().entityManager;
-
-    // Itera sobre una copia de la lista para modificar la original de forma segura
-    std::list<std::shared_ptr<Entity>> currentEntities = entityManager->entities;
-
-    for (const auto& entity : currentEntities) {
-        // Ignora al jugador, solo elimina enemigos y coleccionables/savepoints
-        // Solo eliminamos ENTITIES si no son el jugador.
-        if (entity->type != EntityType::PLAYER) {
-            // Marca para destrucción al final del frame
-            entityManager->DestroyEntity(entity);
-        }
-    }
-}
-
-
 void Map::LoadEntities(std::shared_ptr<Player>& player) {
-
-    // [MODIFICADO]: CAMBIO CLAVE: Limpiar enemigos/ítems ANTES de cargar nuevas instancias
-    if (player) {
-        ResetEntities();
-    }
 
     // ELIMINADO: Carga de textura y animación global del savepoint
 
@@ -531,13 +402,10 @@ void Map::SaveEntities(std::shared_ptr<Player>player) {
                 std::string entityType = objectNode.attribute("type").as_string();
                 //Leer o modificar la informacion del Player
                 if (entityType == std::string("Player")) {
+                    Vector2D playerPos = player->GetPosition();
+                    objectNode.attribute("x").set_value(playerPos.getX());
+                    objectNode.attribute("y").set_value(playerPos.getY());
 
-                    Vector2D savedPos = player->GetSavePosition();
-
-                    // Guardar la posición del savepoint del jugador
-                    objectNode.attribute("x").set_value(savedPos.getX());
-                    // Necesitamos sumar tileHeight porque TMX guarda la coordenada Y de la base del objeto
-                    objectNode.attribute("y").set_value(savedPos.getY() + mapData.tileHeight);
                 }
             }
         }
