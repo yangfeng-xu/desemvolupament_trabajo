@@ -11,7 +11,7 @@ struct Properties
     struct Property
     {
         std::string name;
-        bool value=false;
+        bool value = false;
 
     };
     std::list<Property*>propertiesList;

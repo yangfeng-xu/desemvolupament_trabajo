@@ -80,12 +80,15 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
     return entity;
 }
 
-// ESTA ES LA VERSIÓN NUEVA (Asegúrate de que no haya otra función igual en este archivo)
 void EntityManager::DestroyEntity(std::shared_ptr<Entity> entity)
 {
-    // En lugar de borrar inmediatamente, lo añadimos a la cola
+    // Evitar duplicados
+    for (const auto& e : entitiesToDestroy) {
+        if (e == entity) return;
+    }
     entitiesToDestroy.push_back(entity);
 }
+
 
 void EntityManager::AddEntity(std::shared_ptr<Entity> entity)
 {
@@ -121,19 +124,22 @@ bool EntityManager::PostUpdate()
 
     return true;
 }
+
 void EntityManager::DestroyEntitiesForReload()
 {
-    std::vector<std::shared_ptr<Entity>> entitiesToDestroy;
+    std::vector<std::shared_ptr<Entity>> entitiesToKill;
 
+    // Identificar entidades que no sean el jugador
     for (const auto& entity : entities)
     {
         if (entity->type != EntityType::PLAYER)
         {
-            entitiesToDestroy.push_back(entity);
+            entitiesToKill.push_back(entity);
         }
     }
 
-    for (const auto& entity : entitiesToDestroy)
+    // Marcarlas para destruir
+    for (const auto& entity : entitiesToKill)
     {
         DestroyEntity(entity);
     }

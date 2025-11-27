@@ -74,6 +74,9 @@ bool Scene::Update(float dt)
 	//L03 TODO 3: Make the camera movement independent of framerate
 	float camSpeed = 1;
 
+	if (reloadCooldown > 0.0f) {
+		reloadCooldown -= dt;
+	}
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
 		Engine::GetInstance().render->camera.y -= (int)ceil(camSpeed * dt);
 
@@ -168,11 +171,13 @@ bool Scene::PostUpdate()
 
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
 
-		// 1. Limpiamos las entidades viejas para evitar duplicados y crasheos
-		Engine::GetInstance().entityManager->DestroyEntitiesForReload();
+		
+		
 
 		// 2. Cargamos las entidades (esto creará nuevas y moverá al Player)
 		Engine::GetInstance().map->LoadEntities(player);
+
+		reloadCooldown = 500.0f;
 	}
 	//L15 TODO 5: Call the function to save entities from the map
 	//pulso f6 para guardar donde quiero que el player se vuelve,luego pulsamos f5 para valve ese punto

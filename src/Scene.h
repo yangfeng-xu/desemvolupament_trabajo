@@ -46,4 +46,5 @@ private:
 	std::string tilePosDebug = "[0,0]";
 	bool showHelpMenu = false;
 	bool once = false;
+	float reloadCooldown = 0.0f;
 };

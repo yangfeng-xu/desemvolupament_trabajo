@@ -62,11 +62,24 @@ SDL_Texture* const Textures::Load(const char* path)
 }
 
 // Unload texture
+//bool Textures::UnLoad(SDL_Texture* texture)
+//{
+//	for (const auto& _texture : textures) {
+//		if (_texture == texture) {
+//			SDL_DestroyTexture(texture);
+//			return true;
+//		}
+//	}
+//	return false;
+//}
+
 bool Textures::UnLoad(SDL_Texture* texture)
 {
-	for (const auto& _texture : textures) {
-		if (_texture == texture) {
+	// Usar un iterador para poder borrar el elemento de la lista
+	for (auto it = textures.begin(); it != textures.end(); ++it) {
+		if (*it == texture) {
 			SDL_DestroyTexture(texture);
+			textures.erase(it); // <--- IMPORTANTE: Quitar el puntero de la lista
 			return true;
 		}
 	}
