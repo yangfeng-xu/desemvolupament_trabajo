@@ -165,12 +165,12 @@ bool Scene::PostUpdate()
         LOG("-----------------------------------------------");
     }
 
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
 		Engine::GetInstance().map->LoadEntities(player);
 	}
 	//L15 TODO 5: Call the function to save entities from the map
 	//pulso f6 para guardar donde quiero que el player se vuelve,luego pulsamos f5 para valve ese punto
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
 		Engine::GetInstance().map->SaveEntities(player);
 
 	}

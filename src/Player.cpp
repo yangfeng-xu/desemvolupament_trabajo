@@ -65,6 +65,36 @@ bool Player::Update(float dt)
 {
 	anims.Update(dt);
 
+	// [NUEVO CÓDIGO - TECLA F9 para volver al inicio]
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN) {
+		LOG("Debug: Returning to Start Position (F9)");
+
+		// 1. Forzar posición del cuerpo físico a la posición de inicio
+		// Usamos startPosition para el respawn
+		b2BodyId body = pbody->body;
+		b2Vec2 startPosMeters = {
+			PIXEL_TO_METERS(startPosition.getX() + texW / 2),
+			PIXEL_TO_METERS(startPosition.getY() + texH / 2)
+		};
+		b2Body_SetTransform(body, startPosMeters, b2MakeRot(0.0f));
+
+		// 2. Detener cualquier movimiento/salto
+		b2Vec2 vel = { 0.0f, 0.0f };
+		b2Body_SetLinearVelocity(body, vel);
+		b2Body_SetAwake(body, true); // Asegura que el cuerpo se despierte
+
+		// 3. Restablecer estados (si es necesario, aunque al inicio deberían ser correctos)
+		isJumping = false;
+		IsDead = false;
+		anims.SetCurrent("idle");
+
+		// 4. (Opcional pero recomendado): Forzar la cámara a seguir la posición inicial
+		float limitLeft = Engine::GetInstance().render->camera.w / 4;
+		float cameraX = -(startPosition.getX() - limitLeft);
+		Engine::GetInstance().render->camera.x = (int)cameraX;
+		Engine::GetInstance().render->camera.y = 0;
+	}
+
 	// LOGICA MODO DIOS (F10)
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN) {
 		isGodMode = !isGodMode;
@@ -127,8 +157,15 @@ bool Player::Update(float dt)
 
 			Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Level.wav");
 			//cuando player se muere y vulverá al principio del juego, reinicializar la camara
-			Engine::GetInstance().render->camera.x = 0;
+			float limitLeft = Engine::GetInstance().render->camera.w / 4;
+			float cameraX = -(savePosition.getX() - limitLeft);
+
+			// 2. Aplicar la nueva posición de la cámara
+			Engine::GetInstance().render->camera.x = (int)cameraX;
 			Engine::GetInstance().render->camera.y = 0;
+
+			//Engine::GetInstance().render->camera.x = 0;
+			//Engine::GetInstance().render->camera.y = 0;
 			std::cout << "YOU ARE DEAD";
 
 			for (const auto& entity : Engine::GetInstance().entityManager->entities) {
@@ -326,6 +363,10 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		savePosition.setY((float)spY - texH / 2); // Usando texW/2 como ajuste de píxeles para el tamaño del player.
 		LOG("Collision SAVEPOINT. Position updated to (%.2f, %.2f)", savePosition.getX(), savePosition.getY());
 		break;
+	case ColliderType::ENEMY: // <-- AÑADE ESTE NUEVO CASO
+		LOG("Collision ENEMY");
+		Die(); // Llama a la función de muerte del jugador
+		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
 		break;
@@ -360,4 +401,8 @@ Vector2D Player::GetPosition() {
 
 void Player::SetPosition(Vector2D pos) {
 	pbody->SetPosition((int)(pos.getX() + texW / 2), (int)(pos.getY() + texH / 2));
+}
+
+Vector2D Player::GetSavePosition() const {
+	return savePosition;
 }

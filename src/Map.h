@@ -131,6 +131,7 @@ public:
 
     void LoadEntities(std::shared_ptr<Player>& player);
     void SaveEntities(std::shared_ptr<Player>player);
+    void ResetEntities();
 public: 
     std::string mapFileName;
     std::string mapPath;

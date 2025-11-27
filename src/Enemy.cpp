@@ -380,6 +380,23 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 			}
 		}
 	}
+	else if (physB->ctype == ColliderType::DEATH) {
+		if (!isDead) {
+			isDead = true;
+
+			// Desactiva físicas
+			Engine::GetInstance().physics->DeletePhysBody(pbody);
+			pbody = nullptr;
+
+			// Simula la muerte (igual que al recibir un proyectil)
+			if (enemyType == EnemyType::FLYING) {
+				Engine::GetInstance().entityManager->DestroyEntity(shared_from_this());
+			}
+			else {
+				anims.SetCurrent("death");
+			}
+		}
+	}
 }
 
 void Enemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB)

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="42">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="46">
  <tileset firstgid="1" name="tmw_desert_spacing" tilewidth="32" tileheight="32" spacing="1" margin="1" tilecount="48" columns="8">
   <image source="tmw_desert_spacing.png" width="265" height="199"/>
   <wangsets>
@@ -65,7 +65,7 @@
  <tileset firstgid="437" name="Tiles" tilewidth="32" tileheight="32" tilecount="132" columns="11">
   <image source="Tiles.png" width="352" height="384"/>
  </tileset>
- <layer id="6" name="Collition" width="64" height="24" locked="1">
+ <layer id="6" name="Collition" width="64" height="24">
   <properties>
    <property name="Draw" type="bool" value="false"/>
   </properties>
@@ -1590,21 +1590,21 @@
    <tile gid="49"/>
    <tile gid="49"/>
    <tile gid="49"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
    <tile/>
   </data>
  </layer>
@@ -4694,7 +4694,7 @@
    <tile gid="456"/>
   </data>
  </layer>
- <layer id="10" name="Trampa" width="64" height="24" visible="0" locked="1">
+ <layer id="10" name="Trampa" width="64" height="24">
   <properties>
    <property name="Draw" type="bool" value="true"/>
   </properties>
@@ -6219,21 +6219,21 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="514"/>
+   <tile gid="514"/>
+   <tile gid="514"/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="514"/>
+   <tile gid="514"/>
+   <tile gid="514"/>
+   <tile gid="514"/>
+   <tile gid="514"/>
+   <tile gid="514"/>
+   <tile gid="514"/>
+   <tile gid="514"/>
+   <tile gid="514"/>
+   <tile gid="514"/>
+   <tile gid="514"/>
    <tile/>
   </data>
  </layer>
@@ -7763,26 +7763,26 @@
    <tile gid="49"/>
    <tile gid="49"/>
    <tile gid="49"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
    <tile/>
   </data>
  </layer>
  <objectgroup id="13" name="Entities">
-  <object id="25" name="Player" type="Player" x="87" y="729.667">
+  <object id="25" name="Player" type="Player" x="81.6667" y="687">
    <point/>
   </object>
   <object id="27" name="EnemyGround" type="Enemy" x="422.667" y="732">
@@ -7810,6 +7810,18 @@
    <point/>
   </object>
   <object id="41" name="Save" type="Map" x="1968" y="157.333">
+   <point/>
+  </object>
+  <object id="42" name="EnemyFlying" type="Enemy" x="1968" y="309.333">
+   <point/>
+  </object>
+  <object id="43" name="EnemyFlying" type="Enemy" x="1680" y="112">
+   <point/>
+  </object>
+  <object id="44" name="EnemyGround" type="Enemy" x="1198.67" y="153.333">
+   <point/>
+  </object>
+  <object id="45" name="EnemyGround" type="Enemy" x="1104" y="533.333">
    <point/>
   </object>
  </objectgroup>

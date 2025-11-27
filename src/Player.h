@@ -28,6 +28,7 @@ public:
 
 	Vector2D GetPosition();
 	void SetPosition(Vector2D pos);
+	Vector2D GetSavePosition() const;
 
 	void Die();
 
@@ -63,6 +64,7 @@ private:
 	AnimationSet anims;
 	Vector2D startPosition;
 	Vector2D savePosition;
+	
 	bool IsDead;
 	float shootCooldown = 0.0f;
 	SDL_FlipMode flipState = SDL_FLIP_NONE;//FlipMode para invertir imagen
