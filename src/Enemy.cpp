@@ -36,12 +36,24 @@ void Enemy::SetEnemyType(EnemyType type) {
 bool Enemy::Start() {
 	/*position = startPosition;*/
 	// load
-	std::unordered_map<int, std::string> aliases = { {13,"move"},{24,"idle"},{35,"death"}};
-	anims.LoadFromTSX("Assets/Textures/slime-Sheet2.tsx", aliases);
-	anims.SetCurrent("idle");
+
+	if (enemyType == EnemyType::FLYING) {
+		std::unordered_map<int, std::string>EnemyFlying = { {0,"idleflying"},{4,"fly-right"},{8,"fly-down"},{12,"fly-left"} };
+		anims.LoadFromTSX("Assets/Textures/32x32-bat-sprite.tsx", EnemyFlying);
+		anims.SetCurrent("idleflying");
+		texture = Engine::GetInstance().textures->Load("Assets/Textures/32x32-bat-sprite.png");
+	}
+	else {
+		std::unordered_map<int, std::string> aliases = { {13,"move"},{24,"idle"},{35,"death"} };
+		anims.LoadFromTSX("Assets/Textures/slime-Sheet2.tsx", aliases);
+		anims.SetCurrent("idle");
+
+
+		//Initialize Player parameters
+		texture = Engine::GetInstance().textures->Load("Assets/Textures/slime-Sheet2.png");
+	}
 	
-	//Initialize Player parameters
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/slime-Sheet2.png");
+	
 
 	//Add physics to the enemy - initialize physics body
 	texW = 32;
@@ -259,8 +271,8 @@ void Enemy::MoveFlying() {
 		velocity.y = (dirY / length) * speed;
 
 		// Animación básica
-		if (velocity.x > 0) anims.SetCurrent("fly_right"); // O usa flip
-		else anims.SetCurrent("fly_left");
+		if (velocity.x > 0) anims.SetCurrent("fly-right"); // O usa flip
+		else anims.SetCurrent("fly-left");
 	}
 	else {
 		velocity.x = 0;
