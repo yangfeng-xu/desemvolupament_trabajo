@@ -335,23 +335,23 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
                     enemy->position = Vector2D(x, y);
 
                     // Cargar propiedades personalizadas (por ejemplo, para saber si vuela)
-                    Properties props;
-                    LoadProperties(objectNode, props);
-                    enemy->SetEnemyType(EnemyType::GROUND);
+                    std::string name = objectNode.attribute("name").as_string();
+                    if (name == "EnemyGround") {
+                        enemy->SetEnemyType(EnemyType::GROUND);
+                        LOG("Created Ground Enemy at x:%.2f y:%.2f", x, y);
+                    }
+                    else if (name == "EnemyFlying") { // Asumiendo que llamarás así al otro
+                        enemy->SetEnemyType(EnemyType::FLYING);
+                        LOG("Created Flying Enemy at x:%.2f y:%.2f", x, y);
+                    }
+                    else {
+                        // Por defecto si no coincide el nombre
+                        enemy->SetEnemyType(EnemyType::GROUND);
+                        LOG("Created Default Enemy (Ground) at x:%.2f y:%.2f", x, y);
+                    }
                   
                 }
-                else if (entityType == std::string("Enemy_Flying")) {
-                    float x = objectNode.attribute("x").as_float();
-                    float y = objectNode.attribute("y").as_float();
-
-                    // Crear la entidad Enemigo a través del EntityManager
-                    std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
-
-                    enemy->position = Vector2D(x, y);
-
-                    // Aquí definimos explícitamente que es volador
-                    enemy->SetEnemyType(EnemyType::FLYING);
-                }
+         
 
             }
         }

@@ -40,15 +40,17 @@ private:
 public:
 
 	//Declare enemy parameters
-	float speed = 4.0f;
+	float speed = 2.0f;
 	SDL_Texture* texture = NULL;
 	int texW, texH;
 	PhysBody* pbody;
 
 	Vector2D startPosition;
 	float jumpForce = 8.0f;
-
+	int detectionRadius = 10;
 	EnemyType enemyType = EnemyType::GROUND;
+
+
 private:
 	b2Vec2 velocity;
 	AnimationSet anims;

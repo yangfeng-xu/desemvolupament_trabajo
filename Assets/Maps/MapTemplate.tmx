@@ -7788,22 +7788,22 @@
   <object id="26" x="1941.26" y="-617.435">
    <point/>
   </object>
-  <object id="27" name="Ground_Enemy" type="Enemy" x="422.667" y="732">
+  <object id="27" name="EnemyGround" type="Enemy" x="422.667" y="732">
    <point/>
   </object>
-  <object id="29" name="Ground_Enemy" type="Enemy" x="836" y="157.333">
+  <object id="29" name="EnemyGround" type="Enemy" x="836" y="157.333">
    <point/>
   </object>
-  <object id="30" name="Ground_Enemy" type="Enemy" x="890.667" y="346.667">
+  <object id="30" name="EnemyGround" type="Enemy" x="890.667" y="346.667">
    <point/>
   </object>
-  <object id="31" name="Ground_Enemy" type="Enemy" x="894.667" y="732">
+  <object id="31" name="EnemyGround" type="Enemy" x="894.667" y="732">
    <point/>
   </object>
-  <object id="32" name="Ground_Enemy" type="Enemy" x="1493.33" y="444">
+  <object id="32" name="EnemyGround" type="Enemy" x="1493.33" y="444">
    <point/>
   </object>
-  <object id="33" name="Enemy_Flying" type="Enemy" x="269.333" y="156">
+  <object id="33" name="EnemyFlying" type="Enemy" x="269.333" y="156">
    <point/>
   </object>
  </objectgroup>

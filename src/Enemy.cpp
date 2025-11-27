@@ -100,9 +100,22 @@ void Enemy::PerformPathfinding() {
 	Vector2D myPos = GetPosition();
 	Vector2D myTile = Engine::GetInstance().map->WorldToMap((int)myPos.getX(), (int)myPos.getY());
 
-	// 3. Calcular el camino automáticamente
-	// Usamos MANHATTAN como heurística por defecto
-	pathfinding->ComputeFullPathAStar(myTile, MANHATTAN);
+	float distance = myTile.distanceEuclidean(playerTile);
+	if (distance < 10) {
+		// 3. Calcular el camino automáticamente
+// Usamos MANHATTAN como heurística por defecto
+		pathfinding->ComputeFullPathAStar(myTile, MANHATTAN);
+	}
+	else {
+		velocity.x = 0;
+		if (enemyType == EnemyType::FLYING) {
+			velocity.y = 0;
+		}
+
+		// 3. Poner animación de Idle
+		anims.SetCurrent("idle");
+	}
+
 	// Propagate BFS with J key
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_J) == KEY_DOWN) {
 		pathfinding->PropagateBFS();
