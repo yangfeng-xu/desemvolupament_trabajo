@@ -31,7 +31,7 @@ public:
 
 private:
 	float pathfindingTimer = 0.0f;
-	float pathfindingInterval = 0.5f;
+	float pathfindingInterval = 0.5f;//calcular la ruta de pathfinding cada 0,5 segundo
 	void PerformPathfinding(float dt);
 	void GetPhysicsValues();
 	void Move();

@@ -185,6 +185,19 @@ bool Scene::PostUpdate()
 		Engine::GetInstance().map->SaveEntities(player);
 
 	}
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F11) == KEY_DOWN) {
+		int currentFps = Engine::GetInstance().GetTargetFrameRate();
+		if (currentFps == 60) {
+			Engine::GetInstance().SetTargetFrameRate(30);
+			LOG("FPS limid changed to 30");
+		}
+		else {
+			Engine::GetInstance().SetTargetFrameRate(60);
+			LOG("FPS limid changed to 60");
+
+		}
+	}
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
 		ret = false;
 

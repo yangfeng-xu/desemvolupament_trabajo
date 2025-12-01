@@ -102,6 +102,8 @@ public:
 	std::shared_ptr<Physics> physics;
 
 
+	int GetTargetFrameRate() const;
+	void SetTargetFrameRate(int target);
 private: 
 
 	// Delta time

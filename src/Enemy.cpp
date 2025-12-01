@@ -100,9 +100,7 @@ bool Enemy::Update(float dt)
 	GetPhysicsValues();
 
 	if (pathfinding != nullptr) {
-		PerformPathfinding(dt);
-		// CAMBIO: Usamos la constante MANHATTAN que sí existe en tu Pathfinding.h
-		/*pathfinding->PropagateAStar(MANHATTAN);*/
+		PerformPathfinding(dt);		
 	}
 
 	if (enemyType == EnemyType::GROUND) Move();
@@ -126,6 +124,7 @@ void Enemy::PerformPathfinding(float dt) {
 	Vector2D myTile = Engine::GetInstance().map->WorldToMap((int)myPos.getX(), (int)myPos.getY());
 
 	float distance = myTile.distanceEuclidean(playerTile);
+	
 	if (distance < detectionRadius) {
 		// 3. Calcular el camino automáticamente
 // Usamos MANHATTAN como heurística por defecto

@@ -298,3 +298,10 @@ bool Engine::LoadConfig()
 }
 
 
+int Engine::GetTargetFrameRate() const {
+    return targetFrameRate;
+}
+
+void Engine::SetTargetFrameRate(int target) {
+    targetFrameRate = target;
+}
