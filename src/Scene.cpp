@@ -186,6 +186,7 @@ bool Scene::PostUpdate()
 
 	}
 
+	//f11 change fps
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F11) == KEY_DOWN) {
 		int currentFps = Engine::GetInstance().GetTargetFrameRate();
 		if (currentFps == 60) {
