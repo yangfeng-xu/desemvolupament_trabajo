@@ -50,4 +50,5 @@ private:
 	bool showHelpMenu = false;
 	bool once = false;
 	float reloadCooldown = 0.0f;
+	SDL_Texture* helpMenuTexture = nullptr;
 };

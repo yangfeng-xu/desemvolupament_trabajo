@@ -60,5 +60,5 @@ private:
 	std::shared_ptr<Pathfinding> pathfinding;
 	bool isGrounded = false;
 	bool isDead = false;
-	int deathFxId = 0; // NUEVO: ID del efecto de sonido de muerte del enemigo
+	int deathFxId = 0; //ID del efecto de sonido de muerte del enemigo
 };

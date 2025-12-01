@@ -42,7 +42,6 @@ bool Item::Start() {
         texture = Engine::GetInstance().textures->Load("Assets/Textures/savepoint_5espaciado.png");
 
         std::unordered_map<int, std::string> animNames = { {0,"save"} };
-        // Nota: Asume que 'Assets/Textures/savepoint_5espaciado.tsx' es la ruta correcta
         anims.LoadFromTSX("Assets/Textures/savepoint_5espaciado.tsx", animNames);
         anims.SetCurrent("save");
 
@@ -100,7 +99,7 @@ bool Item::Update(float dt)
         // 2. Lógica específica para SAVEPOINT
         if (type == EntityType::SAVEPOINT)
         {
-            // Actualizar animación (¡CRÍTICO!)
+            // Actualizar animación
             anims.Update(dt);
             srcRect = (SDL_Rect*)&anims.GetCurrentFrame();
 

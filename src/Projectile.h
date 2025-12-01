@@ -27,5 +27,3 @@ private:
     SDL_Texture* texture = nullptr; // Inicialización directa
     int texW = 0, texH = 0;
 }; 
-
-#pragma once

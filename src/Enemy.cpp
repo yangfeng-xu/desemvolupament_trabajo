@@ -35,7 +35,7 @@ void Enemy::SetEnemyType(EnemyType type) {
 	enemyType = type;
 }
 bool Enemy::Start() {
-	/*position = startPosition;*/
+	
 	// load
 	if (pbody != nullptr) return true;
 
@@ -62,7 +62,6 @@ bool Enemy::Start() {
 	//Add physics to the enemy - initialize physics body
 	texW = 32;
 	texH = 32;
-	/*pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX()+texW/2, (int)position.getY()+texH/2, texW / 2, bodyType::DYNAMIC);*/
 
 	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
 
@@ -203,7 +202,6 @@ void Enemy::PerformPathfinding(float dt) {
 void Enemy::GetPhysicsValues() {
 	// Read current velocity
 	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
-	// ERROR ANTERIOR: velocity = { 0, velocity.y };
 	if (enemyType == EnemyType::GROUND && isGrounded) {
 		velocity.x = 0;
 	}

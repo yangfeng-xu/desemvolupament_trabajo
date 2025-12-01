@@ -31,7 +31,6 @@ bool Scene::Awake()
 	bool ret = true;
 
 	//L04: TODO 3b: Instantiate the player using the entity manager
-	/*player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));*/
 
 	//L08: TODO 4: Create a new item using the entity manager and set the position to (200, 672) to test
 	std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
@@ -53,6 +52,7 @@ bool Scene::Start()
 	Engine::GetInstance().map->LoadEntities(player);
 	// Texture to highligh mouse position 
 	mouseTileTex = Engine::GetInstance().textures->Load("Assets/Maps/MapMetadata.png");
+	helpMenuTexture = Engine::GetInstance().textures->Load("Assets/Maps/menu.png");
 
 	saveFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/autosave.wav");
 
@@ -127,49 +127,38 @@ bool Scene::PostUpdate()
 		int windowWidth, windowHeight;
 		Engine::GetInstance().window->GetWindowSize(windowWidth, windowHeight);
 
-		// 1. Define el área para el menú de ayuda (centrado y dos tercios de la pantalla)
+		// CALCULAR POSICIÓN Y TAMAÑO CENTRADO (2/3 de la pantalla)
 		int menuWidth = windowWidth * 2 / 3;
 		int menuHeight = windowHeight * 2 / 3;
 
-		SDL_Rect helpRect = {
-			(windowWidth - menuWidth) / 2,
-			(windowHeight - menuHeight) / 2,
-			menuWidth,
-			menuHeight
-		};
+		int menuX = (windowWidth - menuWidth) / 2;
+		int menuY = (windowHeight - menuHeight) / 2;
 
-		// 2. Dibuja el fondo del menú (rectángulo semi-transparente: R, G, B, Alpha)
-		Engine::GetInstance().render->DrawRectangle(helpRect, 0, 0, 0, 200, true, false);
+		//Dibuja un fondo oscuro para asegurar que el área esté definida.
+		SDL_Rect backgroundRect = { menuX, menuY, menuWidth, menuHeight };
+		Engine::GetInstance().render->DrawRectangle(backgroundRect, 0, 0, 0, 200, true, false);
 
-		// 3. Dibuja el borde blanco
-		Engine::GetInstance().render->DrawRectangle(helpRect, 255, 255, 255, 255, false, false);
+		// 2. DIBUJA LA IMAGEN DEL MENÚ ("menu.png")
+		if (helpMenuTexture != nullptr)
+		{
+			// Usamos las coordenadas de inicio del menú (menuX, menuY)
+			// speed = 0.0f asegura que la imagen no se mueva con el offset de la cámara.
+			Engine::GetInstance().render->DrawTexture(
+				helpMenuTexture,
+				menuX,
+				menuY,
+				nullptr, // section: Dibuja la textura completa
+				0.0f,    // speed: 0.0f (sin movimiento de cámara)
+				0.0,     // angle
+				INT_MAX, // pivotX 
+				INT_MAX  // pivotY 
+			);
+		}
 
-		// 4. Dibuja un rectángulo para simular el TÍTULO (Blanco)
-		int paddingX = 40;
-		int startX = helpRect.x + paddingX;
-		int startY = helpRect.y + 40;
-		int textWidth = menuWidth - (paddingX * 2);
-
-		SDL_Rect titleRect = { startX, startY - 20, textWidth, 15 };
-		// Usamos blanco para el título (R:255, G:255, B:255)
-		Engine::GetInstance().render->DrawRectangle(titleRect, 255, 255, 255, 255, true, false);
-
-		// NOTA IMPORTANTE:
-		// ELIMINAMOS TODOS LOS DEMÁS RECTÁNGULOS DE LÍNEA.
-		// Si su motor tiene una función de dibujo de texto (DrawText),
-		// el código para dibujar las teclas debería ir aquí, justo encima del fondo.
-
-		// Mantenemos los LOGs para que la ayuda aparezca en la consola, que es
-		// el único lugar donde podemos confirmar la salida de texto:
-		LOG("--- H KEY PRESSED - TEXT OUTPUT VIA LOG ONLY ---");
-		LOG("H: WSAD / Arrows: Walk / Fly (God Mode)");
-		LOG("H: Spacebar: Jump");
-		LOG("H: Esc: Exit the game");
-		LOG("H: F1: Show / Hide Collisions (Debug)");
-		LOG("H: F10: God Mode (Fly/Invincible)");
-		LOG("H: H: Show / Hide this Help Menu (TITLE LINE IS WHITE)");
-		LOG("-----------------------------------------------");
+		//Dibuja un borde blanco.
+		Engine::GetInstance().render->DrawRectangle(backgroundRect, 255, 255, 255, 255, false, false);
 	}
+	
 
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
 

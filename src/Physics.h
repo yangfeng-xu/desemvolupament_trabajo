@@ -33,7 +33,6 @@ enum class ColliderType {
     PROJECTILE,
     SAVEPOINT,
     UNKNOWN
-    // ..
 };
 
 // Small class to return to other modules to track position and rotation of physics bodies

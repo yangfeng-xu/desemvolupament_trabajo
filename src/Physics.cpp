@@ -199,8 +199,6 @@ bool Physics::PostUpdate()
 
             // Enable only what you support (3.1 field names)
             dd.drawShapes = true;
-            //dd.drawJoints = true;   // enable if you want joints drawn
-            //dd.drawBounds = true;   // AABBs
             dd.drawContacts = true;   // contact points
 
             // Implemented callbacks
@@ -288,10 +286,6 @@ void Physics::DeletePhysBody(PhysBody* physBody)
     {
         b2DestroyBody(physBody->body);
 
-        // --- LA CLAVE ESTÁ AQUÍ ---
-        // Marcamos el ID como nulo inmediatamente.
-        // Esto evita que el destructor (~PhysBody) intente destruirlo de nuevo
-        // cuando llamemos a 'delete physBody' abajo.
         physBody->body = b2_nullBodyId;
     }
 
@@ -466,7 +460,7 @@ void Physics::DrawPolygonCb(const b2Vec2* v, int n, b2HexColor /*color*/, void* 
 }
 
 void Physics::DrawSolidPolygonCb(b2Transform xf, const b2Vec2* v, int n,
-    float /*radius*/, b2HexColor color, void* ctx)
+    float , b2HexColor color, void* ctx)
 {
     // Transform local verts to world and reuse wireframe draw
     std::vector<b2Vec2> world(n);

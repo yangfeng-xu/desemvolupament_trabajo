@@ -6,11 +6,11 @@
 #include "Physics.h"
 #include"EntityManager.h"
 #include <math.h>
-#include "Item.h" // AÑADIDO
+#include "Item.h" 
 
 Map::Map() : Module(), mapLoaded(false)
 {
-    // ... (resto de Map::Map, Awake, Start, etc. se mantiene igual)
+  
     name = "map";
 }
 
@@ -68,7 +68,7 @@ bool Map::Update(float dt)
             }
         }
 
-        // ELIMINADO: El dibujo y la actualización del savepoint global. Ahora lo hacen las entidades Item.
+       
     }
 
 
@@ -115,7 +115,7 @@ bool Map::CleanUp()
 // Load new map
 bool Map::Load(std::string path, std::string fileName)
 {
-    // ... (código de Load se mantiene igual hasta el final)
+   
     bool ret = false;
 
     // Assigns the name of the map file and the path
@@ -414,7 +414,4 @@ void Map::SaveEntities(std::shared_ptr<Player>player) {
             }
         }
     }
-    //guardar los modificación
-  /* std::string mapPathName = mapPath + mapFileName;
-    mapFileXML.save_file(mapPathName.c_str());*/
 }

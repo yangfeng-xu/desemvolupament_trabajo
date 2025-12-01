@@ -5,8 +5,8 @@
 #include "Scene.h"
 #include "Log.h"
 #include "Item.h"
-#include "Enemy.h"       // Asegúrate de incluir esto
-#include "Projectile.h"  // Asegúrate de incluir esto
+#include "Enemy.h"     
+#include "Projectile.h"  
 
 EntityManager::EntityManager() : Module()
 {
@@ -106,7 +106,6 @@ bool EntityManager::Update(float dt)
     return ret;
 }
 
-// ESTA ES LA FUNCIÓN QUE FALTABA
 bool EntityManager::PostUpdate()
 {
     // Borramos las entidades pendientes de forma segura

@@ -53,7 +53,7 @@ public:
 	//Audio fx
 	int pickCoinFxId = 0;
 	int deathFxId = 0;
-	int jumpFxId = 0; // NUEVO: ID del efecto de sonido de salto
+	int jumpFxId = 0;//ID del efecto de sonido de salto
 	int saveFxId = 0;
 
 	// L08 TODO 5: Add physics to the player - declare a Physics body

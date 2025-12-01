@@ -2,7 +2,7 @@
 
 #include "Entity.h"
 #include <SDL3/SDL.h>
-#include "Animation.h" // AÑADIDO
+#include "Animation.h"
 
 struct SDL_Texture;
 
@@ -36,7 +36,6 @@ private:
 	//L08 TODO 4: Add a physics to an item
 	PhysBody* pbody;
 
-	// AÑADIDO: Para manejar la animación (si es un Savepoint)
 	AnimationSet anims;
 	int texH_offset = 0; // Para compensar la altura en el renderizado.
 };

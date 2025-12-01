@@ -182,7 +182,6 @@ bool Audio::PlayMusic(const char* path, float fadeTime) {
 
 int Audio::LoadFx(const char* path) {
     if (!active) return 0;
-    //if (!EnsureStreams()) return 0;
     if (!EnsureDeviceOpen()) return 0;
     SoundData s{};
     if (!LoadWavFile(path, s)) {
@@ -197,14 +196,11 @@ int Audio::LoadFx(const char* path) {
 bool Audio::PlayFx(int id, int repeat, float rate) {
     if (!active) return false;
     if (id <= 0 || id > static_cast<int>(sfx_.size())) return false;
-    //if (!EnsureStreams()) return false;
     if (!EnsureDeviceOpen()) return false;
 
     const SoundData& s = sfx_[static_cast<size_t>(id - 1)];
 
     // Make sure the SFX stream input format matches this sound
-    /*if (!SDL_SetAudioStreamFormat(sfx_stream_, &s.spec, &device_spec_)) {
-        LOG("Audio: SDL_SetAudioStreamFormat(sfx) failed: %s", SDL_GetError());*/
     SDL_AudioStream* stream = SDL_CreateAudioStream(&s.spec, &device_spec_);
     if (!stream) {
         LOG("Audio: SDL_CreateAudioStream(sfx) failed: %s", SDL_GetError());
@@ -226,7 +222,6 @@ bool Audio::PlayFx(int id, int repeat, float rate) {
 
     // Queue sound 'repeat+1' times
     for (int i = 0; i <= repeat; ++i) {
-        //if (!SDL_PutAudioStreamData(sfx_stream_, s.buf, s.len)) {
         if (!SDL_PutAudioStreamData(stream, s.buf, s.len)) {
             LOG("Audio: SDL_PutAudioStreamData(sfx) failed: %s", SDL_GetError());
             return false;

@@ -34,7 +34,6 @@ bool Player::Awake() {
 bool Player::Start() {
 
 	//L03: TODO 2: Initialize Player parameters
-	/*texture = Engine::GetInstance().textures->Load("Assets/Textures/Owlet_Monster.png");*/
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/player_sprite.png");
 
 	std::unordered_map<int, std::string>animNames = { {13,"death"},{21,"run"},{39,"idle"},{156,"jump"} };
@@ -89,7 +88,7 @@ bool Player::Update(float dt)
 		IsDead = false;
 		anims.SetCurrent("idle");
 
-		// 4. (Opcional pero recomendado): Forzar la cámara a seguir la posición inicial
+		// 4. Forzar la cámara a seguir la posición inicial
 		float limitLeft = Engine::GetInstance().render->camera.w / 4;
 		float cameraX = -(startPosition.getX() - limitLeft);
 		Engine::GetInstance().render->camera.x = (int)cameraX;
@@ -133,7 +132,7 @@ bool Player::Update(float dt)
 		}
 
 		// Inicializar el proyectil
-		projectile->Awake(); // Ojo: EntityManager suele llamar awake, pero si lo creas en runtime asegúrate de su ciclo.
+		projectile->Awake(); // EntityManager suele llamar awake, pero si lo creas en runtime asegúrate de su ciclo.
 		projectile->Start(); // Importante llamarlo para crear su cuerpo físico
 
 		shootCooldown = 500.0f;
@@ -144,8 +143,6 @@ bool Player::Update(float dt)
 			b2Vec2 vel = { 0.0f, 0.0f };
 			b2Body_SetLinearVelocity(body, vel);
 
-			//b2Vec2 startPosMeters = { PIXEL_TO_METERS(startPosition.getX()), PIXEL_TO_METERS(startPosition.getY()) };
-			//b2Body_SetTransform(body, startPosMeters, b2Rot_identity);
 			b2Vec2 respawnPosMeters = {
 				PIXEL_TO_METERS(savePosition.getX() + texW / 2),
 				PIXEL_TO_METERS(savePosition.getY() + texH / 2)
@@ -347,11 +344,11 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		Engine::GetInstance().audio->PlayFx(pickCoinFxId);
 		physB->listener->Destroy();
 		break;
-	case ColliderType::DEATH: // <-- AÑADE ESTE CASO
+	case ColliderType::DEATH:
 		LOG("Collision DEATH");
 		Die(); // Llama a la función de muerte (ya tiene la comprobación de God Mode)
 		break;
-	case ColliderType::SAVEPOINT: // <--- NUEVO CASO
+	case ColliderType::SAVEPOINT:
 		// Cuando colisiona con el Savepoint, actualiza la posición de guardado
 		// Obtenemos la posición del centro del savepoint para que el respawn sea más preciso
 		int spX, spY;
@@ -362,7 +359,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("Collision SAVEPOINT. Position updated to (%.2f, %.2f)", savePosition.getX(), savePosition.getY());
 		Engine::GetInstance().audio->PlayFx(Engine::GetInstance().scene->saveFxId, 0, 10.0f);
 		break;
-	case ColliderType::ENEMY: // <-- AÑADE ESTE NUEVO CASO
+	case ColliderType::ENEMY:
 		LOG("Collision ENEMY");
 		Die(); // Llama a la función de muerte del jugador
 		break;
