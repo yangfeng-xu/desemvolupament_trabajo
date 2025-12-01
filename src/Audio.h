@@ -33,7 +33,7 @@ public:
 	int LoadFx(const char* path);
 
 	// Play a previously loaded WAV
-	bool PlayFx(int fx, int repeat = 0);
+	bool PlayFx(int fx, int repeat = 0, float rate = 1.0f);
 
     bool Update(float dt) override;
 

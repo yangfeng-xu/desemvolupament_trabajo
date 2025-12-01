@@ -9,6 +9,7 @@
 #include "Physics.h"
 #include "EntityManager.h"
 #include "Animation.h" // AÑADIDO
+#include "Map.h"
 
 Item::Item() : Entity(EntityType::ITEM) // Se crea inicialmente como ITEM
 {

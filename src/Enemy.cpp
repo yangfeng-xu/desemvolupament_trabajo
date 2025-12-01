@@ -41,12 +41,14 @@ bool Enemy::Start() {
 
 	if (enemyType == EnemyType::FLYING) {
 		std::unordered_map<int, std::string>EnemyFlying = { {0,"idleflying"},{4,"fly-right"},{8,"fly-down"},{12,"fly-left"} };
+		deathFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/monster-death.mp3"); // Carga el audio
 		anims.LoadFromTSX("Assets/Textures/32x32-bat-sprite.tsx", EnemyFlying);
 		anims.SetCurrent("idleflying");
 		texture = Engine::GetInstance().textures->Load("Assets/Textures/32x32-bat-sprite.png");
 	}
 	else {
 		std::unordered_map<int, std::string> aliases = { {13,"move"},{24,"idle"},{35,"death"} };
+		deathFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/monster-death.wav"); // Carga el audio
 		anims.LoadFromTSX("Assets/Textures/slime-Sheet2.tsx", aliases);
 		anims.SetCurrent("idle");
 
@@ -372,6 +374,7 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 	if (physB->ctype == ColliderType::PROJECTILE) {
 		if (!isDead) {
 			isDead = true;
+			Engine::GetInstance().audio->PlayFx(deathFxId);
 
 			// Desactiva físicas para que no siga chocando ni se mueva
 			Engine::GetInstance().physics->DeletePhysBody(pbody);

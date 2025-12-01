@@ -58,6 +58,8 @@ bool Player::Start() {
 	//initialize audio effect
 	pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
 	deathFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/out.wav");
+	jumpFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/salto.wav"); // Carga el audio de salto
+	saveFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/autosave.wav"); // Carga el audio de guardado
 	return true;
 }
 
@@ -272,6 +274,7 @@ void Player::Jump() {
 		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
 		anims.SetCurrent("jump");
 		isJumping = true;
+		Engine::GetInstance().audio->PlayFx(jumpFxId, 0, 1000.0f);
 	}
 }
 
@@ -357,6 +360,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		savePosition.setX((float)spX - texW / 2); // Ajustamos para que sea la esquina superior izquierda (Entity::position)
 		savePosition.setY((float)spY - texH / 2); // Usando texW/2 como ajuste de píxeles para el tamaño del player.
 		LOG("Collision SAVEPOINT. Position updated to (%.2f, %.2f)", savePosition.getX(), savePosition.getY());
+		Engine::GetInstance().audio->PlayFx(Engine::GetInstance().scene->saveFxId);
 		break;
 	case ColliderType::ENEMY: // <-- AÑADE ESTE NUEVO CASO
 		LOG("Collision ENEMY");

@@ -31,6 +31,9 @@ public:
 
 	// Called before quitting
 	bool CleanUp();
+
+	int saveFxId = 0;
+
 	// Return the player position
 	Vector2D GetPlayerPosition();
 

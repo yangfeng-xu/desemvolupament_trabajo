@@ -54,6 +54,8 @@ bool Scene::Start()
 	// Texture to highligh mouse position 
 	mouseTileTex = Engine::GetInstance().textures->Load("Assets/Maps/MapMetadata.png");
 
+	saveFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/autosave.mp3");
+
 	return true;
 }
 
@@ -183,7 +185,7 @@ bool Scene::PostUpdate()
 	//pulso f6 para guardar donde quiero que el player se vuelve,luego pulsamos f5 para valve ese punto
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
 		Engine::GetInstance().map->SaveEntities(player);
-
+		Engine::GetInstance().audio->PlayFx(saveFxId);
 	}
 
 	//f11 change fps

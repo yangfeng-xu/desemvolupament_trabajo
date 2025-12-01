@@ -194,7 +194,7 @@ int Audio::LoadFx(const char* path) {
     return static_cast<int>(sfx_.size()); // 1-based outward index
 }
 
-bool Audio::PlayFx(int id, int repeat) {
+bool Audio::PlayFx(int id, int repeat, float rate) {
     if (!active) return false;
     if (id <= 0 || id > static_cast<int>(sfx_.size())) return false;
     //if (!EnsureStreams()) return false;
