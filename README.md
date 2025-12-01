@@ -30,13 +30,13 @@ The game involves you being a ghost and wanting to explore the forest you are in
 ## Game Objective:
 DODGE TRAPS AND ENEMYS, YOU CAN ALSO KILL THEM, JUMP OVER PITS, EXPLORE THE MAP!!!
 
-## Last Release (v)
+## Last Release (alpha 1.0)
 
 In this release, the following features and improvements have been implemented:
 
 - Ground and fliying enemy
 - Enemy pathfinding system logic
-- Shooting system
+- Shooting system(the player shoot coins because we want coins became bullets, that the player need to collect them in the map)
 - Savepoints
 - Audio feedback
 - Enemy dead system
