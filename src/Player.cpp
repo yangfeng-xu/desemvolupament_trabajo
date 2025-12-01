@@ -65,7 +65,7 @@ bool Player::Update(float dt)
 {
 	anims.Update(dt);
 
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN) {
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN) {
 		LOG("Debug: Returning to Start Position (F9)");
 
 		// 1. Forzar posición del cuerpo físico a la posición de inicio
