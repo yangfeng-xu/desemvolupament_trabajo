@@ -54,7 +54,7 @@ bool Scene::Start()
 	// Texture to highligh mouse position 
 	mouseTileTex = Engine::GetInstance().textures->Load("Assets/Maps/MapMetadata.png");
 
-	saveFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/autosave.mp3");
+	saveFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/autosave.wav");
 
 	return true;
 }
