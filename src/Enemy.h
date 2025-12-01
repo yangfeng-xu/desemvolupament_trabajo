@@ -30,7 +30,9 @@ public:
 	void SetEnemyType(EnemyType type);
 
 private:
-	void PerformPathfinding();
+	float pathfindingTimer = 0.0f;
+	float pathfindingInterval = 0.5f;
+	void PerformPathfinding(float dt);
 	void GetPhysicsValues();
 	void Move();
 	void MoveFlying();
