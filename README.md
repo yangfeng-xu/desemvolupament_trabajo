@@ -15,27 +15,43 @@ The game involves you being a ghost and wanting to explore the forest you are in
 
 - **WSDA KEYS**: Walk.
 - **Spacebar**: jump.
+- **F KEY**: Shoot
 - **Esc**: Exit the game.
 
 ## Debug keys
 
-- F1 : Show collisions/Pathfinding routes
-- F10 : God mod
+- F1 : Start from the first level
 - F5 : Save the current game state
 - F6 : Load the previous state
+- F9 : Show collisions/Pathfinding routes
+- F10 : God mod
+- F11 : Enable/Disable FPS cap to 30
 
-### Game Objective:
-DODGE TRAPS AND ENEMYS, JUMP OVER PITS, EXPLORE THE MAP!!!
+## Game Objective:
+DODGE TRAPS AND ENEMYS, YOU CAN ALSO KILL THEM, JUMP OVER PITS, EXPLORE THE MAP!!!
 
-## Features Implemented
+## Last Release (v)
 
-- One level.
-- Movement system.
-- Jumping system.
-- Background music during gameplay.
-- Ground enemy
-- Flying Enemy
+In this release, the following features and improvements have been implemented:
+
+- Ground and fliying enemy
+- Enemy pathfinding system logic
+- Shooting system
 - Savepoints
+- Audio feedback
+- Enemy dead system
+- New map
+- Polish code
+
+## Installation / Execution
+
+1. Download the latest `.zip` file from the [Releases](../../releases) section.  
+2. Extract all files to a folder.  
+3. Run `[GameName].exe`.
+
+## Known Issues
+
+- When the enemy falls off the cliff without dying, the game crashes(but we put traps in all the cliff avoiding this problem).
 
 ## License
 
