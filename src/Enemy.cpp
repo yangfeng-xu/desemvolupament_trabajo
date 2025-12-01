@@ -374,7 +374,7 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 	if (physB->ctype == ColliderType::PROJECTILE) {
 		if (!isDead) {
 			isDead = true;
-			Engine::GetInstance().audio->PlayFx(deathFxId);
+			Engine::GetInstance().audio->PlayFx(deathFxId, 0, 5.0f);
 
 			// Desactiva físicas para que no siga chocando ni se mueva
 			Engine::GetInstance().physics->DeletePhysBody(pbody);

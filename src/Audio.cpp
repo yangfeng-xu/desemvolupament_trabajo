@@ -217,6 +217,13 @@ bool Audio::PlayFx(int id, int repeat, float rate) {
         return false;
     }
 
+    if (rate != 1.0f) {
+        if (!SDL_SetAudioStreamFrequencyRatio(stream, rate)) { // Establecer la proporción de frecuencia
+            LOG("Audio: SDL_SetAudioStreamFrequencyRatio failed: %s", SDL_GetError());
+            // Si falla, se sigue con el tono normal (rate = 1.0f)
+        }
+    }
+
     // Queue sound 'repeat+1' times
     for (int i = 0; i <= repeat; ++i) {
         //if (!SDL_PutAudioStreamData(sfx_stream_, s.buf, s.len)) {
