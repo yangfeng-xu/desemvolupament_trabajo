@@ -28,6 +28,7 @@ public:
 	void SetPosition(Vector2D pos);
 	Vector2D GetPosition();
 	void SetEnemyType(EnemyType type);
+	SDL_FlipMode flipState = SDL_FLIP_NONE;
 
 private:
 	float pathfindingTimer = 0.0f;

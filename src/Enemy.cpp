@@ -245,12 +245,12 @@ void Enemy::Move() {
 		if (currentPos.getX() < targetPos.getX() - xTolerance) {
 			velocity.x = speed;
 			anims.SetCurrent("move");
-			// flipState = SDL_FLIP_NONE; 
+			flipState = SDL_FLIP_HORIZONTAL;
 		}
 		else if (currentPos.getX() > targetPos.getX() + xTolerance) {
 			velocity.x = -speed;
 			anims.SetCurrent("move");
-			// flipState = SDL_FLIP_HORIZONTAL;
+			flipState = SDL_FLIP_NONE;
 		}
 
 	}
@@ -311,13 +311,8 @@ void Enemy::Draw(float dt) {
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
 	// Update render position using your PhysBody helper
-	/*int x, y;
 
-	pbody->GetPosition(x, y);
-	position.setX((float)x);
-	position.setY((float)y);*/
-
-	if (pbody != nullptr) {
+   if (pbody != nullptr) {
 		int x, y;
 		pbody->GetPosition(x, y);
 		position.setX((float)x);
@@ -330,8 +325,8 @@ void Enemy::Draw(float dt) {
 		pathfinding->DrawPath();
 	}
 	//Draw the player using the texture and the current animation frame
-	/*Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame);*/
-	Engine::GetInstance().render->DrawTexture(texture, (int)position.getX() - texW / 2, (int)position.getY() - texH / 2, &animFrame);
+
+	Engine::GetInstance().render->DrawTexture(texture, (int)position.getX() - texW / 2, (int)position.getY() - texH / 2, &animFrame,1.0f,0.0f,INT_MAX,INT_MAX,flipState);
 
 }
 
