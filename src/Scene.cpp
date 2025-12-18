@@ -12,7 +12,7 @@
 #include "Map.h"
 #include "Item.h"
 #include "Enemy.h"
-
+#include "UIManager.h"
 Scene::Scene() : Module()
 {
 	name = "scene";
@@ -36,6 +36,10 @@ bool Scene::Awake()
 	std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
 	item->startPosition = Vector2D(200, 672);
 
+	// L16: TODO 2: Instantiate a new GuiControlButton in the Scene
+	uiBt1 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, std::string("Start").c_str(), { 0,0,100,20 }, this));
+	uiBt2 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 2, std::string("Setting").c_str(), { 0,50,100,20 }, this));
+	
 	return ret;
 }
 
@@ -206,4 +210,17 @@ bool Scene::CleanUp()
 Vector2D Scene::GetPlayerPosition()
 {
 	return player->GetPosition();
+}
+
+bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
+{
+	// L16: TODO 5: Implement the OnGuiMouseClickEvent method
+	/*LOG("Click:%d",uiElement->id);*/
+	if (uiElement->id == 1) {
+		LOG("Start game");
+	}
+	if (uiElement->id == 2) {
+		LOG("Go to settings");
+	}
+	return true;
 }

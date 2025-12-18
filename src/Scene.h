@@ -2,7 +2,7 @@
 
 #include "Module.h"
 #include "Player.h"
-
+#include "UIButton.h"
 struct SDL_Texture;
 
 class Scene : public Module
@@ -41,6 +41,7 @@ public:
 	std::string GetTilePosDebug() {
 		return tilePosDebug;
 	}
+	bool OnUIMouseClickEvent(UIElement* uiElement);
 private:
 
 	//L03: TODO 3b: Declare a Player attribute
@@ -51,4 +52,7 @@ private:
 	bool once = false;
 	float reloadCooldown = 0.0f;
 	SDL_Texture* helpMenuTexture = nullptr;
+	// L16: TODO 2: Declare a UIButton 
+	std::shared_ptr<UIButton>uiBt1;
+	std::shared_ptr<UIButton>uiBt2;
 };
