@@ -61,6 +61,7 @@ bool Render::Awake()
 	}
 
 	TTF_Init();
+	font = TTF_OpenFont("Assets/Fonts/arial.ttf", 25);
 	return ret;
 }
 
