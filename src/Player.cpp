@@ -176,7 +176,7 @@ bool Player::Update(float dt)
 		GetPhysicsValues();
 		Move();
 
-		// Solo salta si NO está en God Mode
+		// Solo salta si NO est?en God Mode
 		if (!isGodMode) {
 			Jump();
 		}
@@ -192,7 +192,7 @@ bool Player::Update(float dt)
 
 		//comprovamos si el player esta fuera de la tamaño de la mapa, es dacir se cae al hueco donde no es plataforma, si lo es player se muere
 		float mapBottom = mapSize.getY();
-		// Solo muere por caída si NO está en God Mode
+		// Solo muere por caída si NO est?en God Mode
 		if (!isGodMode && position.getY() > mapBottom + (texH)) {
 			LOG("player fell off the map");
 			Die();
@@ -207,7 +207,7 @@ void Player::GetPhysicsValues() {
 	// Read current velocity
 	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 
-	// Si está en God Mode, resetea ambas velocidades para un control total del vuelo
+	// Si est?en God Mode, resetea ambas velocidades para un control total del vuelo
 	if (isGodMode) {
 		velocity = { 0.0f, 0.0f };
 	}
@@ -263,7 +263,7 @@ void Player::Move() {
 }
 
 void Player::Jump() {
-	// Si está en God Mode, no puede saltar
+	// Si est?en God Mode, no puede saltar
 	if (isGodMode) return;
 
 	// This function can be used for more complex jump logic if needed
@@ -276,7 +276,7 @@ void Player::Jump() {
 }
 
 void Player::ApplyPhysics() {
-	// Preserve vertical speed while jumping (solo aplica si NO está en God Mode, en God Mode ya se calcula en Move())
+	// Preserve vertical speed while jumping (solo aplica si NO est?en God Mode, en God Mode ya se calcula en Move())
 	if (isJumping == true && !isGodMode) {
 		velocity.y = Engine::GetInstance().physics->GetYVelocity(pbody);
 	}
@@ -306,7 +306,7 @@ bool Player::CleanUp()
 
 void Player::Die()
 {
-	// Invencibilidad: no muere si ya está muerto o si está en God Mode
+	// Invencibilidad: no muere si ya est?muerto o si est?en God Mode
 	if (IsDead || isGodMode) return;
 
 	LOG("Player Died!");

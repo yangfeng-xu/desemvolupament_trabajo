@@ -5,6 +5,14 @@
 #include "UIButton.h"
 struct SDL_Texture;
 
+enum class SceneID
+{
+	INTRO_SCR,
+	MAIN_MENU,
+	LEVEL_1,
+	LEVEL_2
+
+};
 class Scene : public Module
 {
 public:
@@ -42,6 +50,26 @@ public:
 		return tilePosDebug;
 	}
 	bool OnUIMouseClickEvent(UIElement* uiElement);
+
+	// L17 TODO 2: Define functions to handle scene changes
+	void LoadScene(SceneID newScene);
+	void UnloadCurrentScene();
+	void ChangeScene(SceneID newScene);
+private:
+	// L17 TODO 3: Define specific function for main menu scene: Load, Unload, Handle UI events
+	void LoadMainMenu();
+	void UnloadMainMenu();
+	void UpdateMainMenu(float dt);
+	void HandleMainMenuUIVebets(UIElement* uiLement);
+	// L17 TODO 4: Define specific functions for level1 scene: Load, Unload, Update, PostUpdate
+	void LoadLevel1();
+	void UnloadLevel1();
+	void UpdateLevel1(float dt);
+	void PostUpdateLevel1();
+	// L17 TODO 5: Define specific functions for level2 scene: Load, Unload, Update
+	void LoadLevel2();
+	void UnloadLevel2();
+	void UpdateLevel2(float dt);
 private:
 
 	//L03: TODO 3b: Declare a Player attribute
@@ -55,4 +83,7 @@ private:
 	// L16: TODO 2: Declare a UIButton 
 	std::shared_ptr<UIButton>uiBt1;
 	std::shared_ptr<UIButton>uiBt2;
+
+	// L17 TODO 1: Current scene attribute with initial value
+	SceneID currentScene = SceneID::MAIN_MENU;
 };

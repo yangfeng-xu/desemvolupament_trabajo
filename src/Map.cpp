@@ -330,6 +330,7 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
                     if (player == NULL) {
                         player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
                         player->position = Vector2D(x, y);
+                        player->Start();//L17
                     }
                     else {
                         player->SetPosition(Vector2D(x, y));
@@ -352,7 +353,7 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
                         enemy->SetEnemyType(EnemyType::GROUND);
                         LOG("Created Ground Enemy at x:%.2f y:%.2f", x, y);
                     }
-                    else if (name == "EnemyFlying") { // Asumiendo que llamarás así al otro
+                    else if (name == "EnemyFlying") { // Asumiendo que llamarás as?al otro
                         enemy->SetEnemyType(EnemyType::FLYING);
                         LOG("Created Flying Enemy at x:%.2f y:%.2f", x, y);
                     }
