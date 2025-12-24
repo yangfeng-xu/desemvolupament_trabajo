@@ -32,14 +32,15 @@ bool Scene::Awake()
 
 	//L04: TODO 3b: Instantiate the player using the entity manager
 
-	//L08: TODO 4: Create a new item using the entity manager and set the position to (200, 672) to test
-	std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
-	item->startPosition = Vector2D(200, 672);
+	////L08: TODO 4: Create a new item using the entity manager and set the position to (200, 672) to test
+	//std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
+	//item->startPosition = Vector2D(200, 672);
 
-	// L16: TODO 2: Instantiate a new GuiControlButton in the Scene
-	uiBt1 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, std::string("Start").c_str(), { 0,0,100,20 }, this));
-	uiBt2 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 2, std::string("Setting").c_str(), { 0,50,100,20 }, this));
+	//// L16: TODO 2: Instantiate a new GuiControlButton in the Scene
+	//uiBt1 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, std::string("Start").c_str(), { 0,0,100,20 }, this));
+	//uiBt2 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 2, std::string("Setting").c_str(), { 0,50,100,20 }, this));
 	
+	LoadScene(currentScene);
 	return ret;
 }
 
@@ -176,6 +177,8 @@ bool Scene::PostUpdate()
 				INT_MAX, // pivotX 
 				INT_MAX  // pivotY 
 			);
+
+			if (currentScene == SceneID::LEVEL_1) PostUpdateLevel1();
 		}
 
 		//Dibuja un borde blanco.
@@ -377,6 +380,13 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 
 	saveFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/autosave.wav");
 
+
+	//// L16: TODO 2: Instantiate a new GuiControlButton in the Scene
+	uiBt1 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, std::string("Start").c_str(), { 0,0,100,20 }, this));
+	uiBt2 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 2, std::string("Setting").c_str(), { 0,50,100,20 }, this));
+
+
+
 	//L08: TODO 4: Create a new item using the entity manager and set the position to (200, 672) to test
 	std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
 	item->position = Vector2D(200, 672);
@@ -391,6 +401,7 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 	//uiBt = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "MyButton", btPos, this));
 }
 void Scene::UnloadLevel1() {//limpia la mapa y entity
+	Engine::GetInstance().uiManager->CleanUp();
 	player.reset();//eliminar player para verificar que todo esta eliminado//opcional
 	Engine::GetInstance().map->CleanUp();
 	Engine::GetInstance().entityManager->CleanUp();
@@ -417,6 +428,7 @@ void Scene::PostUpdateLevel1() {//code especifico de level 1
 
 // L17 TODO 5: Define specific functions for level2 scene: Load, Unload, Update
 void Scene::LoadLevel2() {
+
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/that-8-bit-music-322062.wav");
 
 	//L06 TODO 3: Call the function to load the map. 
@@ -428,6 +440,7 @@ void Scene::LoadLevel2() {
 
 }
 void Scene::UnloadLevel2() {
+	Engine::GetInstance().uiManager->CleanUp();
 	player.reset();//eliminar player para verificar que todo esta eliminado//opcional
 	Engine::GetInstance().map->CleanUp();
 	Engine::GetInstance().entityManager->CleanUp();
@@ -437,3 +450,4 @@ void Scene::UpdateLevel2(float dt) {//cambiar a nivell 1
 		ChangeScene(SceneID::LEVEL_1);
 	}
 }
+
