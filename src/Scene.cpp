@@ -141,6 +141,14 @@ bool Scene::Update(float dt)
 // Called each loop iteration
 bool Scene::PostUpdate()
 {
+
+	if (sceneChangeRequested)
+	{
+		UnloadCurrentScene();
+		currentScene = nextScene;
+		LoadScene(currentScene);
+		sceneChangeRequested = false;
+	}
 	bool ret = true;
 	//L15 TODO 3: Call the function to load entities from the map
 	//Engine::GetInstance().map->LoadEntities(player);
@@ -331,9 +339,11 @@ void Scene::UnloadCurrentScene() {
 	}
 }
 void Scene::ChangeScene(SceneID newScene) {
-	UnloadCurrentScene();
-	currentScene = newScene;
-	LoadScene(currentScene);
+	/*UnloadCurrentScene();*/
+	sceneChangeRequested = true;
+	nextScene = newScene;
+	/*currentScene = newScene;*/
+	/*LoadScene(currentScene);*/
 }
 
 // *********************************************

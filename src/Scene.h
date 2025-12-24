@@ -85,5 +85,7 @@ private:
 	std::shared_ptr<UIButton>uiBt2;
 
 	// L17 TODO 1: Current scene attribute with initial value
+	bool sceneChangeRequested = false;
+	SceneID nextScene = SceneID::MAIN_MENU;
 	SceneID currentScene = SceneID::MAIN_MENU;
 };
