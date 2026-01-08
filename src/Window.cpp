@@ -98,3 +98,10 @@ int Window::GetScale() const
 {
 	return scale;
 }
+
+void Window::ToggleFullsreen() {
+	Uint32 flags = SDL_GetWindowFlags(window);
+	bool isFullscreen = flags & SDL_WINDOW_FULLSCREEN;
+	SDL_SetWindowFullscreen(window, !isFullscreen);
+
+}

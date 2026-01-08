@@ -13,6 +13,7 @@
 #include "Item.h"
 #include "Enemy.h"
 #include "UIManager.h"
+#include "UIToggle.h"
 Scene::Scene() : Module()
 {
 	name = "scene";
@@ -275,6 +276,13 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 	if (uiElement->id == 2) {
 		LOG("Go to settings");
 	}
+	// ?? ID ???????? ?? Toggle ID (?? 100)
+	if (uiElement->id == 100)
+	{
+		// ???????????
+		Engine::GetInstance().window->ToggleFullsreen();
+		LOG("Toggled Fullscreen Mode");
+	}
 
 	switch (currentScene) {
 	case SceneID::INTRO_SCR:
@@ -394,7 +402,8 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 	//// L16: TODO 2: Instantiate a new GuiControlButton in the Scene
 	uiBt1 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, std::string("Start").c_str(), { 0,0,100,20 }, this));
 	uiBt2 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 2, std::string("Setting").c_str(), { 0,50,100,20 }, this));
-
+	//full sreen
+	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::TOGGLE, 100, "FullScreen", { 10, 10, 100, 30 }, this);
 
 
 	//L08: TODO 4: Create a new item using the entity manager and set the position to (200, 672) to test

@@ -1,5 +1,6 @@
 #include "UIManager.h"
 #include "UIButton.h"
+#include "UIToggle.h"
 #include "Engine.h"
 #include "Textures.h"
 #include "Audio.h"
@@ -26,6 +27,7 @@ std::shared_ptr<UIElement> UIManager::CreateUIElement(UIElementType type, int id
 		uiElement = std::make_shared<UIButton>(id, bounds, text);
 		break;
 	case UIElementType::TOGGLE:
+		uiElement = std::make_shared<UIToggle>(id,bounds,text,false);
 		break;
 	case UIElementType::CHECKBOX:
 		break;
