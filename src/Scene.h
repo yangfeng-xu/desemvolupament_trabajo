@@ -89,4 +89,12 @@ private:
 	bool sceneChangeRequested = false;
 	SceneID nextScene = SceneID::MAIN_MENU;
 	SceneID currentScene = SceneID::MAIN_MENU;
+
+	//timer
+	float levelTimer = 0.0f;
+	bool isGameOver = false;
+
+	const int RESUME_BTN_ID = 101;
+	const int EXIT_BTN_ID = 102;
+
 };

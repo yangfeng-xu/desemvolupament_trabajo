@@ -195,28 +195,28 @@ bool Scene::PostUpdate()
 
 		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)//para salir el juego
 			ret = false;
-		switch (currentScene) {
-
-		case SceneID::INTRO_SCR:
-			//loadIntroScren();
-			break;
-
-		case SceneID::MAIN_MENU:
-			break;
-		case SceneID::LEVEL_1:
-			PostUpdateLevel1();
-			break;
-		case SceneID::LEVEL_2:
-			break;
-		default:
-			break;
-		}
+	
 
 
 
 
 	}
-	
+	switch (currentScene) {
+
+	case SceneID::INTRO_SCR:
+		//loadIntroScren();
+		break;
+
+	case SceneID::MAIN_MENU:
+		break;
+	case SceneID::LEVEL_1:
+		PostUpdateLevel1();
+		break;
+	case SceneID::LEVEL_2:
+		break;
+	default:
+		break;
+	}
 
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
 
@@ -283,7 +283,26 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 		Engine::GetInstance().window->ToggleFullsreen();
 		LOG("Toggled Fullscreen Mode");
 	}
+	// ????? Level 1 ???????
+	if (currentScene == SceneID::LEVEL_1 && isGameOver) {
 
+		if (uiElement->id == RESUME_BTN_ID) {
+			// ???????????????
+			LOG("Restarting Level 1...");
+
+			// ?????? UI (?????????)
+			Engine::GetInstance().uiManager->CleanUp();
+
+			// ???? Level 1
+			LoadLevel1();
+			// ???? ChangeScene(SceneID::LEVEL_1); ????
+		}
+		else if (uiElement->id == EXIT_BTN_ID) {
+			// ?????????
+			LOG("Exiting Game...");
+			return false; // ? Engine ?????? false ?????????
+		}
+	}
 	switch (currentScene) {
 	case SceneID::INTRO_SCR:
 		//loadIntroScren();
@@ -418,6 +437,9 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 	//// L16: TODO 2: Instantiate a new GuiControlButton in the Scene
 	//SDL_Rect btPos = { 520, 350, 120,20 };
 	//uiBt = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "MyButton", btPos, this));
+	//timer
+	levelTimer = 60.0f * 1000.0f;
+	isGameOver = false;
 }
 void Scene::UnloadLevel1() {//limpia la mapa y entity
 	Engine::GetInstance().uiManager->CleanUp();
@@ -429,6 +451,40 @@ void Scene::UpdateLevel1(float dt) {//para poder cambiar la escena a nivell 2
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN) {
 		ChangeScene(SceneID::LEVEL_2);
 	}
+	if (!isGameOver) {
+		levelTimer -= dt;
+		if (levelTimer <= 0.0f) {
+			levelTimer = 0.0f;
+			isGameOver = true;
+			LOG("Game Over!!! Time's Up");
+
+			int w;
+			int h;
+			Engine::GetInstance().window->GetWindowSize(w, h);
+			int centerX = w / 2;
+			int centerY = h / 2;
+
+			// 2. ??????? UI (???????)
+			// Engine::GetInstance().uiManager->CleanUp();
+
+			Engine::GetInstance().uiManager->CreateUIElement(
+				UIElementType::BUTTON,
+				RESUME_BTN_ID,
+				"RESTART",
+				{ centerX - 70, centerY - 50, 140, 40 },
+				this
+			);
+
+			// 4. ?? "??" ?? (ID: 101)
+			Engine::GetInstance().uiManager->CreateUIElement(
+				UIElementType::BUTTON,
+				EXIT_BTN_ID,
+				"EXIT",
+				{ centerX - 70, centerY + 10, 140, 40 },
+				this
+			);
+		}
+	}
 }
 void Scene::PostUpdateLevel1() {//code especifico de level 1
 	//L15 TODO 3: Call the function to load entities from the map
@@ -439,6 +495,22 @@ void Scene::PostUpdateLevel1() {//code especifico de level 1
 	//L15 TODO 4: Call the function to save entities from the map
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
 		Engine::GetInstance().map->SaveEntities(player);
+	}
+
+	// ???????
+	int secondsLeft = (int)(levelTimer / 1000.0f);
+
+	// ?????
+	std::string timeText = "Time: " + std::to_string(secondsLeft);
+
+	// ?????????? (?? x=10, y=10)
+	// ????? {255, 255, 255, 255}
+	// ???? DrawText ????
+	Engine::GetInstance().render->DrawText(timeText.c_str(), 50, 50, 100, 30, { 255, 255, 255, 255 });
+
+	// ????????????????? "GAME OVER" ???
+	if (isGameOver) {
+		Engine::GetInstance().render->DrawText("GAME OVER", 550, 200, 200, 50, { 255, 0, 0, 255 });
 	}
 }
 // *********************************************
