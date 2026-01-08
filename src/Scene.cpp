@@ -417,6 +417,9 @@ void Scene::HandleMainMenuUIVebets(UIElement* uiLement) {
 // L17 TODO 4: Define specific functions for level1 scene: Load, Unload, Update, PostUpdate
 void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Level.wav");
+
+	Engine::GetInstance().render->camera.x = 0;
+	Engine::GetInstance().render->camera.y = 0;
 	isGameOver = false;
 	gameOverShown = false;
 	//L06 TODO 3: Call the function to load the map. 
@@ -461,6 +464,10 @@ void Scene::UnloadLevel1() {//limpia la mapa y entity
 	player.reset();//eliminar player para verificar que todo esta eliminado//opcional
 	Engine::GetInstance().entityManager->CleanUp();
 	Engine::GetInstance().map->CleanUp();
+
+	isGameOver = false;
+	gameOverShown = false;
+	levelTimer = 60.0f * 1000.0f; // ????
 	
 }
 void Scene::UpdateLevel1(float dt) {//para poder cambiar la escena a nivell 2
@@ -535,7 +542,8 @@ void Scene::PostUpdateLevel1() {//code especifico de level 1
 void Scene::LoadLevel2() {
 
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/that-8-bit-music-322062.wav");
-
+	Engine::GetInstance().render->camera.x = 0;
+	Engine::GetInstance().render->camera.y = 0;
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplateLevel2.tmx");
 

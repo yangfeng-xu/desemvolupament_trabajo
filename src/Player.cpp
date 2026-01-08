@@ -341,6 +341,10 @@ bool Player::CleanUp()
 	LOG("Cleanup player");
 	Engine::GetInstance().textures->UnLoad(texture);
 	Engine::GetInstance().textures->UnLoad(heartTexture);
+	if (pbody != nullptr) {
+		Engine::GetInstance().physics->DeletePhysBody(pbody);
+		pbody = nullptr; // ??????
+	}
 	return true;
 }
 

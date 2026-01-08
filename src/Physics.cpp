@@ -281,6 +281,14 @@ void Physics::DeletePhysBody(PhysBody* physBody)
     // 1. Seguridad básica
     if (physBody == nullptr) return;
 
+    for (auto it = bodiesToDelete.begin(); it != bodiesToDelete.end(); ) {
+        if (*it == physBody) {
+            it = bodiesToDelete.erase(it); // ????????????????
+        }
+        else {
+            ++it;
+        }
+    }
     // 2. Si el cuerpo de Box2D es válido, lo destruimos
     if (!B2_IS_NULL(physBody->body) && b2Body_IsValid(physBody->body))
     {
