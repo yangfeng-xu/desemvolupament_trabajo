@@ -269,6 +269,9 @@ bool Scene::CleanUp()
 }
 Vector2D Scene::GetPlayerPosition()
 {
+	if (player == nullptr) {
+		return Vector2D(0, 0);
+	}
 	return player->GetPosition();
 }
 
@@ -414,9 +417,13 @@ void Scene::HandleMainMenuUIVebets(UIElement* uiLement) {
 // L17 TODO 4: Define specific functions for level1 scene: Load, Unload, Update, PostUpdate
 void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Level.wav");
-
+	isGameOver = false;
+	gameOverShown = false;
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
+
+
+
 
 	Engine::GetInstance().map->LoadEntities(player);
 	// Texture to highligh mouse position 
@@ -447,7 +454,7 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 	//uiBt = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "MyButton", btPos, this));
 	//timer
 	levelTimer = 60.0f * 1000.0f;
-	isGameOver = false;
+	
 }
 void Scene::UnloadLevel1() {//limpia la mapa y entity
 	Engine::GetInstance().uiManager->CleanUp();
@@ -465,33 +472,31 @@ void Scene::UpdateLevel1(float dt) {//para poder cambiar la escena a nivell 2
 			levelTimer = 0.0f;
 			isGameOver = true;
 			LOG("Game Over!!! Time's Up");
-
-			int w;
-			int h;
-			Engine::GetInstance().window->GetWindowSize(w, h);
-			int centerX = w / 2;
-			int centerY = h / 2;
-
-			// 2. ??????? UI (???????)
-			// Engine::GetInstance().uiManager->CleanUp();
-
-			Engine::GetInstance().uiManager->CreateUIElement(
-				UIElementType::BUTTON,
-				RESUME_BTN_ID,
-				"RESTART",
-				{ centerX - 70, centerY - 50, 140, 40 },
-				this
-			);
-
-			// 4. ?? "??" ?? (ID: 101)
-			Engine::GetInstance().uiManager->CreateUIElement(
-				UIElementType::BUTTON,
-				EXIT_BTN_ID,
-				"EXIT",
-				{ centerX - 70, centerY + 10, 140, 40 },
-				this
-			);
 		}
+	}
+	// ??? isGameOver ?????????????
+	if (isGameOver && !gameOverShown) {
+		int w, h;
+		Engine::GetInstance().window->GetWindowSize(w, h);
+		int centerX = w / 2;
+		int centerY = h / 2;
+
+		Engine::GetInstance().uiManager->CreateUIElement(
+			UIElementType::BUTTON,
+			RESUME_BTN_ID,
+			"RESTART",
+			{ centerX - 70, centerY - 50, 140, 40 },
+			this
+		);
+
+		Engine::GetInstance().uiManager->CreateUIElement(
+			UIElementType::BUTTON,
+			EXIT_BTN_ID,
+			"EXIT",
+			{ centerX - 70, centerY + 10, 140, 40 },
+			this
+		);
+		gameOverShown = true;
 	}
 }
 void Scene::PostUpdateLevel1() {//code especifico de level 1
