@@ -144,4 +144,5 @@ private:
     pugi::xml_document mapFileXML;
     SDL_Texture* savepointTexture = nullptr; // Textura
     Vector2D savepointDrawPosition = { -1.0f, -1.0f };
+    std::list<PhysBody*> mapBodies;
 };

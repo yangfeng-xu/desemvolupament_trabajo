@@ -459,8 +459,9 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 void Scene::UnloadLevel1() {//limpia la mapa y entity
 	Engine::GetInstance().uiManager->CleanUp();
 	player.reset();//eliminar player para verificar que todo esta eliminado//opcional
-	Engine::GetInstance().map->CleanUp();
 	Engine::GetInstance().entityManager->CleanUp();
+	Engine::GetInstance().map->CleanUp();
+	
 }
 void Scene::UpdateLevel1(float dt) {//para poder cambiar la escena a nivell 2
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN) {
@@ -546,8 +547,9 @@ void Scene::LoadLevel2() {
 void Scene::UnloadLevel2() {
 	Engine::GetInstance().uiManager->CleanUp();
 	player.reset();//eliminar player para verificar que todo esta eliminado//opcional
-	Engine::GetInstance().map->CleanUp();
 	Engine::GetInstance().entityManager->CleanUp();
+	Engine::GetInstance().map->CleanUp();
+	
 }
 void Scene::UpdateLevel2(float dt) {//cambiar a nivell 1
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) {
