@@ -96,5 +96,6 @@ private:
 
 	const int RESUME_BTN_ID = 101;
 	const int EXIT_BTN_ID = 102;
+	bool exitGameRequested = false;
 
 };

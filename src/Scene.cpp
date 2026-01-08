@@ -149,6 +149,12 @@ bool Scene::PostUpdate()
 		currentScene = nextScene;
 		LoadScene(currentScene);
 		sceneChangeRequested = false;
+		isGameOver = false;
+		exitGameRequested = false;
+	}
+
+	if (exitGameRequested) {
+		return false; // ???? false ??? Engine ???????????????
 	}
 	bool ret = true;
 	//L15 TODO 3: Call the function to load entities from the map
@@ -291,16 +297,18 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 			LOG("Restarting Level 1...");
 
 			// ?????? UI (?????????)
-			Engine::GetInstance().uiManager->CleanUp();
+			/*Engine::GetInstance().uiManager->CleanUp();*/
 
 			// ???? Level 1
-			LoadLevel1();
+			ChangeScene(SceneID::LEVEL_1);
+
 			// ???? ChangeScene(SceneID::LEVEL_1); ????
 		}
 		else if (uiElement->id == EXIT_BTN_ID) {
 			// ?????????
 			LOG("Exiting Game...");
-			return false; // ? Engine ?????? false ?????????
+			exitGameRequested = true;
+		
 		}
 	}
 	switch (currentScene) {
