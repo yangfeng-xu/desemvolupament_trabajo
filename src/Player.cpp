@@ -39,6 +39,12 @@ bool Player::Start() {
 	std::unordered_map<int, std::string>animNames = { {13,"death"},{21,"run"},{39,"idle"},{156,"jump"} };
 	anims.LoadFromTSX("Assets/Textures/player_sprite2.tsx", animNames);
 	anims.SetCurrent("idle");
+
+	//heart system
+	heartTexture = Engine::GetInstance().textures->Load("Assets/Textures/heart.png");
+	lives = maxLives;
+	invulnerabilityTimer = 0.0f;
+
 	// L08 TODO 5: Add physics to the player - initialize physics body
 
 	startPosition = position;
@@ -65,6 +71,9 @@ bool Player::Start() {
 bool Player::Update(float dt)
 {
 	anims.Update(dt);
+	if (invulnerabilityTimer > 0.0f) {
+		invulnerabilityTimer -= dt;
+	}
 
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN) {
 		LOG("Debug: Returning to Start Position (F9)");
@@ -293,14 +302,45 @@ void Player::Draw() {
 	position.setX((float)x);
 	position.setY((float)y);
 
-	const SDL_Rect& animFrame = anims.GetCurrentFrame();
-	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame, 1.0f, 0.0, INT_MAX, INT_MAX, flipState);
+	bool shouldDraw = true; // ??????
+	if (invulnerabilityTimer > 0.0f) {
+		// ?????????????
+		// ?100ms????????100????????????
+		if (((int)invulnerabilityTimer / 100) % 2 == 0) {
+			shouldDraw = false;
+		}
+	}
+
+	if (shouldDraw) {
+		const SDL_Rect& animFrame = anims.GetCurrentFrame();
+		Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame, 1.0f, 0.0, INT_MAX, INT_MAX, flipState);
+	}
+	// ==========================================================
+	// heart UI
+	if (heartTexture != nullptr) {
+		for (int i = 0; i < lives; ++i) {
+			float heartScale = 0.1f;
+			int spacing = 25;
+			Engine::GetInstance().render->DrawTexture(
+				heartTexture,
+				20 + i * spacing,  // X
+				20,           // Y 
+				nullptr,      // 
+				0.0f,          // speed = 0 
+				0.0,
+				INT_MAX, INT_MAX,
+				SDL_FLIP_NONE,
+				heartScale
+			);
+		}
+	}
 }
 
 bool Player::CleanUp()
 {
 	LOG("Cleanup player");
 	Engine::GetInstance().textures->UnLoad(texture);
+	Engine::GetInstance().textures->UnLoad(heartTexture);
 	return true;
 }
 
@@ -311,10 +351,14 @@ void Player::Die()
 
 	LOG("Player Died!");
 
+
 	// 1. Obtén el cuerpo de físicas
 	IsDead = true;
 	Engine::GetInstance().audio->PlayFx(deathFxId);
 	anims.SetCurrent("death");
+
+	lives = maxLives;
+	invulnerabilityTimer = 0.0f;
 
 	b2BodyId body = pbody->body;
 	// 2. Resetea la velocidad a cero
@@ -358,10 +402,40 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		savePosition.setY((float)spY - texH / 2); // Usando texW/2 como ajuste de píxeles para el tamaño del player.
 		LOG("Collision SAVEPOINT. Position updated to (%.2f, %.2f)", savePosition.getX(), savePosition.getY());
 		Engine::GetInstance().audio->PlayFx(Engine::GetInstance().scene->saveFxId, 0, 10.0f);
+
+		if (lives < maxLives) {
+			lives++;
+			LOG("Life restored!!! Current lives: %d", lives);
+			//audios de recuperar la vida
+
+		}
+
+
 		break;
 	case ColliderType::ENEMY:
 		LOG("Collision ENEMY");
-		Die(); // Llama a la función de muerte del jugador
+		if (invulnerabilityTimer <= 0.0f) {
+			lives--;
+			if (lives>0) {
+				invulnerabilityTimer = 2000.0f;
+				LOG("Player HIT!!! Lives remaining %d",lives);
+				// ?????? (???? deathFxId ???????? hurtFxId)
+				Engine::GetInstance().audio->PlayFx(deathFxId);
+
+				b2Vec2 velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
+
+				float knockDir = (velocity.x > 0) ? -1.0f : 1.0f;
+				Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, knockDir * 1.5f, -2.0f, true);
+
+			}
+			else {
+				Die();
+			}
+		}
+
+
+
+		//Die(); // Llama a la función de muerte del jugador
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");

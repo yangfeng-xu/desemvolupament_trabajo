@@ -120,7 +120,7 @@ void Render::ResetViewPort()
 }
 
 // Blit to screen
-bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section, float speed, double angle, int pivotX, int pivotY, SDL_FlipMode flip) const
+bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section, float speed, double angle, int pivotX, int pivotY, SDL_FlipMode flip,float texScale) const
 {
 	bool ret = true;
 	int scale = Engine::GetInstance().window->GetScale();
@@ -132,8 +132,8 @@ bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* sec
 
 	if (section != NULL)
 	{
-		rect.w = (float)(section->w * scale);
-		rect.h = (float)(section->h * scale);
+		rect.w = (float)(section->w * scale*texScale);
+		rect.h = (float)(section->h * scale*texScale);
 	}
 	else
 	{
@@ -143,8 +143,8 @@ bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* sec
 			LOG("SDL_GetTextureSize failed: %s", SDL_GetError());
 			return false;
 		}
-		rect.w = tw * scale;
-		rect.h = th * scale;
+		rect.w = tw * scale*texScale;
+		rect.h = th * scale*texScale;
 	}
 
 	const SDL_FRect* src = NULL;
