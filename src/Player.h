@@ -30,6 +30,7 @@ public:
 	void SetPosition(Vector2D pos);
 
 	void Die();
+	int GetLives() const { return lives; }
 
 private:
 
@@ -40,6 +41,11 @@ private:
 	void Draw();
 
 public:
+	//Live system
+	int lives = 3;
+	const int maxLives = 3;
+	SDL_Texture* heartTexture = nullptr;
+
 
 	//Declare player parameters
 	float speed = 4.0f;
@@ -68,5 +74,6 @@ private:
 	bool IsDead;
 	float shootCooldown = 0.0f;
 	SDL_FlipMode flipState = SDL_FLIP_NONE;//FlipMode para invertir imagen
+	float invulnerabilityTimer = 0.0f;
 
 };
