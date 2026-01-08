@@ -42,6 +42,9 @@ bool Render::Awake()
 	}
 	else
 	{
+		int w = Engine::GetInstance().window->width;
+		int h = Engine::GetInstance().window->height;
+		SDL_SetRenderLogicalPresentation(renderer, w, h, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 		if (configParameters.child("vsync").attribute("value").as_bool())
 		{
 			if (!SDL_SetRenderVSync(renderer, 1))
