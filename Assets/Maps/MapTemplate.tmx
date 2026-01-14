@@ -74,6 +74,9 @@
  <tileset firstgid="571" name="resized-image (2)" tilewidth="32" tileheight="32" tilecount="1" columns="1">
   <image source="../Textures/resized-image (2).png" width="32" height="32"/>
  </tileset>
+ <tileset firstgid="572" name="resized-image (3)" tilewidth="32" tileheight="32" tilecount="4" columns="2">
+  <image source="../Textures/resized-image (3).png" width="64" height="64"/>
+ </tileset>
  <layer id="6" name="Collition" width="64" height="24" visible="0">
   <properties>
    <property name="Draw" type="bool" value="false"/>
@@ -4961,6 +4964,8 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="572"/>
+   <tile gid="573"/>
    <tile/>
    <tile/>
    <tile/>
@@ -5023,10 +5028,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile gid="571"/>
-   <tile/>
+   <tile gid="574"/>
+   <tile gid="575"/>
    <tile/>
    <tile/>
    <tile/>
