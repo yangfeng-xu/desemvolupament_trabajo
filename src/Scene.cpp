@@ -1,4 +1,4 @@
-#include "Engine.h"
+﻿#include "Engine.h"
 #include "Input.h"
 #include "Textures.h"
 #include "Audio.h"
@@ -25,42 +25,19 @@ Scene::~Scene()
 }
 
 // Called before render is available
-//en awake si no creamos una capa llamando entities en el maptxt, decidimos el posici�n en aqui
+//en awake si no creamos una capa llamando entities en el maptxt, decidimos el posición en aqui
 bool Scene::Awake()
 {
 	LOG("Loading Scene");
 	bool ret = true;
-
-	//L04: TODO 3b: Instantiate the player using the entity manager
-
-	////L08: TODO 4: Create a new item using the entity manager and set the position to (200, 672) to test
-	//std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
-	//item->startPosition = Vector2D(200, 672);
-
-	//// L16: TODO 2: Instantiate a new GuiControlButton in the Scene
-	//uiBt1 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, std::string("Start").c_str(), { 0,0,100,20 }, this));
-	//uiBt2 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 2, std::string("Setting").c_str(), { 0,50,100,20 }, this));
-	
-	LoadScene(currentScene);
+	/*LoadScene(currentScene);*/
 	return ret;
 }
 
 // Called before the first frame
 bool Scene::Start()
 {
-
-	/*Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Level.wav");*/
-
-	//L06 TODO 3: Call the function to load the map. 
-	/*Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");*/
-
-	////L15 TODO 3: Call the function to load entities from the map
-	//Engine::GetInstance().map->LoadEntities(player);
-	//// Texture to highligh mouse position 
-	//mouseTileTex = Engine::GetInstance().textures->Load("Assets/Maps/MapMetadata.png");
-	//helpMenuTexture = Engine::GetInstance().textures->Load("Assets/Maps/menu.png");
-
-	//saveFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/autosave.wav");
+	LoadScene(currentScene);
 
 	return true;
 }
@@ -73,6 +50,10 @@ bool Scene::PreUpdate()
 		showHelpMenu = !showHelpMenu;
 		LOG("Help Menu: %s", showHelpMenu ? "SHOWING" : "HIDING");
 	}
+	//if (currentScene == SceneID::MAIN_MENU && mainMenuBackground != nullptr) {
+	//	// 记得 speed = 0.0f
+	//	Engine::GetInstance().render->DrawTexture(mainMenuBackground, 0, 0, nullptr, 0.0f);
+	//}
 	return true;
 }
 
@@ -85,39 +66,6 @@ bool Scene::Update(float dt)
 	if (reloadCooldown > 0.0f) {
 		reloadCooldown -= dt;
 	}
-	/*if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
-		Engine::GetInstance().render->camera.y -= (int)ceil(camSpeed * dt);
-
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
-		Engine::GetInstance().render->camera.y += (int)ceil(camSpeed * dt);
-
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
-		Engine::GetInstance().render->camera.x -= (int)ceil(camSpeed * dt);
-
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-		Engine::GetInstance().render.get()->camera.x += (int)ceil(camSpeed * dt);*/
-
-	////Get mouse position and obtain the map coordinate
-	//Vector2D mousePos = Engine::GetInstance().input->GetMousePosition();
-	//Vector2D mouseTile = Engine::GetInstance().map->WorldToMap((int)(mousePos.getX() - Engine::GetInstance().render->camera.x),
-	//	(int)(mousePos.getY() - Engine::GetInstance().render->camera.y));
-
-	////Render a texture where the mouse is over to highlight the tile, use the texture 'mouseTileTex'
-	//Vector2D highlightTile = Engine::GetInstance().map.get()->MapToWorld((int)mouseTile.getX(), (int)mouseTile.getY());
-	//SDL_Rect rect = { 0,0,Engine::GetInstance().map->GetTileWidth(),Engine::GetInstance().map->GetTileHeight() };
-	//Engine::GetInstance().render.get()->DrawTexture(mouseTileTex, (int)highlightTile.getX(), (int)highlightTile.getY(), &rect);
-
-	//// saves the tile pos for debugging purposes
-	//if (mouseTile.getX() >= 0 && mouseTile.getY() >= 0 || once) {
-	//	tilePosDebug = "[" + std::to_string((int)mouseTile.getX()) + "," + std::to_string((int)mouseTile.getY()) + "] ";
-	//	once = true;
-	//}
-
-	////If mouse button is pressed modify player position
-	//if (Engine::GetInstance().input.get()->GetMouseButtonDown(1) == KEY_DOWN) {
-	//	player->SetPosition(Vector2D(highlightTile.getX(), highlightTile.getY()));
-	//}
-
 	switch (currentScene) {
 	case SceneID::INTRO_SCR:
 		//loadIntroScren();
@@ -166,14 +114,14 @@ bool Scene::PostUpdate()
 		int windowWidth, windowHeight;
 		Engine::GetInstance().window->GetWindowSize(windowWidth, windowHeight);
 
-		// CALCULAR POSICI�N Y TAMA�O CENTRADO (2/3 de la pantalla)
+		// CALCULAR POSICIÓN Y TAMAÑO CENTRADO (2/3 de la pantalla)
 		int menuWidth = windowWidth * 2 / 3;
 		int menuHeight = windowHeight * 2 / 3;
 
 		int menuX = (windowWidth - menuWidth) / 2;
 		int menuY = (windowHeight - menuHeight) / 2;
 
-		//Dibuja un fondo oscuro para asegurar que el �rea est?definida.
+		//Dibuja un fondo oscuro para asegurar que el área est?definida.
 		SDL_Rect backgroundRect = { menuX, menuY, menuWidth, menuHeight };
 		Engine::GetInstance().render->DrawRectangle(backgroundRect, 0, 0, 0, 200, true, false);
 
@@ -181,13 +129,13 @@ bool Scene::PostUpdate()
 		if (helpMenuTexture != nullptr)
 		{
 			// Usamos las coordenadas de inicio del men?(menuX, menuY)
-			// speed = 0.0f asegura que la imagen no se mueva con el offset de la c�mara.
+			// speed = 0.0f asegura que la imagen no se mueva con el offset de la cámara.
 			Engine::GetInstance().render->DrawTexture(
 				helpMenuTexture,
 				menuX,
 				menuY,
 				nullptr, // section: Dibuja la textura completa
-				0.0f,    // speed: 0.0f (sin movimiento de c�mara)
+				0.0f,    // speed: 0.0f (sin movimiento de cámara)
 				0.0,     // angle
 				INT_MAX, // pivotX 
 				INT_MAX  // pivotY 
@@ -214,6 +162,11 @@ bool Scene::PostUpdate()
 		break;
 
 	case SceneID::MAIN_MENU:
+		if (mainMenuBackground != nullptr) {
+			// speed = 0.0f 确保背景固定在屏幕上
+			Engine::GetInstance().render->DrawTexture(mainMenuBackground, 0, 0, nullptr, 0.0f);
+		}
+		
 		break;
 	case SceneID::LEVEL_1:
 		PostUpdateLevel1();
@@ -225,9 +178,6 @@ bool Scene::PostUpdate()
 	}
 
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
-
-		
-		
 
 		// 2. Cargamos las entidades (esto crear?nuevas y mover?al Player)
 		Engine::GetInstance().map->LoadEntities(player);
@@ -391,10 +341,19 @@ void Scene::ChangeScene(SceneID newScene) {
 // L17 TODO 3: Define specific function for main menu scene: Load, Unload, Handle UI events
 void Scene::LoadMainMenu() {//cargar audio en aqui
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/retro-gaming-short-248416.wav");
+	Engine::GetInstance().render->camera.x = 0;
+	Engine::GetInstance().render->camera.y = 0;
+	mainMenuBackground = Engine::GetInstance().textures->Load("Assets/Textures/game_menu_vacio.png");
 	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "Start", { 520,350,120,20 }, this);
+
 }
 void Scene::UnloadMainMenu() {
 	Engine::GetInstance().uiManager->CleanUp();
+	if (mainMenuBackground != nullptr) {
+		Engine::GetInstance().textures->UnLoad(mainMenuBackground);
+		mainMenuBackground = nullptr;
+	}
+	
 }
 void Scene::UpdateMainMenu(float dt) {
 
