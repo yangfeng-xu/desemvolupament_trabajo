@@ -71,6 +71,9 @@
  <tileset firstgid="570" name="resized-star" tilewidth="32" tileheight="32" tilecount="1" columns="1">
   <image source="../Textures/resized-star.png" width="32" height="32"/>
  </tileset>
+ <tileset firstgid="571" name="resized-image (2)" tilewidth="32" tileheight="32" tilecount="1" columns="1">
+  <image source="../Textures/resized-image (2).png" width="32" height="32"/>
+ </tileset>
  <layer id="6" name="Collition" width="64" height="24" visible="0">
   <properties>
    <property name="Draw" type="bool" value="false"/>
@@ -5022,7 +5025,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="571"/>
    <tile/>
    <tile/>
    <tile/>
@@ -7813,9 +7816,6 @@
    <point/>
   </object>
   <object id="40" name="Save" type="Map" x="1296" y="734">
-   <point/>
-  </object>
-  <object id="41" name="Final" type="Map" x="1968" y="157.333">
    <point/>
   </object>
   <object id="42" name="EnemyFlying" type="Enemy" x="1968" y="309.333">
