@@ -1,4 +1,4 @@
-#include "Enemy.h"
+﻿#include "Enemy.h"
 #include "Engine.h"
 #include "Textures.h"
 #include "Audio.h"
@@ -120,31 +120,61 @@ void Enemy::PerformPathfinding(float dt) {
 	Vector2D playerPos = Engine::GetInstance().scene->GetPlayerPosition();
 	Vector2D playerTile = Engine::GetInstance().map->WorldToMap((int)playerPos.getX(), (int)playerPos.getY());
 
-	// 2. Obtener mi posici�n (Origen)
+	// 2. Obtener mi posición (Origen)
 	Vector2D myPos = GetPosition();
 	Vector2D myTile = Engine::GetInstance().map->WorldToMap((int)myPos.getX(), (int)myPos.getY());
 
 	float distance = myTile.distanceEuclidean(playerTile);
-	
-	if (distance < detectionRadius) {
-		// 3. Calcular el camino autom�ticamente
-// Usamos MANHATTAN como heur�stica por defecto
+
+	float verticalDist = abs(playerPos.getY() - myPos.getY());
+	bool targetTooHigh = false;
+	if (enemyType == EnemyType::GROUND) {
+		// 如果高度差大于 64 像素（根据你的图块大小调整，这里假设32x32）
+		if (verticalDist > 64.0f) {
+			targetTooHigh = true;
+		}
+	}
+//	if (distance < detectionRadius) {
+//		// 3. Calcular el camino automáticamente
+//// Usamos MANHATTAN como heurística por defecto
+//
+//		pathfindingTimer += dt;
+//		if (pathfindingTimer >= pathfindingInterval) {
+//			pathfinding->ComputeFullPathAStar(myTile, MANHATTAN);
+//			pathfindingTimer = 0.0f;
+//		}
+//		
+//	}
+//	else {
+//		pathfinding->pathTiles.clear();
+//		velocity.x = 0;
+//		if (enemyType == EnemyType::FLYING) {
+//			velocity.y = 0;
+//		}
+//
+//		// 3. Poner animación de Idle
+//		anims.SetCurrent("idle");
+//	}
+	// 修改判断条件：加入 && !targetTooHigh
+	if (distance < detectionRadius && !targetTooHigh) {
+		// 3. Calcular el camino automáticamente
+		// Usamos MANHATTAN como heurística por defecto
 
 		pathfindingTimer += dt;
 		if (pathfindingTimer >= pathfindingInterval) {
 			pathfinding->ComputeFullPathAStar(myTile, MANHATTAN);
 			pathfindingTimer = 0.0f;
 		}
-		
 	}
 	else {
+		// 目标太远 或者 目标太高 -> 停止移动，进入 Idle
 		pathfinding->pathTiles.clear();
 		velocity.x = 0;
 		if (enemyType == EnemyType::FLYING) {
 			velocity.y = 0;
 		}
 
-		// 3. Poner animaci�n de Idle
+		// 3. Poner animación de Idle
 		anims.SetCurrent("idle");
 	}
 
@@ -221,8 +251,8 @@ void Enemy::Move() {
 		targetPos.setY(targetPos.getY() + 16);
 
 		// --- TRUCO DE "LOOKAHEAD" PARA SALTOS ---
-		// Si el siguiente tile est� justo encima (salto vertical), miramos un paso m�s all�
-		// para ver si hay que avanzar horizontalmente TAMBI�N.
+		// Si el siguiente tile está justo encima (salto vertical), miramos un paso más allá
+		// para ver si hay que avanzar horizontalmente TAMBIÉN.
 		if (pathfinding->pathTiles.size() > 2) {
 			Vector2D currentTilePos = Engine::GetInstance().map->WorldToMap((int)GetPosition().getX(), (int)GetPosition().getY());
 
@@ -277,11 +307,11 @@ void Enemy::MoveFlying() {
 
 	Vector2D currentPos = GetPosition();
 
-	// 2. Calcular vector direcci�n (Destino - Origen)
+	// 2. Calcular vector dirección (Destino - Origen)
 	float dirX = targetPos.getX() - currentPos.getX();
 	float dirY = targetPos.getY() - currentPos.getY();
 
-	// 3. Normalizar (Teorema de Pit�goras)
+	// 3. Normalizar (Teorema de Pitágoras)
 	float length = sqrt(dirX * dirX + dirY * dirY);
 
 	if (length > 0) {
@@ -289,7 +319,7 @@ void Enemy::MoveFlying() {
 		velocity.x = (dirX / length) * speed;
 		velocity.y = (dirY / length) * speed;
 
-		// Animaci�n b�sica
+		// Animación básica
 		if (velocity.x > 0) anims.SetCurrent("fly-right"); // O usa flip
 		else anims.SetCurrent("fly-left");
 	}
@@ -334,7 +364,7 @@ bool Enemy::CleanUp()
 {
 	LOG("Cleanup enemy");
 
-	// 1. Borrar f�sica (ya lo ten�as)
+	// 1. Borrar física (ya lo tenías)
 	if (pbody != nullptr) {
 		Engine::GetInstance().physics->DeletePhysBody(pbody);
 		pbody = nullptr;
@@ -374,18 +404,18 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 			isDead = true;
 			Engine::GetInstance().audio->PlayFx(deathFxId, 0, 5.0f);
 
-			// Desactiva f�sicas para que no siga chocando ni se mueva
+			// Desactiva físicas para que no siga chocando ni se mueva
 			Engine::GetInstance().physics->DeletePhysBody(pbody);
 			pbody = nullptr;
 
-			// Reproducir animaci�n de muerte
-			// Seg�n tu c�digo actual, ya cargas "death" en el Start()
+			// Reproducir animación de muerte
+			// Según tu código actual, ya cargas "death" en el Start()
 			if (enemyType == EnemyType::FLYING) {
-				// El murci�lago no tiene animaci�n de muerte, lo destruimos ya.
+				// El murciélago no tiene animación de muerte, lo destruimos ya.
 				Engine::GetInstance().entityManager->DestroyEntity(shared_from_this());
 			}
 			else {
-				// El Slime s� tiene animaci�n "death", dejamos que se reproduzca.
+				// El Slime sí tiene animación "death", dejamos que se reproduzca.
 				anims.SetCurrent("death");
 			}
 		}
@@ -394,7 +424,7 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 		if (!isDead) {
 			isDead = true;
 
-			// Desactiva f�sicas
+			// Desactiva físicas
 			Engine::GetInstance().physics->DeletePhysBody(pbody);
 			pbody = nullptr;
 
