@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="94" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="16" nextobjectid="129">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="94" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="16" nextobjectid="162">
  <tileset firstgid="1" name="tmw_desert_spacing" tilewidth="32" tileheight="32" spacing="1" margin="1" tilecount="48" columns="8">
   <image source="tmw_desert_spacing.png" width="265" height="199"/>
   <wangsets>
@@ -11391,7 +11391,7 @@
   </data>
  </layer>
  <objectgroup id="13" name="Entities">
-  <object id="46" name="EnemyGround" type="Enemy" x="1508" y="370.667">
+  <object id="46" name="EnemyFlying" type="Enemy" x="1511" y="283.667">
    <point/>
   </object>
   <object id="48" name="EnemyGround" type="Enemy" x="1780" y="118.667">
@@ -11400,7 +11400,7 @@
   <object id="50" name="EnemyGround" type="Enemy" x="1512" y="664">
    <point/>
   </object>
-  <object id="51" name="EnemyGround" type="Enemy" x="1760" y="274.667">
+  <object id="51" name="EnemyGround" type="Enemy" x="1339" y="375.667">
    <point/>
   </object>
   <object id="52" name="EnemyGround" type="Enemy" x="1153.33" y="728">
@@ -11419,6 +11419,12 @@
    <point/>
   </object>
   <object id="60" name="Player" type="Player" x="14.6667" y="144">
+   <point/>
+  </object>
+  <object id="160" name="EnemyFlying" type="Enemy" x="1836" y="449">
+   <point/>
+  </object>
+  <object id="161" name="EnemyGround" type="Enemy" x="1764" y="282">
    <point/>
   </object>
  </objectgroup>
@@ -13683,68 +13689,67 @@
   </data>
  </layer>
  <objectgroup id="15" name="Capa de Objetos 2">
-  <object id="66" gid="701" x="29.3333" y="161.333" width="32" height="32"/>
-  <object id="67" gid="701" x="414.667" y="161.333" width="32" height="32"/>
-  <object id="68" gid="701" x="481.333" y="736" width="32" height="32"/>
-  <object id="69" gid="701" x="832" y="480" width="32" height="32"/>
-  <object id="70" gid="701" x="1089.33" y="542.667" width="32" height="32"/>
-  <object id="71" gid="701" x="1086.67" y="738.667" width="32" height="32"/>
-  <object id="72" gid="701" x="1790.67" y="126.667" width="32" height="32"/>
-  <object id="73" gid="701" x="1822.67" y="289.333" width="32" height="32"/>
-  <object id="74" gid="701" x="1792" y="733.333" width="32" height="32"/>
-  <object id="75" gid="701" x="1822.67" y="733.333" width="32" height="32"/>
-  <object id="76" gid="701" x="1856" y="737.333" width="32" height="32"/>
-  <object id="77" gid="702" x="253.333" y="480" width="32" height="32"/>
-  <object id="78" gid="702" x="253.333" y="510.667" width="32" height="32"/>
-  <object id="79" gid="702" x="257.333" y="542.667" width="32" height="32"/>
-  <object id="80" gid="702" x="257.333" y="577.333" width="32" height="32"/>
-  <object id="81" gid="702" x="254.667" y="610.667" width="32" height="32"/>
-  <object id="82" gid="702" x="448" y="290.667" width="32" height="32"/>
-  <object id="83" gid="702" x="448" y="257.333" width="32" height="32"/>
-  <object id="84" gid="702" x="478.667" y="225.333" width="32" height="32"/>
-  <object id="85" gid="702" x="513.333" y="192" width="32" height="32"/>
-  <object id="86" gid="702" x="545.333" y="194.667" width="32" height="32"/>
-  <object id="87" gid="702" x="516" y="706.667" width="32" height="32"/>
-  <object id="88" gid="702" x="546.667" y="673.333" width="32" height="32"/>
-  <object id="89" gid="702" x="736" y="193.333" width="32" height="32"/>
-  <object id="90" gid="702" x="768" y="161.333" width="32" height="32"/>
-  <object id="91" gid="702" x="801.333" y="129.333" width="32" height="32"/>
-  <object id="92" gid="702" x="834.667" y="94.6667" width="32" height="32"/>
-  <object id="93" gid="702" x="866.667" y="98.6667" width="32" height="32"/>
-  <object id="94" gid="702" x="897.333" y="96" width="32" height="32"/>
-  <object id="95" gid="702" x="926.667" y="129.333" width="32" height="32"/>
-  <object id="96" gid="702" x="961.333" y="158.667" width="32" height="32"/>
-  <object id="97" gid="702" x="1282.67" y="101.333" width="32" height="32"/>
-  <object id="98" gid="702" x="1314.67" y="132" width="32" height="32"/>
-  <object id="99" gid="702" x="1441.33" y="133.333" width="32" height="32"/>
-  <object id="100" gid="702" x="1470.67" y="102.667" width="32" height="32"/>
-  <object id="101" gid="702" x="1501.33" y="65.3333" width="32" height="32"/>
-  <object id="102" gid="702" x="1540" y="66.6667" width="32" height="32"/>
-  <object id="103" gid="702" x="1569.33" y="66.6667" width="32" height="32"/>
-  <object id="104" gid="702" x="1604" y="96" width="32" height="32"/>
-  <object id="105" gid="702" x="1637.33" y="129.333" width="32" height="32"/>
-  <object id="106" gid="702" x="1536" y="292" width="32" height="32"/>
-  <object id="107" gid="702" x="1570.67" y="253.333" width="32" height="32"/>
-  <object id="108" gid="702" x="1602.67" y="256" width="32" height="32"/>
-  <object id="109" gid="702" x="1638.67" y="258.667" width="32" height="32"/>
-  <object id="110" gid="702" x="1668" y="292" width="32" height="32"/>
-  <object id="111" gid="702" x="1505.33" y="321.333" width="32" height="32"/>
-  <object id="112" gid="702" x="1473.33" y="353.333" width="32" height="32"/>
-  <object id="113" gid="702" x="1441.33" y="386.667" width="32" height="32"/>
-  <object id="114" gid="702" x="1249.33" y="386.667" width="32" height="32"/>
-  <object id="115" gid="702" x="1217.33" y="418.667" width="32" height="32"/>
-  <object id="116" gid="702" x="1185.33" y="448" width="32" height="32"/>
-  <object id="117" gid="702" x="1154.67" y="482.667" width="32" height="32"/>
-  <object id="118" gid="702" x="1250.67" y="644" width="32" height="32"/>
-  <object id="119" gid="702" x="1217.33" y="642.667" width="32" height="32"/>
-  <object id="120" gid="702" x="1184" y="681.333" width="32" height="32"/>
-  <object id="121" gid="702" x="1156" y="708" width="32" height="32"/>
-  <object id="122" gid="702" x="1121.33" y="740" width="32" height="32"/>
-  <object id="123" gid="702" x="1476" y="674.667" width="32" height="32"/>
-  <object id="124" gid="702" x="1506.67" y="642.667" width="32" height="32"/>
-  <object id="125" gid="702" x="1538.67" y="610.667" width="32" height="32"/>
-  <object id="126" gid="702" x="1570.67" y="573.333" width="32" height="32"/>
-  <object id="127" gid="702" x="1601.33" y="542.667" width="32" height="32"/>
-  <object id="128" gid="702" x="1637.33" y="580" width="32" height="32"/>
+  <object id="66" name="Moneda" type="Item" gid="701" x="29.3333" y="161.333" width="32" height="32"/>
+  <object id="67" name="Moneda" type="Item" gid="701" x="414.667" y="161.333" width="32" height="32"/>
+  <object id="68" name="Moneda" type="Item" gid="701" x="481.333" y="736" width="32" height="32"/>
+  <object id="69" name="Moneda" type="Item" gid="701" x="832" y="480" width="32" height="32"/>
+  <object id="70" name="Moneda" type="Item" gid="701" x="1089.33" y="542.667" width="32" height="32"/>
+  <object id="71" name="Moneda" type="Item" gid="701" x="1086.67" y="738.667" width="32" height="32"/>
+  <object id="72" name="Moneda" type="Item" gid="701" x="1790.67" y="126.667" width="32" height="32"/>
+  <object id="73" name="Moneda" type="Item" gid="701" x="1822.67" y="289.333" width="32" height="32"/>
+  <object id="74" name="Moneda" type="Item" gid="701" x="1792" y="733.333" width="32" height="32"/>
+  <object id="75" name="Moneda" type="Item" gid="701" x="1822.67" y="733.333" width="32" height="32"/>
+  <object id="76" name="Moneda" type="Item" gid="701" x="1856" y="737.333" width="32" height="32"/>
+  <object id="77" name="Star" type="Item" gid="702" x="253.333" y="480" width="32" height="32"/>
+  <object id="78" name="Star" type="Item" gid="702" x="253.333" y="510.667" width="32" height="32"/>
+  <object id="79" name="Star" type="Item" gid="702" x="257.333" y="542.667" width="32" height="32"/>
+  <object id="80" name="Star" type="Item" gid="702" x="260" y="578.667" width="32" height="32"/>
+  <object id="81" name="Star" type="Item" gid="702" x="254.667" y="610.667" width="32" height="32"/>
+  <object id="82" name="Star" type="Item" gid="702" x="448" y="290.667" width="32" height="32"/>
+  <object id="83" name="Star" type="Item" gid="702" x="448" y="257.333" width="32" height="32"/>
+  <object id="84" name="Star" type="Item" gid="702" x="478.667" y="225.333" width="32" height="32"/>
+  <object id="85" name="Star" type="Item" gid="702" x="513.333" y="192" width="32" height="32"/>
+  <object id="86" name="Star" type="Item" gid="702" x="545.333" y="194.667" width="32" height="32"/>
+  <object id="87" name="Star" type="Item" gid="702" x="516" y="706.667" width="32" height="32"/>
+  <object id="88" name="Star" type="Item" gid="702" x="546.667" y="673.333" width="32" height="32"/>
+  <object id="89" name="Star" type="Item" gid="702" x="736" y="193.333" width="32" height="32"/>
+  <object id="90" name="Star" type="Item" gid="702" x="768" y="161.333" width="32" height="32"/>
+  <object id="91" name="Star" type="Item" gid="702" x="801.333" y="129.333" width="32" height="32"/>
+  <object id="92" name="Star" type="Item" gid="702" x="834.667" y="94.6667" width="32" height="32"/>
+  <object id="93" name="Star" type="Item" gid="702" x="866.667" y="98.6667" width="32" height="32"/>
+  <object id="94" name="Star" type="Item" gid="702" x="897.333" y="96" width="32" height="32"/>
+  <object id="95" name="Star" type="Item" gid="702" x="926.667" y="129.333" width="32" height="32"/>
+  <object id="96" name="Star" type="Item" gid="702" x="961.333" y="158.667" width="32" height="32"/>
+  <object id="129" name="Star" type="Item" gid="702" x="1157.33" y="474.667" width="32" height="32"/>
+  <object id="130" name="Star" type="Item" gid="702" x="1188" y="450.667" width="32" height="32"/>
+  <object id="131" name="Star" type="Item" gid="702" x="1222.67" y="428" width="32" height="32"/>
+  <object id="132" name="Star" type="Item" gid="702" x="1264" y="401.333" width="32" height="32"/>
+  <object id="133" name="Star" type="Item" gid="702" x="1277.33" y="664" width="32" height="32"/>
+  <object id="134" name="Star" type="Item" gid="702" x="1249.33" y="642.667" width="32" height="32"/>
+  <object id="135" name="Star" type="Item" gid="702" x="1210.67" y="642.667" width="32" height="32"/>
+  <object id="136" name="Star" type="Item" gid="702" x="1181.33" y="674.667" width="32" height="32"/>
+  <object id="137" name="Star" type="Item" gid="702" x="1158.67" y="697.333" width="32" height="32"/>
+  <object id="138" name="Star" type="Item" gid="702" x="1121.33" y="732" width="32" height="32"/>
+  <object id="139" name="Star" type="Item" gid="702" x="1284" y="100" width="32" height="32"/>
+  <object id="140" name="Star" type="Item" gid="702" x="1313.33" y="126.667" width="32" height="32"/>
+  <object id="141" name="Star" type="Item" gid="702" x="1438.67" y="130.667" width="32" height="32"/>
+  <object id="142" name="Star" type="Item" gid="702" x="1470.67" y="100" width="32" height="32"/>
+  <object id="143" name="Star" type="Item" gid="702" x="1504" y="68" width="32" height="32"/>
+  <object id="144" name="Star" type="Item" gid="702" x="1538.33" y="66" width="32" height="32"/>
+  <object id="145" name="Star" type="Item" gid="702" x="1571" y="65" width="32" height="32"/>
+  <object id="146" name="Star" type="Item" gid="702" x="1602" y="95" width="32" height="32"/>
+  <object id="147" name="Star" type="Item" gid="702" x="1631" y="127" width="32" height="32"/>
+  <object id="148" name="Star" type="Item" gid="702" x="1564" y="329" width="32" height="32"/>
+  <object id="149" name="Star" type="Item" gid="702" x="1602" y="298" width="32" height="32"/>
+  <object id="150" name="Star" type="Item" gid="702" x="1531" y="351" width="32" height="32"/>
+  <object id="151" name="Star" type="Item" gid="702" x="1632" y="269" width="32" height="32"/>
+  <object id="152" name="Star" type="Item" gid="702" x="1504" y="380" width="32" height="32"/>
+  <object id="153" name="Star" type="Item" gid="702" x="1669" y="287" width="32" height="32"/>
+  <object id="154" name="Star" type="Item" gid="702" x="1463" y="673" width="32" height="32"/>
+  <object id="155" name="Star" type="Item" gid="702" x="1494" y="636" width="32" height="32"/>
+  <object id="156" name="Star" type="Item" gid="702" x="1534" y="607" width="32" height="32"/>
+  <object id="157" name="Star" type="Item" gid="702" x="1571" y="575" width="32" height="32"/>
+  <object id="158" name="Star" type="Item" gid="702" x="1614" y="552" width="32" height="32"/>
+  <object id="159" name="Star" type="Item" gid="702" x="1651" y="573" width="32" height="32"/>
  </objectgroup>
 </map>

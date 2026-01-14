@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="16" nextobjectid="47">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="18" nextobjectid="101">
  <tileset firstgid="1" name="tmw_desert_spacing" tilewidth="32" tileheight="32" spacing="1" margin="1" tilecount="48" columns="8">
   <image source="tmw_desert_spacing.png" width="265" height="199"/>
   <wangsets>
@@ -7831,7 +7831,7 @@
    <point/>
   </object>
  </objectgroup>
- <layer id="15" name="Item" width="64" height="24">
+ <layer id="15" name="Item" width="64" height="24" visible="0">
   <data>
    <tile/>
    <tile/>
@@ -9371,4 +9371,59 @@
    <tile/>
   </data>
  </layer>
+ <objectgroup id="17" name="Items">
+  <object id="48" name="Star" type="Item" gid="570" x="256" y="639" width="32" height="32"/>
+  <object id="49" name="Star" type="Item" gid="570" x="286" y="641" width="32" height="32"/>
+  <object id="50" name="Star" type="Item" gid="570" x="321" y="640" width="32" height="32"/>
+  <object id="51" name="Star" type="Item" gid="570" x="161" y="450" width="32" height="32"/>
+  <object id="52" name="Star" type="Item" gid="570" x="191" y="448" width="32" height="32"/>
+  <object id="53" name="Star" type="Item" gid="570" x="257" y="319" width="32" height="32"/>
+  <object id="54" name="Star" type="Item" gid="570" x="416" y="226" width="32" height="32"/>
+  <object id="55" name="Star" type="Item" gid="570" x="449" y="190" width="32" height="32"/>
+  <object id="56" name="Star" type="Item" gid="570" x="481" y="161" width="32" height="32"/>
+  <object id="57" name="Star" type="Item" gid="570" x="515" y="127" width="32" height="32"/>
+  <object id="58" name="Star" type="Item" gid="570" x="543" y="128" width="32" height="32"/>
+  <object id="59" name="Star" type="Item" gid="570" x="577" y="129" width="32" height="32"/>
+  <object id="60" name="Star" type="Item" gid="570" x="609" y="158" width="32" height="32"/>
+  <object id="61" name="Star" type="Item" gid="570" x="1186" y="351" width="32" height="32"/>
+  <object id="62" name="Star" type="Item" gid="570" x="1153" y="319" width="32" height="32"/>
+  <object id="63" name="Star" type="Item" gid="570" x="1123" y="288" width="32" height="32"/>
+  <object id="64" name="Star" type="Item" gid="570" x="1089" y="290" width="32" height="32"/>
+  <object id="65" name="Star" type="Item" gid="570" x="1055" y="289" width="32" height="32"/>
+  <object id="66" name="Star" type="Item" gid="570" x="1023" y="320" width="32" height="32"/>
+  <object id="67" name="Star" type="Item" gid="570" x="990" y="352" width="32" height="32"/>
+  <object id="68" name="Star" type="Item" gid="570" x="802" y="540" width="32" height="32"/>
+  <object id="69" name="Star" type="Item" gid="570" x="834" y="511" width="32" height="32"/>
+  <object id="70" name="Star" type="Item" gid="570" x="869" y="513" width="32" height="32"/>
+  <object id="71" name="Star" type="Item" gid="570" x="894" y="544" width="32" height="32"/>
+  <object id="72" name="Star" type="Item" gid="570" x="1022" y="738" width="32" height="32"/>
+  <object id="73" name="Star" type="Item" gid="570" x="1056" y="702" width="32" height="32"/>
+  <object id="74" name="Star" type="Item" gid="570" x="1090" y="671" width="32" height="32"/>
+  <object id="75" name="Star" type="Item" gid="570" x="1120" y="672" width="32" height="32"/>
+  <object id="76" name="Star" type="Item" gid="570" x="1152" y="671" width="32" height="32"/>
+  <object id="77" name="Star" type="Item" gid="570" x="1182" y="706" width="32" height="32"/>
+  <object id="78" name="Star" type="Item" gid="570" x="1217" y="736" width="32" height="32"/>
+  <object id="79" name="Star" type="Item" gid="570" x="1890" y="447" width="32" height="32"/>
+  <object id="80" name="Star" type="Item" gid="570" x="1857" y="416" width="32" height="32"/>
+  <object id="81" name="Star" type="Item" gid="570" x="1826" y="385" width="32" height="32"/>
+  <object id="82" name="Star" type="Item" gid="570" x="1789" y="384" width="32" height="32"/>
+  <object id="83" name="Star" type="Item" gid="570" x="1763" y="385" width="32" height="32"/>
+  <object id="84" name="Star" type="Item" gid="570" x="1730" y="415" width="32" height="32"/>
+  <object id="85" name="Star" type="Item" gid="570" x="1696" y="447" width="32" height="32"/>
+  <object id="86" name="Star" type="Item" gid="570" x="1791" y="224" width="32" height="32"/>
+  <object id="87" name="Star" type="Item" gid="570" x="1828" y="193" width="32" height="32"/>
+  <object id="88" name="Star" type="Item" gid="570" x="1857" y="162" width="32" height="32"/>
+  <object id="89" name="Star" type="Item" gid="570" x="1888" y="130" width="32" height="32"/>
+  <object id="90" name="Star" type="Item" gid="570" x="1920" y="161" width="32" height="32"/>
+  <object id="91" name="Moneda" type="Item" gid="569" x="1" y="449" width="32" height="32"/>
+  <object id="92" name="Moneda" type="Item" gid="569" x="128" y="737" width="32" height="32"/>
+  <object id="93" name="Moneda" type="Item" gid="569" x="161" y="736" width="32" height="32"/>
+  <object id="94" name="Moneda" type="Item" gid="569" x="544" y="544" width="32" height="32"/>
+  <object id="95" name="Moneda" type="Item" gid="569" x="703" y="737" width="32" height="32"/>
+  <object id="96" name="Moneda" type="Item" gid="569" x="736" y="736" width="32" height="32"/>
+  <object id="97" name="Moneda" type="Item" gid="569" x="1344" y="544" width="32" height="32"/>
+  <object id="98" name="Moneda" type="Item" gid="569" x="1345" y="159" width="32" height="32"/>
+  <object id="99" name="Moneda" type="Item" gid="569" x="1983" y="384" width="32" height="32"/>
+  <object id="100" name="Moneda" type="Item" gid="569" x="1504" y="257" width="32" height="32"/>
+ </objectgroup>
 </map>
