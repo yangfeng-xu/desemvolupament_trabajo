@@ -51,7 +51,7 @@ bool Scene::PreUpdate()
 		LOG("Help Menu: %s", showHelpMenu ? "SHOWING" : "HIDING");
 	}
 	//if (currentScene == SceneID::MAIN_MENU && mainMenuBackground != nullptr) {
-	//	// 记得 speed = 0.0f
+	//	
 	//	Engine::GetInstance().render->DrawTexture(mainMenuBackground, 0, 0, nullptr, 0.0f);
 	//}
 	return true;
@@ -162,10 +162,10 @@ bool Scene::PostUpdate()
 		break;
 
 	case SceneID::MAIN_MENU:
-		if (mainMenuBackground != nullptr) {
-			// speed = 0.0f 确保背景固定在屏幕上
-			Engine::GetInstance().render->DrawTexture(mainMenuBackground, 0, 0, nullptr, 0.0f);
-		}
+		//if (mainMenuBackground != nullptr) {
+		//	// speed = 0.0f 确保背景固定在屏幕上
+		//	Engine::GetInstance().render->DrawTexture(mainMenuBackground, 0, 0, nullptr, 0.0f);
+		//}
 		
 		break;
 	case SceneID::LEVEL_1:
@@ -343,7 +343,7 @@ void Scene::LoadMainMenu() {//cargar audio en aqui
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/retro-gaming-short-248416.wav");
 	Engine::GetInstance().render->camera.x = 0;
 	Engine::GetInstance().render->camera.y = 0;
-	mainMenuBackground = Engine::GetInstance().textures->Load("Assets/Textures/game_menu_vacio.png");
+	mainMenuBackground = Engine::GetInstance().textures->Load("Assets/Textures/menu_resized.png");
 	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "Start", { 520,350,120,20 }, this);
 
 }
@@ -356,7 +356,10 @@ void Scene::UnloadMainMenu() {
 	
 }
 void Scene::UpdateMainMenu(float dt) {
-
+	if (mainMenuBackground != nullptr) {
+		// speed = 0.0f 确保背景固定
+		Engine::GetInstance().render->DrawTexture(mainMenuBackground, 0, 0, nullptr, 0.0f);
+	}
 }
 void Scene::HandleMainMenuUIVebets(UIElement* uiLement) {
 	switch (uiLement->id)
@@ -504,7 +507,7 @@ void Scene::LoadLevel2() {
 	Engine::GetInstance().render->camera.x = 0;
 	Engine::GetInstance().render->camera.y = 0;
 	//L06 TODO 3: Call the function to load the map. 
-	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplateLevel2.tmx");
+	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate2.tmx");
 	   
 	//L15 TODO 3: Call the function to load entities from the map
 	Engine::GetInstance().map->LoadEntities(player);
