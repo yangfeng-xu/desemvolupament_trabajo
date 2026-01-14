@@ -172,6 +172,7 @@ bool Scene::PostUpdate()
 		PostUpdateLevel1();
 		break;
 	case SceneID::LEVEL_2:
+		PostUpdateLevel2();
 		break;
 	default:
 		break;
@@ -264,6 +265,17 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 		
 		}
 	}
+	else if (currentScene == SceneID::LEVEL_2 && isGameOver) {
+		if (uiElement->id == RESUME_BTN_ID) {
+			LOG("Restarting Level 2...");
+			ChangeScene(SceneID::LEVEL_2); // <--- 确保这里重启的是 Level 2
+		}
+		else if (uiElement->id == EXIT_BTN_ID) {
+			LOG("Exiting Game...");
+			exitGameRequested = true;
+		}
+	}
+
 	switch (currentScene) {
 	case SceneID::INTRO_SCR:
 		//loadIntroScren();
@@ -433,9 +445,29 @@ void Scene::UnloadLevel1() {//limpia la mapa y entity
 	
 }
 void Scene::UpdateLevel1(float dt) {//para poder cambiar la escena a nivell 2
+
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN) {
 		ChangeScene(SceneID::LEVEL_2);
 	}
+
+	if (player != nullptr)
+	{
+		Vector2D pos = player->GetPosition();
+
+		// 【修改这里】：设置你的终点范围
+		// 假设终点平台在 X=3050, Y=200 左右
+		float targetX_Min = 1950.0f; // 区域左边界
+		float targetX_Max = 2000.0f; // 区域右边界
+		float targetY_Max = 160.0f;  // 区域下边界 (Y越小越高，所以只要小于这个值就是在上面)
+
+		// 同时满足：X在范围内 且 Y足够高
+		if (pos.getX() > targetX_Min && pos.getX() < targetX_Max && pos.getY() < targetY_Max)
+		{
+			LOG("Reached the top platform! Loading Level 2...");
+			ChangeScene(SceneID::LEVEL_2);
+		}
+	}
+
 	if (!isGameOver) {
 		levelTimer -= dt;
 		if (levelTimer <= 0.0f) {
@@ -444,6 +476,7 @@ void Scene::UpdateLevel1(float dt) {//para poder cambiar la escena a nivell 2
 			LOG("Game Over!!! Time's Up");
 		}
 	}
+
 	// ??? isGameOver ?????????????
 	if (isGameOver && !gameOverShown) {
 		int w, h;
@@ -506,24 +539,92 @@ void Scene::LoadLevel2() {
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/that-8-bit-music-322062.wav");
 	Engine::GetInstance().render->camera.x = 0;
 	Engine::GetInstance().render->camera.y = 0;
+
+	isGameOver = false;
+	gameOverShown = false;
+
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate2.tmx");
-	   
 	//L15 TODO 3: Call the function to load entities from the map
 	Engine::GetInstance().map->LoadEntities(player);
+	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::TOGGLE, 100, "FullScreen", { 10, 10, 100, 30 }, this);
+	levelTimer = 60.0f * 1000.0f;
 
-
+	
+	
 }
 void Scene::UnloadLevel2() {
 	Engine::GetInstance().uiManager->CleanUp();
 	player.reset();//eliminar player para verificar que todo esta eliminado//opcional
 	Engine::GetInstance().entityManager->CleanUp();
 	Engine::GetInstance().map->CleanUp();
-	
+	isGameOver = false;
+	gameOverShown = false;
+	levelTimer = 60.0f * 1000.0f; // ????
 }
 void Scene::UpdateLevel2(float dt) {//cambiar a nivell 1
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) {
 		ChangeScene(SceneID::LEVEL_1);
+	}
+	if (!isGameOver) {
+		levelTimer -= dt;
+		if (levelTimer <= 0.0f) {
+			levelTimer = 0.0f;
+			isGameOver = true;
+			LOG("Game Over!!! Time's Up");
+		}
+	}
+
+	// ??? isGameOver ?????????????
+	if (isGameOver && !gameOverShown) {
+		int w, h;
+		Engine::GetInstance().window->GetWindowSize(w, h);
+		int centerX = w / 2;
+		int centerY = h / 2;
+
+		Engine::GetInstance().uiManager->CreateUIElement(
+			UIElementType::BUTTON,
+			RESUME_BTN_ID,
+			"RESTART",
+			{ centerX - 70, centerY - 50, 140, 40 },
+			this
+		);
+
+		Engine::GetInstance().uiManager->CreateUIElement(
+			UIElementType::BUTTON,
+			EXIT_BTN_ID,
+			"EXIT",
+			{ centerX - 70, centerY + 10, 140, 40 },
+			this
+		);
+		gameOverShown = true;
+	}
+}
+void Scene::PostUpdateLevel2() {
+	//L15 TODO 3: Call the function to load entities from the map
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
+		Engine::GetInstance().map->LoadEntities(player);
+	}
+
+	//L15 TODO 4: Call the function to save entities from the map
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
+		Engine::GetInstance().map->SaveEntities(player);
+	}
+
+	// ???????
+	int secondsLeft = (int)(levelTimer / 1000.0f);
+
+	// ?????
+	std::string timeText = "Time: " + std::to_string(secondsLeft);
+
+	// ?????????? (?? x=10, y=10)
+	// ????? {255, 255, 255, 255}
+	// ???? DrawText ????
+	Engine::GetInstance().render->DrawText(timeText.c_str(), 50, 50, 100, 30, { 255, 255, 255, 255 });
+
+	// ????????????????? "GAME OVER" ???
+	if (isGameOver) {
+		Engine::GetInstance().render->DrawText("GAME OVER", 550, 200, 200, 50, { 255, 0, 0, 255 });
 	}
 }
 
