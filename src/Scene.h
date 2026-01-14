@@ -89,7 +89,7 @@ private:
 	bool sceneChangeRequested = false;
 	SceneID nextScene = SceneID::MAIN_MENU;
 	SceneID currentScene = SceneID::MAIN_MENU;
-
+	SDL_Texture* mainMenuBackground = nullptr;
 	//timer
 	float levelTimer = 0.0f;
 	bool isGameOver = false;
