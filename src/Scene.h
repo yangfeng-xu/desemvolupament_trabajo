@@ -70,6 +70,7 @@ private:
 	void LoadLevel2();
 	void UnloadLevel2();
 	void UpdateLevel2(float dt);
+	void PostUpdateLevel2();
 private:
 
 	//L03: TODO 3b: Declare a Player attribute
