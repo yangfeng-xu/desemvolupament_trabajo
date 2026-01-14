@@ -134,27 +134,6 @@ void Enemy::PerformPathfinding(float dt) {
 			targetTooHigh = true;
 		}
 	}
-//	if (distance < detectionRadius) {
-//		// 3. Calcular el camino automáticamente
-//// Usamos MANHATTAN como heurística por defecto
-//
-//		pathfindingTimer += dt;
-//		if (pathfindingTimer >= pathfindingInterval) {
-//			pathfinding->ComputeFullPathAStar(myTile, MANHATTAN);
-//			pathfindingTimer = 0.0f;
-//		}
-//		
-//	}
-//	else {
-//		pathfinding->pathTiles.clear();
-//		velocity.x = 0;
-//		if (enemyType == EnemyType::FLYING) {
-//			velocity.y = 0;
-//		}
-//
-//		// 3. Poner animación de Idle
-//		anims.SetCurrent("idle");
-//	}
 	// 修改判断条件：加入 && !targetTooHigh
 	if (distance < detectionRadius && !targetTooHigh) {
 		// 3. Calcular el camino automáticamente

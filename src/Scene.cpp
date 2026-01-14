@@ -507,7 +507,7 @@ void Scene::LoadLevel2() {
 	Engine::GetInstance().render->camera.x = 0;
 	Engine::GetInstance().render->camera.y = 0;
 	//L06 TODO 3: Call the function to load the map. 
-	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplateLevel2.tmx");
+	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate2.tmx");
 	   
 	//L15 TODO 3: Call the function to load entities from the map
 	Engine::GetInstance().map->LoadEntities(player);
