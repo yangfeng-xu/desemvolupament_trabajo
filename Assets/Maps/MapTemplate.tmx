@@ -7815,7 +7815,7 @@
   <object id="40" name="Save" type="Map" x="1296" y="734">
    <point/>
   </object>
-  <object id="41" name="Save" type="Map" x="1968" y="157.333">
+  <object id="41" name="Final" type="Map" x="1968" y="157.333">
    <point/>
   </object>
   <object id="42" name="EnemyFlying" type="Enemy" x="1968" y="309.333">
