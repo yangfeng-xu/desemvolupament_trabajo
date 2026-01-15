@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="18" nextobjectid="107">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="18" nextobjectid="110">
  <tileset firstgid="1" name="tmw_desert_spacing" tilewidth="32" tileheight="32" spacing="1" margin="1" tilecount="48" columns="8">
   <image source="tmw_desert_spacing.png" width="265" height="199"/>
   <wangsets>
@@ -7839,6 +7839,7 @@
   <object id="106" name="Moneda" type="Item" x="470" y="382">
    <point/>
   </object>
+  <object id="107" name="Moneda" type="Item" gid="576" x="382" y="424" width="32" height="32"/>
  </objectgroup>
  <layer id="15" name="Item" width="64" height="24">
   <data>
