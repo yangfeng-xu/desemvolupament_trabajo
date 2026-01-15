@@ -242,11 +242,10 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 	{
 		// 这里的逻辑是：如果按钮是 On (显示播放图)，说明我们刚才按下了暂停，进入暂停状态
 		// 我们强制转换一下来获取状态
-		auto toggle = std::dynamic_pointer_cast<UIToggle>(Engine::GetInstance().uiManager->GetElement(PAUSE_TOGGLE_ID));
+		UIToggle* toggle = dynamic_cast<UIToggle*>(uiElement);
 		if (toggle) {
 			isGamePaused = toggle->IsOn();
 		}
-
 		LOG("Game Paused: %s", isGamePaused ? "YES" : "NO");
 
 		// Pause music

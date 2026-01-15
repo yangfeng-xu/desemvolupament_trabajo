@@ -1,4 +1,4 @@
-#include "UIManager.h"
+﻿#include "UIManager.h"
 #include "UIButton.h"
 #include "UIToggle.h"
 #include "Engine.h"
@@ -19,15 +19,16 @@ bool UIManager::Start()
 
 std::shared_ptr<UIElement> UIManager::CreateUIElement(UIElementType type, int id, const char* text, SDL_Rect bounds, Module* observer, SDL_Rect sliderBounds)
 {
-	std::shared_ptr<UIElement> uiElement = std::make_shared<UIElement>();
+	/*std::shared_ptr<UIElement> uiElement = std::make_shared<UIElement>();*/
+	std::shared_ptr<UIElement> uiElement = nullptr; // 初始化为 nullptr
 
 	// L16: TODO 1: Implement CreateUIElement function that instantiates a new UIElement according to the UIElementType and add it to the list of UIElements
 	switch(type) {
 	case UIElementType::BUTTON:
-		uiElement = std::make_shared<UIButton>(id, bounds, text);
+		uiElement = std::make_shared<UIButton>(id, bounds, text,observer);
 		break;
 	case UIElementType::TOGGLE:
-		uiElement = std::make_shared<UIToggle>(id,bounds,text,false);
+		uiElement = std::make_shared<UIToggle>(id,bounds,text,false,observer);
 		break;
 	case UIElementType::CHECKBOX:
 		break;
@@ -46,10 +47,15 @@ std::shared_ptr<UIElement> UIManager::CreateUIElement(UIElementType type, int id
 	case UIElementType::SPINNER:
 		break;
 	}
-	//set the callback to the observer
-	uiElement->SetObserver(observer);
-	//Add UiElemento to the list
-	UIElementsList.push_back(uiElement);
+	////set the callback to the observer
+	//uiElement->SetObserver(observer);
+	////Add UiElemento to the list
+	//UIElementsList.push_back(uiElement);
+	// 双重保险：虽然构造函数里传了，这里再设置一次也没错
+	if (uiElement != nullptr) {
+		uiElement->SetObserver(observer);
+		UIElementsList.push_back(uiElement);
+	}
 	return uiElement;
 }
 
@@ -63,7 +69,7 @@ std::shared_ptr<UIElement> UIManager::GetElement(int id)
 			return uiElement;
 		}
 	}
-	return nullptr; // ???????????
+	return nullptr; // 如果没找到，返回空指针
 }
 
 bool UIManager::Update(float dt)

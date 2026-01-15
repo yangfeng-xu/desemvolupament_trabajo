@@ -3,11 +3,12 @@
 #include "Engine.h"
 #include "Input.h"
 
-UIToggle::UIToggle(int id, SDL_Rect bounds, const char* text, bool initialBufferState)
-    : UIElement(UIElementType::TOGGLE, id), isOn(initialBufferState)
+UIToggle::UIToggle(int id, SDL_Rect bounds, const char* text, bool initialBufferState, Module* observer)
+    : UIElement(UIElementType::TOGGLE, id,bounds,text,observer), isOn(initialBufferState)
 {
     this->bounds = bounds;
     this->text = text;
+    this -> observer = observer;
 }
 
 UIToggle::~UIToggle() {}

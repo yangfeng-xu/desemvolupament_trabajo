@@ -3,7 +3,7 @@
 #include "Engine.h"
 #include "Audio.h"
 
-UIButton::UIButton(int id, SDL_Rect bounds, const char* text) : UIElement(UIElementType::BUTTON, id)
+UIButton::UIButton(int id, SDL_Rect bounds, const char* text,Module* obsever) : UIElement(UIElementType::BUTTON, id, bounds, text, observer)
 {
 	this->bounds = bounds;
 	this->text = text;

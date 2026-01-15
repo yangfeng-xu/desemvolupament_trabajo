@@ -8,7 +8,7 @@ class UIButton : public UIElement
 
 public:
 
-	UIButton(int id, SDL_Rect bounds, const char* text);
+	UIButton(int id, SDL_Rect bounds, const char* text,Module* obsever);
 	virtual ~UIButton();
 
 	// Called each loop iteration
