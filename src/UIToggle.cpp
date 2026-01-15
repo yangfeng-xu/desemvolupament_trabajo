@@ -12,6 +12,12 @@ UIToggle::UIToggle(int id, SDL_Rect bounds, const char* text, bool initialBuffer
 
 UIToggle::~UIToggle() {}
 
+// ??????????
+void UIToggle::SetTextures(SDL_Texture* textureOff, SDL_Texture* textureOn) {
+    this->texOff = textureOff;
+    this->texOn = textureOn;
+}
+
 bool UIToggle::Update(float dt)
 {
     if (state != UIElementState::DISABLED)
@@ -38,13 +44,21 @@ bool UIToggle::Update(float dt)
             state = UIElementState::NORMAL;
         }
 
-        // ???? (?????????????????)
-        // ?????????? Toggle ???
-        Uint8 r = isOn ? 0 : 255;
-        Uint8 g = isOn ? 255 : 0;
-
-        Engine::GetInstance().render->DrawRectangle(bounds, r, g, 0, 255, true, false);
-        Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y, bounds.w, bounds.h, { 255, 255, 255, 255 });
+        // ????????
+         // ???????????????????????????
+        if (texOff != nullptr && texOn != nullptr) {
+            SDL_Texture* currentTex = isOn ? texOn : texOff;
+            // speed = 0.0f ?? UI ??????
+            Engine::GetInstance().render->DrawTexture(currentTex, bounds.x, bounds.y, nullptr, 0.0f);
+        }
+        else {
+            // ???????
+            Uint8 r = isOn ? 0 : 255;
+            Uint8 g = isOn ? 255 : 0;
+            Engine::GetInstance().render->DrawRectangle(bounds, r, g, 0, 255, true, false);
+            Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y, bounds.w, bounds.h, { 255, 255, 255, 255 });
+        }
+        
     }
     return true;
 }

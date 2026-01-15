@@ -37,6 +37,8 @@ bool Scene::Awake()
 // Called before the first frame
 bool Scene::Start()
 {
+	//SDL_Texture* pauseTex = Engine::GetInstance().textures->Load("Assets/Textures/Pause.png");
+	//SDL_Texture* resumeTex = Engine::GetInstance().textures->Load("Assets/Textures/Resume.png");
 	LoadScene(currentScene);
 
 	return true;
@@ -149,24 +151,19 @@ bool Scene::PostUpdate()
 
 		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)//para salir el juego
 			ret = false;
-	
-
-
-
-
 	}
+
+
+	//----------------------------------------------------------------------------Currrent Scene-----------------------------------------------------------------------------------//
+
+
 	switch (currentScene) {
 
 	case SceneID::INTRO_SCR:
 		//loadIntroScren();
 		break;
 
-	case SceneID::MAIN_MENU:
-		//if (mainMenuBackground != nullptr) {
-		//	// speed = 0.0f 确保背景固定在屏幕上
-		//	Engine::GetInstance().render->DrawTexture(mainMenuBackground, 0, 0, nullptr, 0.0f);
-		//}
-		
+	case SceneID::MAIN_MENU:	
 		break;
 	case SceneID::LEVEL_1:
 		PostUpdateLevel1();
@@ -177,7 +174,7 @@ bool Scene::PostUpdate()
 	default:
 		break;
 	}
-
+	//----------------------------------------------------------------------------F5-----------------------------------------------------------------------------------//
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
 
 		// 2. Cargamos las entidades (esto crear?nuevas y mover?al Player)
@@ -243,20 +240,34 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 		Engine::GetInstance().window->ToggleFullsreen();
 		LOG("Toggled Fullscreen Mode");
 	}
-	// ????? Level 1 ???????
+
+
+	// --------------------------------------------------------------------------Pause UI-----------------------------------------------------------------------------------//
+	if (uiElement->id == PAUSE_TOGGLE_ID)
+	{
+		// 这里的逻辑是：如果按钮是 On (显示播放图)，说明我们刚才按下了暂停，进入暂停状态
+		// 我们强制转换一下来获取状态
+		auto toggle = std::dynamic_pointer_cast<UIToggle>(Engine::GetInstance().uiManager->GetElement(PAUSE_TOGGLE_ID));
+		if (toggle) {
+			isGamePaused = toggle->IsOn();
+		}
+
+		LOG("Game Paused: %s", isGamePaused ? "YES" : "NO");
+
+		// Pause music
+		if (isGamePaused)
+			Engine::GetInstance().audio->PauseMusic(); // 假设你有这个函数
+		else
+			Engine::GetInstance().audio->ResumeMusic();
+	}
+	
+	//----------------------------------------------------------------------------Level 1-----------------------------------------------------------------------------------//
 	if (currentScene == SceneID::LEVEL_1 && isGameOver) {
 
 		if (uiElement->id == RESUME_BTN_ID) {
-			// ???????????????
-			LOG("Restarting Level 1...");
-
-			// ?????? UI (?????????)
-			/*Engine::GetInstance().uiManager->CleanUp();*/
-
-			// ???? Level 1
-			ChangeScene(SceneID::LEVEL_1);
-
-			// ???? ChangeScene(SceneID::LEVEL_1); ????
+		
+			LOG("Restarting Level 1...");	
+			ChangeScene(SceneID::LEVEL_1);		
 		}
 		else if (uiElement->id == EXIT_BTN_ID) {
 			// ?????????
@@ -276,6 +287,8 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 		}
 	}
 
+
+	//----------------------------------------------------------------------------Current Scene-----------------------------------------------------------------------------------//
 	switch (currentScene) {
 	case SceneID::INTRO_SCR:
 		//loadIntroScren();
@@ -399,8 +412,27 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
 
+	iconPause = Engine::GetInstance().textures->Load("Assets/Textures/Pause.png");
+	iconPlay = Engine::GetInstance().textures->Load("Assets/Textures/Resume.png");
 
+	// 2. 创建 Toggle
+	// 位置 { 10, 50, 32, 32 } 根据你的图标大小调整
+	auto pauseToggle = Engine::GetInstance().uiManager->CreateUIElement(
+		UIElementType::TOGGLE,
+		PAUSE_TOGGLE_ID,
+		"",
+		{ 10, 50, 32, 32 },
+		this
+	);
 
+	// 3. 将其转换为 UIToggle 指针并设置图片
+	// 注意：dynamic_pointer_cast 用于将基类 UIElement 转为子类 UIToggle
+	auto togglePtr = std::dynamic_pointer_cast<UIToggle>(pauseToggle);
+	if (togglePtr) {
+		// 参数1(Off): 游戏没暂停时显示的图 -> 暂停键
+		// 参数2(On): 游戏暂停时显示的图 -> 播放键
+		togglePtr->SetTextures(iconPause, iconPlay);
+	}
 
 	Engine::GetInstance().map->LoadEntities(player);
 	// Texture to highligh mouse position 
@@ -448,6 +480,16 @@ void Scene::UpdateLevel1(float dt) {//para poder cambiar la escena a nivell 2
 
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN) {
 		ChangeScene(SceneID::LEVEL_2);
+	}
+
+	// 1. 始终允许切换场景的输入（如按键 '2'）
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN) {
+		ChangeScene(SceneID::LEVEL_2);
+	}
+
+	// 2. 如果游戏暂停了，直接 return，不执行下面的逻辑
+	if (isGamePaused) {
+		return;
 	}
 
 	if (player != nullptr)

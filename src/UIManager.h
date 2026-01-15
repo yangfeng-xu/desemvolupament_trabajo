@@ -31,5 +31,6 @@ public:
 
 	std::list<std::shared_ptr<UIElement>> UIElementsList;
 	SDL_Texture* texture;
+	std::shared_ptr<UIElement> GetElement(int id);
 
 };

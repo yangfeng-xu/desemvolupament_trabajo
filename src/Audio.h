@@ -35,6 +35,10 @@ public:
 	// Play a previously loaded WAV
 	bool PlayFx(int fx, int repeat = 0, float rate = 1.0f);
 
+    void PauseMusic();
+    void ResumeMusic();
+
+
     bool Update(float dt) override;
 
 private:
@@ -69,4 +73,5 @@ private:
     void FreeSound(SoundData& s);
     bool EnsureDeviceOpen();
     bool EnsureStreams();
+    bool musicPaused = false;
 };

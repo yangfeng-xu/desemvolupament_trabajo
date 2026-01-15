@@ -72,21 +72,6 @@ bool Audio::EnsureStreams() {
             return false;
         }
     }
-
-    //if (!sfx_stream_) {
-    //    sfx_stream_ = SDL_CreateAudioStream(nullptr, &device_spec_);
-    //    if (!sfx_stream_) {
-    //        LOG("Audio: SDL_CreateAudioStream (sfx) failed: %s", SDL_GetError());
-    //        return false;
-    //    }
-    //    if (!SDL_BindAudioStream(device_, sfx_stream_)) {
-    //        LOG("Audio: SDL_BindAudioStream (sfx) failed: %s", SDL_GetError());
-    //        SDL_DestroyAudioStream(sfx_stream_);
-    //        sfx_stream_ = nullptr;
-    //        return false;
-    //    }
-    //}
-
     return true;
 }
 
@@ -151,6 +136,7 @@ bool Audio::CleanUp() {
 bool Audio::PlayMusic(const char* path, float fadeTime) {
     if (!active) return false;
     if (!EnsureStreams()) return false;
+    musicPaused = false;
 
     // Stop any existing music: clear stream + free buffer
     if (music_stream_) {
@@ -232,6 +218,32 @@ bool Audio::PlayFx(int id, int repeat, float rate) {
     active_sfx_streams_.push_back(stream);
 
     return true;
+}
+void Audio::PauseMusic()
+{
+    // ????????????????????????
+    if (musicPaused || music_stream_ == nullptr) return;
+
+    // SDL3: ??????“??” (?????????)
+    SDL_UnbindAudioStream(music_stream_);
+
+    musicPaused = true;
+    LOG("Audio: Music paused (stream unbound)");
+}
+
+void Audio::ResumeMusic()
+{
+    // ?????????????????????????????
+    if (!musicPaused || music_stream_ == nullptr || device_ == 0) return;
+
+    // SDL3: ????????“??”
+    if (SDL_BindAudioStream(device_, music_stream_) == 0) {
+        musicPaused = false;
+        LOG("Audio: Music resumed (stream rebound)");
+    }
+    else {
+        LOG("Audio: Failed to resume music: %s", SDL_GetError());
+    }
 }
 
 bool Audio::Update(float dt)

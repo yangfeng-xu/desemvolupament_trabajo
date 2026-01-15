@@ -53,6 +53,19 @@ std::shared_ptr<UIElement> UIManager::CreateUIElement(UIElementType type, int id
 	return uiElement;
 }
 
+
+std::shared_ptr<UIElement> UIManager::GetElement(int id)
+{
+	for (auto& uiElement : UIElementsList)
+	{
+		if (uiElement->id == id)
+		{
+			return uiElement;
+		}
+	}
+	return nullptr; // ???????????
+}
+
 bool UIManager::Update(float dt)
 {	
 	for (const auto& control : UIElementsList)
