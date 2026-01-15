@@ -1,4 +1,4 @@
-#include "UIToggle.h"
+﻿#include "UIToggle.h"
 #include "Render.h"
 #include "Engine.h"
 #include "Input.h"
@@ -12,7 +12,7 @@ UIToggle::UIToggle(int id, SDL_Rect bounds, const char* text, bool initialBuffer
 
 UIToggle::~UIToggle() {}
 
-// ??????????
+// 【新增】实现设置纹理
 void UIToggle::SetTextures(SDL_Texture* textureOff, SDL_Texture* textureOn) {
     this->texOff = textureOff;
     this->texOn = textureOn;
@@ -44,15 +44,15 @@ bool UIToggle::Update(float dt)
             state = UIElementState::NORMAL;
         }
 
-        // ????????
-         // ???????????????????????????
+        // 【修改】绘制逻辑
+         // 如果设置了纹理，就画纹理；否则还是画矩形（保持兼容性）
         if (texOff != nullptr && texOn != nullptr) {
             SDL_Texture* currentTex = isOn ? texOn : texOff;
-            // speed = 0.0f ?? UI ??????
+            // speed = 0.0f 确保 UI 不随地图滚动
             Engine::GetInstance().render->DrawTexture(currentTex, bounds.x, bounds.y, nullptr, 0.0f);
         }
         else {
-            // ???????
+            // 原来的方块逻辑
             Uint8 r = isOn ? 0 : 255;
             Uint8 g = isOn ? 255 : 0;
             Engine::GetInstance().render->DrawRectangle(bounds, r, g, 0, 255, true, false);

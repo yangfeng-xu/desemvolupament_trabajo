@@ -37,8 +37,6 @@ bool Scene::Awake()
 // Called before the first frame
 bool Scene::Start()
 {
-	//SDL_Texture* pauseTex = Engine::GetInstance().textures->Load("Assets/Textures/Pause.png");
-	//SDL_Texture* resumeTex = Engine::GetInstance().textures->Load("Assets/Textures/Resume.png");
 	LoadScene(currentScene);
 
 	return true;
@@ -52,10 +50,6 @@ bool Scene::PreUpdate()
 		showHelpMenu = !showHelpMenu;
 		LOG("Help Menu: %s", showHelpMenu ? "SHOWING" : "HIDING");
 	}
-	//if (currentScene == SceneID::MAIN_MENU && mainMenuBackground != nullptr) {
-	//	
-	//	Engine::GetInstance().render->DrawTexture(mainMenuBackground, 0, 0, nullptr, 0.0f);
-	//}
 	return true;
 }
 
@@ -108,9 +102,6 @@ bool Scene::PostUpdate()
 	}
 	bool ret = true;
 	//L15 TODO 3: Call the function to load entities from the map
-	//Engine::GetInstance().map->LoadEntities(player);
-	// Texture to highligh mouse position 
-	//mouseTileTex = Engine::GetInstance().textures->Load("Assets/Maps/MapMetadata.png");
 	if (showHelpMenu)
 	{
 		int windowWidth, windowHeight;
@@ -182,13 +173,15 @@ bool Scene::PostUpdate()
 
 		reloadCooldown = 500.0f;
 	}
+
+	//----------------------------------------------------------------------------F6-----------------------------------------------------------------------------------//
 	//L15 TODO 5: Call the function to save entities from the map
 	//pulso f6 para guardar donde quiero que el player se vuelve,luego pulsamos f5 para valve ese punto
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
 		Engine::GetInstance().map->SaveEntities(player);
 		Engine::GetInstance().audio->PlayFx(saveFxId);
 	}
-
+	//----------------------------------------------------------------------------F11-----------------------------------------------------------------------------------//
 	//f11 change fps
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F11) == KEY_DOWN) {
 		int currentFps = Engine::GetInstance().GetTargetFrameRate();
@@ -202,6 +195,8 @@ bool Scene::PostUpdate()
 
 		}
 	}
+
+
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
 		ret = false;
 
@@ -412,6 +407,16 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
 
+	int windowW, windowH;
+	Engine::GetInstance().window->GetWindowSize(windowW, windowH);
+
+	int iconSize = 32; // 你设置的图标大小
+	int margin = 20;   // 离边缘的距离
+
+	// 计算坐标: X = 屏幕宽 - 图标宽 - 边距
+	int posX = windowW - iconSize - margin;
+	int posY = margin; // 离顶部一点距离
+
 	iconPause = Engine::GetInstance().textures->Load("Assets/Textures/Pause.png");
 	iconPlay = Engine::GetInstance().textures->Load("Assets/Textures/Resume.png");
 
@@ -421,7 +426,7 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 		UIElementType::TOGGLE,
 		PAUSE_TOGGLE_ID,
 		"",
-		{ 10, 50, 32, 32 },
+		{ posX, posY, iconSize, iconSize }, // 使用计算好的右上角坐标
 		this
 	);
 
@@ -458,10 +463,7 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 	enemy1->position = Vector2D(384, 672);
 	enemy1->Start();//importante!!!, tenemos que credar nosotros 
 	//este escena no vaterner el botton por lo tanto podemos quitar
-	//// L16: TODO 2: Instantiate a new GuiControlButton in the Scene
-	//SDL_Rect btPos = { 520, 350, 120,20 };
-	//uiBt = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "MyButton", btPos, this));
-	//timer
+
 	levelTimer = 60.0f * 1000.0f;
 	
 }
@@ -659,12 +661,10 @@ void Scene::PostUpdateLevel2() {
 	// ?????
 	std::string timeText = "Time: " + std::to_string(secondsLeft);
 
-	// ?????????? (?? x=10, y=10)
-	// ????? {255, 255, 255, 255}
-	// ???? DrawText ????
+	//  DrawText 
 	Engine::GetInstance().render->DrawText(timeText.c_str(), 50, 50, 100, 30, { 255, 255, 255, 255 });
 
-	// ????????????????? "GAME OVER" ???
+	// GAME OVER
 	if (isGameOver) {
 		Engine::GetInstance().render->DrawText("GAME OVER", 550, 200, 200, 50, { 255, 0, 0, 255 });
 	}
