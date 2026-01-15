@@ -7837,7 +7837,7 @@
    <point/>
   </object>
  </objectgroup>
- <layer id="15" name="Item" width="64" height="24" visible="0">
+ <layer id="15" name="Item" width="64" height="24">
   <data>
    <tile/>
    <tile/>
@@ -8932,6 +8932,10 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="576"/>
+   <tile gid="576"/>
+   <tile gid="576"/>
+   <tile gid="576"/>
    <tile/>
    <tile/>
    <tile/>
@@ -8992,6 +8996,9 @@
    <tile/>
    <tile/>
    <tile/>
+   <tile gid="576"/>
+   <tile gid="576"/>
+   <tile gid="576"/>
    <tile/>
    <tile/>
    <tile/>
@@ -9053,15 +9060,8 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
-   <tile/>
+   <tile gid="576"/>
+   <tile gid="576"/>
    <tile/>
    <tile gid="570"/>
    <tile gid="570"/>
@@ -9125,7 +9125,7 @@
    <tile/>
    <tile/>
    <tile/>
-   <tile/>
+   <tile gid="576"/>
    <tile/>
    <tile/>
    <tile/>
@@ -9377,7 +9377,7 @@
    <tile/>
   </data>
  </layer>
- <objectgroup id="17" name="Items">
+ <objectgroup id="17" name="Items" visible="0">
   <object id="48" name="Star" type="Item" gid="570" x="256" y="639" width="32" height="32"/>
   <object id="49" name="Star" type="Item" gid="570" x="286" y="641" width="32" height="32"/>
   <object id="50" name="Star" type="Item" gid="570" x="321" y="640" width="32" height="32"/>
