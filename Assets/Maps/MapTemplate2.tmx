@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="94" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="16" nextobjectid="162">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="94" height="24" tilewidth="32" tileheight="32" infinite="0" nextlayerid="16" nextobjectid="199">
  <tileset firstgid="1" name="tmw_desert_spacing" tilewidth="32" tileheight="32" spacing="1" margin="1" tilecount="48" columns="8">
   <image source="tmw_desert_spacing.png" width="265" height="199"/>
   <wangsets>
@@ -11427,6 +11427,117 @@
   <object id="161" name="EnemyGround" type="Enemy" x="1764" y="282">
    <point/>
   </object>
+  <object id="162" name="Star" type="Item" x="322.667" y="582.667">
+   <point/>
+  </object>
+  <object id="163" name="Star" type="Item" x="369.333" y="541.333">
+   <point/>
+  </object>
+  <object id="164" name="Star" type="Item" x="425.333" y="528">
+   <point/>
+  </object>
+  <object id="165" name="Star" type="Item" x="481.333" y="573.333">
+   <point/>
+  </object>
+  <object id="166" name="Star" type="Item" x="506.667" y="641.333">
+   <point/>
+  </object>
+  <object id="167" name="Star" type="Item" x="514.667" y="712">
+   <point/>
+  </object>
+  <object id="168" name="Star" type="Item" x="257.333" y="310.667">
+   <point/>
+  </object>
+  <object id="169" name="Star" type="Item" x="277.333" y="400">
+   <point/>
+  </object>
+  <object id="170" name="Star" type="Item" x="298.667" y="488">
+   <point/>
+  </object>
+  <object id="171" name="Star" type="Item" x="768" y="178.667">
+   <point/>
+  </object>
+  <object id="172" name="Star" type="Item" x="821.333" y="141.333">
+   <point/>
+  </object>
+  <object id="173" name="Star" type="Item" x="881.333" y="121.333">
+   <point/>
+  </object>
+  <object id="174" name="Star" type="Item" x="936" y="146.667">
+   <point/>
+  </object>
+  <object id="175" name="Star" type="Item" x="1450.67" y="114.667">
+   <point/>
+  </object>
+  <object id="176" name="Star" type="Item" x="1504" y="96">
+   <point/>
+  </object>
+  <object id="177" name="Star" type="Item" x="1562.67" y="84">
+   <point/>
+  </object>
+  <object id="178" name="Star" type="Item" x="1613.33" y="112">
+   <point/>
+  </object>
+  <object id="179" name="Star" type="Item" x="1340" y="653.333">
+   <point/>
+  </object>
+  <object id="180" name="Star" type="Item" x="1278.67" y="674.667">
+   <point/>
+  </object>
+  <object id="181" name="Star" type="Item" x="1240" y="720">
+   <point/>
+  </object>
+  <object id="182" name="Star" type="Item" x="1520" y="356">
+   <point/>
+  </object>
+  <object id="183" name="Star" type="Item" x="1558.67" y="308">
+   <point/>
+  </object>
+  <object id="184" name="Star" type="Item" x="1613.33" y="274.667">
+   <point/>
+  </object>
+  <object id="185" name="Star" type="Item" x="1668" y="270.667">
+   <point/>
+  </object>
+  <object id="186" name="Star" type="Item" x="1777.33" y="549.333">
+   <point/>
+  </object>
+  <object id="187" name="Star" type="Item" x="1824" y="582.667">
+   <point/>
+  </object>
+  <object id="188" name="Star" type="Item" x="1841.33" y="638.667">
+   <point/>
+  </object>
+  <object id="189" name="Star" type="Item" x="1853.33" y="710.667">
+   <point/>
+  </object>
+  <object id="190" name="Moneda" type="Item" x="1116" y="525.333">
+   <point/>
+  </object>
+  <object id="191" name="Moneda" type="Item" x="1112" y="726.667">
+   <point/>
+  </object>
+  <object id="192" name="Moneda" type="Item" x="1826.67" y="282.667">
+   <point/>
+  </object>
+  <object id="193" name="Moneda" type="Item" x="1697.33" y="126.667">
+   <point/>
+  </object>
+  <object id="194" name="Moneda" type="Item" x="722.667" y="602.667">
+   <point/>
+  </object>
+  <object id="195" name="Moneda" type="Item" x="585.333" y="190.667">
+   <point/>
+  </object>
+  <object id="196" name="Moneda" type="Item" x="174.667" y="466.667">
+   <point/>
+  </object>
+  <object id="197" name="Moneda" type="Item" x="1816" y="729.333">
+   <point/>
+  </object>
+  <object id="198" name="Moneda" type="Item" x="1421.33" y="668">
+   <point/>
+  </object>
  </objectgroup>
  <layer id="14" name="Item" width="94" height="24" visible="0">
   <data>
@@ -13688,7 +13799,7 @@
    <tile/>
   </data>
  </layer>
- <objectgroup id="15" name="Capa de Objetos 2">
+ <objectgroup id="15" name="Capa de Objetos 2" visible="0">
   <object id="66" name="Moneda" type="Item" gid="701" x="29.3333" y="161.333" width="32" height="32"/>
   <object id="67" name="Moneda" type="Item" gid="701" x="414.667" y="161.333" width="32" height="32"/>
   <object id="68" name="Moneda" type="Item" gid="701" x="481.333" y="736" width="32" height="32"/>
