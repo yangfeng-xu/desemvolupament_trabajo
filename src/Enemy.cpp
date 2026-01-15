@@ -43,35 +43,28 @@ bool Enemy::Start() {
 		LOG("Loading BOSS with Multiple Textures");
 
 		// 1. 加载所有独立的图片 (请改成你真实的文件名)
-		bossTextures["idle"] = Engine::GetInstance().textures->Load("Assets/Textures/Boss_idle.png");
+		/*bossTextures["idle"] = Engine::GetInstance().textures->Load("Assets/Textures/Boss_idle.png");*/
+		bossTextures["idle"] = Engine::GetInstance().textures->Load("Assets/Textures/Bidle.png");
 		bossTextures["attack"] = Engine::GetInstance().textures->Load("Assets/Textures/Boss_Attack1.png");
 		bossTextures["walk"] = Engine::GetInstance().textures->Load("Assets/Textures/Boss_walk.png");
 
 		// 默认当前图片设为 idle
 		texture = bossTextures["idle"];
 
-		// 2. 定义 IDLE 动画
+		//------------------------------------------------------------------------Boss idle-------------------------------------------------------------------------------//
 		Animation idleAnim;
 		// 因为是独立图片，第一帧通常就是从 0,0 开始！不用在大图里找位置了
-
-		// 你的测量数据
-		int padding = 0;
-		int startX = 0;       // 【新增】第一帧左上角的 X 坐标 (前面的空白宽度)
-		int frameWidth =240;  // 每一帧的宽度
+     // 【新增】第一帧左上角的 X 坐标 (前面的空白宽度)
+		int frameWidth =247;  // 每一帧的宽度
 		int frameHeight = 87;
 		int frameCount = 14;
 
 		for (int i = 0; i < frameCount; i++) {
 			// 公式变了： 起始位置 + (第几个 * 宽度)
-			int currentX = startX + (i * frameWidth+padding);
+			int currentX =i * frameWidth;
 
 			idleAnim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
 		}
-
-
-
-		idleAnim.AddFrame({ 0, 0, 100, 100 }, 200);
-		idleAnim.AddFrame({ 100, 0, 100, 100 }, 200);
 		anims.AddClip("idle", idleAnim);
 
 		// 3. 定义 ATTACK 动画
