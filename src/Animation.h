@@ -39,6 +39,15 @@ public:
     bool LoadFromTSX(const char* tsxPath,
         const std::unordered_map<int, std::string>& aliases);
 
+    // ================== 【新增代码】开始 ==================
+    // 允许手动添加动画，不需要 .tsx 文件
+    void AddClip(const std::string& name, const Animation& anim) {
+        clips_[name] = anim;
+        // 如果是第一个添加的动画，默认设为当前动画，防止空指针
+        if (currentName_.empty()) {
+            currentName_ = name;
+        }
+    }
     // manage animations
     void SetCurrent(const std::string& name);
     void Update(float dtSeconds);

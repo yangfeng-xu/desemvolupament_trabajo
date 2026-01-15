@@ -38,8 +38,63 @@ bool Enemy::Start() {
 	
 	// load
 	if (pbody != nullptr) return true;
+	// ================== 【BOSS 多图逻辑】 ==================
+	if (enemyType == EnemyType::BOSS) {
+		LOG("Loading BOSS with Multiple Textures");
 
-	if (enemyType == EnemyType::FLYING) {
+		// 1. 加载所有独立的图片 (请改成你真实的文件名)
+		bossTextures["idle"] = Engine::GetInstance().textures->Load("Assets/Textures/Boss_idle.png");
+		bossTextures["attack"] = Engine::GetInstance().textures->Load("Assets/Textures/Boss_Attack1.png");
+		bossTextures["walk"] = Engine::GetInstance().textures->Load("Assets/Textures/Boss_walk.png");
+
+		// 默认当前图片设为 idle
+		texture = bossTextures["idle"];
+
+		// 2. 定义 IDLE 动画
+		Animation idleAnim;
+		// 因为是独立图片，第一帧通常就是从 0,0 开始！不用在大图里找位置了
+
+		// 你的测量数据
+		int padding = 0;
+		int startX = 0;       // 【新增】第一帧左上角的 X 坐标 (前面的空白宽度)
+		int frameWidth =240;  // 每一帧的宽度
+		int frameHeight = 87;
+		int frameCount = 14;
+
+		for (int i = 0; i < frameCount; i++) {
+			// 公式变了： 起始位置 + (第几个 * 宽度)
+			int currentX = startX + (i * frameWidth+padding);
+
+			idleAnim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
+		}
+
+
+
+		idleAnim.AddFrame({ 0, 0, 100, 100 }, 200);
+		idleAnim.AddFrame({ 100, 0, 100, 100 }, 200);
+		anims.AddClip("idle", idleAnim);
+
+		// 3. 定义 ATTACK 动画
+		Animation attackAnim;
+		// 攻击动作在另一张图里，也是从 0,0 开始
+		attackAnim.AddFrame({ 0, 0, 200, 150 }, 150);
+		attackAnim.AddFrame({ 200, 0, 200, 150 }, 150);
+		anims.AddClip("attack", attackAnim);
+
+		// 4. 定义 WALK 动画 (如果有)
+		// Animation walkAnim; ...
+		// anims.AddClip("walk", walkAnim);
+
+		// 设置初始状态
+		anims.SetCurrent("idle");
+
+		// 设置物理 (同之前)
+		texW = 100; texH = 100;
+		pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), 40, bodyType::DYNAMIC);
+		pbody->listener = this;
+		pbody->ctype = ColliderType::ENEMY;
+		b2Body_SetGravityScale(pbody->body, 1.0f);
+	}else if (enemyType == EnemyType::FLYING) {
 		std::unordered_map<int, std::string>EnemyFlying = { {0,"idleflying"},{4,"fly-right"},{8,"fly-down"},{12,"fly-left"} };
 		deathFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/monster-death.mp3"); // Carga el audio
 		anims.LoadFromTSX("Assets/Textures/32x32-bat-sprite.tsx", EnemyFlying);
@@ -317,6 +372,18 @@ void Enemy::ApplyPhysics() {
 void Enemy::Draw(float dt) {
 
 	anims.Update(dt);
+
+	// ================== 【新增：自动切换图片】 ==================
+	if (enemyType == EnemyType::BOSS) {
+		// 获取当前正在播放的动画名字 (例如 "idle", "attack")
+		std::string currentAnimName = anims.GetCurrentName();
+
+		// 如果这个名字在我们的素材库里，就切换 texture
+		if (bossTextures.find(currentAnimName) != bossTextures.end()) {
+			texture = bossTextures[currentAnimName];
+		}
+	}
+	// ==========================================================
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
 	// Update render position using your PhysBody helper
@@ -352,6 +419,13 @@ bool Enemy::CleanUp()
 	// 2. Borrar Pathfinding (NUEVO E IMPORTANTE)
 	pathfinding = nullptr;
 
+	// 【新增】清理 Boss 的多张图片
+	for (auto& entry : bossTextures) {
+		if (entry.second != nullptr) {
+			Engine::GetInstance().textures->UnLoad(entry.second);
+		}
+	}
+	bossTextures.clear();
 	// 3. Descargar textura
 	if (texture != nullptr) {
 		Engine::GetInstance().textures->UnLoad(texture);

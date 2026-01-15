@@ -60,7 +60,6 @@ bool Scene::PreUpdate()
 bool Scene::Update(float dt)
 {
 	//L03 TODO 3: Make the camera movement independent of framerate
-	/*float camSpeed = 1;*/
 
 	if (reloadCooldown > 0.0f) {
 		reloadCooldown -= dt;
@@ -593,6 +592,28 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 	//enemy1->position = Vector2D(384, 672);
 	//enemy1->Start();//importante!!!, tenemos que credar nosotros 
 	//este escena no vaterner el botton por lo tanto podemos quitar
+	// ================== 【新增：生成测试 Boss】 ==================
+	std::shared_ptr<Enemy> boss = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
+
+	if (boss != nullptr) {
+		// 1. 【重要】先设置类型为 BOSS，这样 Start() 里才会跑 Boss 的加载逻辑
+		boss->SetEnemyType(EnemyType::BOSS);
+
+		// 2. 设置位置 (建议设置在主角附近，比如 X=500, Y=600)
+		// 注意：确保这个坐标不在墙里，而在你的地图可视范围内
+		boss->position = Vector2D(500, 600);
+
+		// 3. 启动！(这会调用你刚才写的加载图片和动画的代码)
+		boss->Start();
+
+		LOG("Testing Boss Created!");
+	}
+	// ==========================================================
+
+
+
+
+
 
 	levelTimer = 60.0f * 1000.0f;
 	

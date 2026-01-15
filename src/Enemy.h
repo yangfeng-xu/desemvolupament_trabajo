@@ -6,12 +6,15 @@
 #include <SDL3/SDL.h>
 #include "Pathfinding.h"
 #include "Player.h"
+#include <unordered_map>
+#include <string>
 
 struct SDL_Texture;
 
 enum class EnemyType {
 	GROUND,
-	FLYING
+	FLYING,
+	BOSS
 };
 class Enemy : public Entity
 {
@@ -29,7 +32,7 @@ public:
 	Vector2D GetPosition();
 	void SetEnemyType(EnemyType type);
 	SDL_FlipMode flipState = SDL_FLIP_NONE;
-
+	std::unordered_map<std::string, SDL_Texture*> bossTextures;
 private:
 	float pathfindingTimer = 0.0f;
 	float pathfindingInterval = 0.5f;//calcular la ruta de pathfinding cada 0,5 segundo
@@ -53,7 +56,7 @@ public:
 	int detectionRadius = 10;
 	EnemyType enemyType = EnemyType::GROUND;
 
-
+	
 private:
 	b2Vec2 velocity;
 	AnimationSet anims;
