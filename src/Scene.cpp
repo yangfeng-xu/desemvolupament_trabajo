@@ -483,12 +483,7 @@ void Scene::UpdateLevel1(float dt) {//para poder cambiar la escena a nivell 2
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN) {
 		ChangeScene(SceneID::LEVEL_2);
 	}
-
-	// 1. 始终允许切换场景的输入（如按键 '2'）
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN) {
-		ChangeScene(SceneID::LEVEL_2);
-	}
-
+	Engine::GetInstance().uiManager->Update(dt);
 	// 2. 如果游戏暂停了，直接 return，不执行下面的逻辑
 	if (isGamePaused) {
 		return;
