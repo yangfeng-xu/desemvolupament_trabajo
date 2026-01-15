@@ -401,7 +401,25 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
                     savepoint->Awake();
                     savepoint->Start();
                 }
+                else if (entityType == std::string("Item")) {
+                    float x = objectNode.attribute("x").as_float();
+                    float y = objectNode.attribute("y").as_float();
 
+                    // Crear entidad Item
+                    std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
+
+                    // Guardar nombre para saber si es "Coin" o "Star"
+                    item->name = objectNode.attribute("name").as_string();
+
+                    // Ajustar posición (Tiled suele poner el origen abajo-izquierda para objetos, SDL arriba-izquierda)
+                    item->position = Vector2D(x, y - mapData.tileHeight);
+                    item->startPosition = item->position;
+
+                    LOG("Created Item '%s' at x:%.2f y:%.2f", item->name.c_str(), x, y);
+
+                    item->Awake();
+                    item->Start();
+                }
             }
         }
     }

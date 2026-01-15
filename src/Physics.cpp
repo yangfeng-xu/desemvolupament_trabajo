@@ -218,11 +218,24 @@ bool Physics::PostUpdate()
         }
     }
 
-    // Process bodies to delete after the world step
-    for (PhysBody* physBody : bodiesToDelete) {
-        b2DestroyBody(physBody->body);
+    //// Process bodies to delete after the world step
+    //for (PhysBody* physBody : bodiesToDelete) {
+    //    b2DestroyBody(physBody->body);
+    //}
+    //bodiesToDelete.clear();
+    if (!bodiesToDelete.empty())
+    {
+        for (auto body : bodiesToDelete)
+        {
+            // 1. Destruir cuerpo de Box2D
+            if (!B2_IS_NULL(body->body)) {
+                b2DestroyBody(body->body);
+            }
+            // 2. Borrar memoria del wrapper
+            delete body;
+        }
+        bodiesToDelete.clear();
     }
-    bodiesToDelete.clear();
 
     return ret;
 }
@@ -276,29 +289,43 @@ void Physics::EndContact(b2ShapeId shapeA, b2ShapeId shapeB)
 
 
 
+//void Physics::DeletePhysBody(PhysBody* physBody)
+//{
+//    // 1. Seguridad básica
+//    if (physBody == nullptr) return;
+//
+//    for (auto it = bodiesToDelete.begin(); it != bodiesToDelete.end(); ) {
+//        if (*it == physBody) {
+//            it = bodiesToDelete.erase(it); // ????????????????
+//        }
+//        else {
+//            ++it;
+//        }
+//    }
+//    // 2. Si el cuerpo de Box2D es válido, lo destruimos
+//    if (!B2_IS_NULL(physBody->body) && b2Body_IsValid(physBody->body))
+//    {
+//        b2DestroyBody(physBody->body);
+//
+//        physBody->body = b2_nullBodyId;
+//    }
+//
+//    // 3. Ahora borramos el contenedor (wrapper) de memoria
+//    delete physBody;
+//}
+
 void Physics::DeletePhysBody(PhysBody* physBody)
 {
-    // 1. Seguridad básica
+    // Validación de seguridad
     if (physBody == nullptr) return;
 
-    for (auto it = bodiesToDelete.begin(); it != bodiesToDelete.end(); ) {
-        if (*it == physBody) {
-            it = bodiesToDelete.erase(it); // ????????????????
-        }
-        else {
-            ++it;
-        }
-    }
-    // 2. Si el cuerpo de Box2D es válido, lo destruimos
-    if (!B2_IS_NULL(physBody->body) && b2Body_IsValid(physBody->body))
-    {
-        b2DestroyBody(physBody->body);
-
-        physBody->body = b2_nullBodyId;
+    // Verificar si ya está en la lista para evitar duplicados
+    for (auto& body : bodiesToDelete) {
+        if (body == physBody) return;
     }
 
-    // 3. Ahora borramos el contenedor (wrapper) de memoria
-    delete physBody;
+    // En lugar de borrarlo aquí, lo añadimos a la lista de pendientes
+    bodiesToDelete.push_back(physBody);
 }
 
 

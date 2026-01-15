@@ -23,10 +23,14 @@ public:
 
 	bool Destroy();
 
+	void OnCollision(PhysBody* physA, PhysBody* physB) override;
 public:
 
 	bool isPicked = false;
 	Vector2D startPosition;
+
+	bool isCoin = false;
+	bool isStar = false;
 private:
 
 	SDL_Texture* texture;
