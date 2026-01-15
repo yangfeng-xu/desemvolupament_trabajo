@@ -474,6 +474,15 @@ void Scene::UnloadLevel1() {//limpia la mapa y entity
 	Engine::GetInstance().entityManager->CleanUp();
 	Engine::GetInstance().map->CleanUp();
 
+	// 卸载暂停/播放图标
+	if (iconPause != nullptr) {
+		Engine::GetInstance().textures->UnLoad(iconPause);
+		iconPause = nullptr;
+	}
+	if (iconPlay != nullptr) {
+		Engine::GetInstance().textures->UnLoad(iconPlay);
+		iconPlay = nullptr;
+	}
 	isGameOver = false;
 	gameOverShown = false;
 	levelTimer = 60.0f * 1000.0f; // ????
@@ -484,7 +493,7 @@ void Scene::UpdateLevel1(float dt) {//para poder cambiar la escena a nivell 2
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN) {
 		ChangeScene(SceneID::LEVEL_2);
 	}
-	Engine::GetInstance().uiManager->Update(dt);
+	/*Engine::GetInstance().uiManager->Update(dt);*/
 	// 2. 如果游戏暂停了，直接 return，不执行下面的逻辑
 	if (isGamePaused) {
 		return;
