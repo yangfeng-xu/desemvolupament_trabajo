@@ -31,6 +31,8 @@ public:
 
 	bool isCoin = false;
 	bool isStar = false;
+
+	int id = -1;
 private:
 
 	SDL_Texture* texture;

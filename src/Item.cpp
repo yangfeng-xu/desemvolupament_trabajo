@@ -22,6 +22,8 @@ Item::Item() : Entity(EntityType::ITEM) // Se crea inicialmente como ITEM
     isPicked = false;
     texturePath = nullptr;
     texH_offset = 0;
+
+    id = -1;
 }
 
 Item::~Item() {}
@@ -215,6 +217,10 @@ void Item::OnCollision(PhysBody* physA, PhysBody* physB) {
 
         // 1. Marcar como recogido
         isPicked = true;
+
+        if (id != -1) {
+            Engine::GetInstance().scene->collectedIDs.push_back(id);
+        }
 
         // 2. Reproducir sonido
         if (isCoin) {

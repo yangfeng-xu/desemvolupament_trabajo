@@ -31,12 +31,15 @@ bool Scene::Awake()
 	LOG("Loading Scene");
 	bool ret = true;
 	/*LoadScene(currentScene);*/
+
+	collectedIDs.clear();
 	return ret;
 }
 
 // Called before the first frame
 bool Scene::Start()
 {
+	/*collectedIDs.clear();*/
 	LoadScene(currentScene);
 
 	return true;
@@ -582,13 +585,13 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 
 
 	//L08: TODO 4: Create a new item using the entity manager and set the position to (200, 672) to test
-	std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
-	item->position = Vector2D(200, 672);
-	item->Start();//!!!
-	//Create a new enemy 
-	std::shared_ptr<Enemy> enemy1 = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
-	enemy1->position = Vector2D(384, 672);
-	enemy1->Start();//importante!!!, tenemos que credar nosotros 
+	//std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
+	//item->position = Vector2D(200, 672);
+	//item->Start();//!!!
+	////Create a new enemy 
+	//std::shared_ptr<Enemy> enemy1 = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
+	//enemy1->position = Vector2D(384, 672);
+	//enemy1->Start();//importante!!!, tenemos que credar nosotros 
 	//este escena no vaterner el botton por lo tanto podemos quitar
 
 	levelTimer = 60.0f * 1000.0f;

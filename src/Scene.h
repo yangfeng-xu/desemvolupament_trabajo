@@ -56,6 +56,8 @@ public:
 	void UnloadCurrentScene();
 	void ChangeScene(SceneID newScene);
 	bool isGamePaused = false; // 游戏是否暂停
+
+	std::list<int> collectedIDs;
 	
 private:
 	// L17 TODO 3: Define specific function for main menu scene: Load, Unload, Handle UI events

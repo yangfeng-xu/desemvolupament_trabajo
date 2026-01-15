@@ -7,6 +7,7 @@
 #include"EntityManager.h"
 #include <math.h>
 #include "Item.h" 
+#include "Scene.h"
 
 Map::Map() : Module(), mapLoaded(false)
 {
@@ -402,21 +403,64 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
                     savepoint->Start();
                 }
                 else if (entityType == std::string("Item")) {
+                    //float x = objectNode.attribute("x").as_float();
+                    //float y = objectNode.attribute("y").as_float();
+
+                    //// Crear entidad Item
+                    //std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
+
+                    //// Guardar nombre para saber si es "Coin" o "Star"
+                    //item->name = objectNode.attribute("name").as_string();
+
+                    //// Ajustar posición (Tiled suele poner el origen abajo-izquierda para objetos, SDL arriba-izquierda)
+                    //item->position = Vector2D(x, y - mapData.tileHeight);
+                    //item->startPosition = item->position;
+
+                    //LOG("Created Item '%s' at x:%.2f y:%.2f", item->name.c_str(), x, y);
+
+                    //item->Awake();
+                    //item->Start();
+                    // --- PEGA ESTO AQUÍ (INICIO DEL BLOQUE) ---
+    // 1. Leer el ID único que le da Tiled al objeto
+ // 1. PRIMERO LEEMOS EL ID
+                    int id = objectNode.attribute("id").as_int();
+
+                    // --- DIAGNÓSTICO: Imprimir qué está pasando ---
+                    bool foundInList = false;
+                    LOG("--- PROCESANDO ITEM ID: %d ---", id);
+
+                    // Imprimir toda la lista para ver qué tenemos guardado
+                    /*Descomenta si quieres ver la lista completa:
+                    for (int savedId : Engine::GetInstance().scene->collectedIDs) {
+                        LOG("Lista tiene ID: %d", savedId);
+                    }
+                    */
+
+                    for (int collectedId : Engine::GetInstance().scene->collectedIDs) {
+                        if (collectedId == id) {
+                            foundInList = true;
+                            break;
+                        }
+                    }
+
+                    if (foundInList) {
+                        LOG(" -> ¡ENCONTRADO EN LISTA! No se crea.");
+                        continue; // Se salta la creación
+                    }
+                    else {
+                        LOG(" -> NO encontrado en lista. Creando objeto...");
+                    }
+                    // ----------------------------------------------
+
+                    // Tu código normal de creación
                     float x = objectNode.attribute("x").as_float();
                     float y = objectNode.attribute("y").as_float();
 
-                    // Crear entidad Item
                     std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
-
-                    // Guardar nombre para saber si es "Coin" o "Star"
+                    item->id = id; // IMPORTANTE
                     item->name = objectNode.attribute("name").as_string();
-
-                    // Ajustar posición (Tiled suele poner el origen abajo-izquierda para objetos, SDL arriba-izquierda)
                     item->position = Vector2D(x, y - mapData.tileHeight);
                     item->startPosition = item->position;
-
-                    LOG("Created Item '%s' at x:%.2f y:%.2f", item->name.c_str(), x, y);
-
                     item->Awake();
                     item->Start();
                 }
