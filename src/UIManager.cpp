@@ -26,6 +26,7 @@ std::shared_ptr<UIElement> UIManager::CreateUIElement(UIElementType type, int id
 	switch(type) {
 	case UIElementType::BUTTON:
 		uiElement = std::make_shared<UIButton>(id, bounds, text,observer);
+		uiElement->SetObserver(observer); // 额外确保设置
 		break;
 	case UIElementType::TOGGLE:
 		uiElement = std::make_shared<UIToggle>(id,bounds,text,false,observer);

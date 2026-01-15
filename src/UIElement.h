@@ -104,6 +104,8 @@
 #include "Render.h"
 #include "Module.h"
 #include "Vector2D.h"
+#include <memory>
+#include <string>
 
 enum class UIElementType
 {
@@ -131,31 +133,25 @@ enum class UIElementState
 class UIElement : public std::enable_shared_from_this<UIElement>
 {
 public:
-
 	UIElement() {}
 
-	// 【修改 1】通用的构造函数：增加了 id 和 observer 参数
-	// 这样子类 (UIToggle, UIButton) 就可以把 Scene 传进来了
+	// 统一的构造函数
 	UIElement(UIElementType type, int id, SDL_Rect bounds, const char* text, Module* observer) :
 		type(type),
 		id(id),
 		state(UIElementState::NORMAL),
 		bounds(bounds),
 		text(text),
-		observer(observer) // <--- 【关键】保存 observer
+		observer(observer) // 关键：保存 observer
 	{
 		color.r = 255; color.g = 255; color.b = 255; color.a = 255;
 		texture = nullptr;
-		section = { 0,0,0,0 };
+		section = { 0, 0, 0, 0 };
 	}
 
 	virtual ~UIElement() {}
 
-	// Called each loop iteration
-	virtual bool Update(float dt)
-	{
-		return true;
-	}
+	virtual bool Update(float dt) { return true; }
 
 	void SetTexture(SDL_Texture* tex)
 	{
@@ -168,7 +164,6 @@ public:
 		observer = module;
 	}
 
-	// 【修改 2】增加空指针检查，防止崩溃
 	void NotifyObserver()
 	{
 		if (observer != nullptr) {
@@ -176,18 +171,10 @@ public:
 		}
 	}
 
-	virtual bool CleanUp()
-	{
-		return true;
-	}
-
-	virtual bool Destroy()
-	{
-		return true;
-	}
+	virtual bool CleanUp() { return true; }
+	virtual bool Destroy() { return true; }
 
 public:
-
 	int id;
 	UIElementType type;
 	UIElementState state;
@@ -196,8 +183,8 @@ public:
 	SDL_Rect bounds;
 	SDL_Color color;
 
-	SDL_Texture* texture = nullptr; // 初始化为 nullptr
+	SDL_Texture* texture = nullptr;
 	SDL_Rect section;
 
-	Module* observer = nullptr;     // 【修改 3】初始化为 nullptr，防止随机值
+	Module* observer = nullptr; // 默认为空
 };

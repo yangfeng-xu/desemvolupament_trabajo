@@ -238,21 +238,23 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 
 
 	// --------------------------------------------------------------------------Pause UI-----------------------------------------------------------------------------------//
+
+
 	if (uiElement->id == PAUSE_TOGGLE_ID)
 	{
-		// 这里的逻辑是：如果按钮是 On (显示播放图)，说明我们刚才按下了暂停，进入暂停状态
-		// 我们强制转换一下来获取状态
+		// 使用 dynamic_cast 将基类指针转为子类指针
 		UIToggle* toggle = dynamic_cast<UIToggle*>(uiElement);
-		if (toggle) {
-			isGamePaused = toggle->IsOn();
-		}
-		LOG("Game Paused: %s", isGamePaused ? "YES" : "NO");
 
-		// Pause music
-		if (isGamePaused)
-			Engine::GetInstance().audio->PauseMusic(); // 假设你有这个函数
-		else
-			Engine::GetInstance().audio->ResumeMusic();
+		if (toggle != nullptr) {
+			isGamePaused = toggle->IsOn();
+
+			LOG("Game Paused: %s", isGamePaused ? "YES" : "NO");
+
+			if (isGamePaused)
+				Engine::GetInstance().audio->PauseMusic();
+			else
+				Engine::GetInstance().audio->ResumeMusic();
+		}
 	}
 	
 	//----------------------------------------------------------------------------Level 1-----------------------------------------------------------------------------------//

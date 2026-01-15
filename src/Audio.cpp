@@ -1,4 +1,4 @@
-#include "Audio.h"
+﻿#include "Audio.h"
 #include "Log.h"
 
 Audio::Audio() {
@@ -200,7 +200,7 @@ bool Audio::PlayFx(int id, int repeat, float rate) {
     }
 
     if (rate != 1.0f) {
-        if (!SDL_SetAudioStreamFrequencyRatio(stream, rate)) { // Establecer la proporci�n de frecuencia
+        if (!SDL_SetAudioStreamFrequencyRatio(stream, rate)) { // Establecer la proporción de frecuencia
             LOG("Audio: SDL_SetAudioStreamFrequencyRatio failed: %s", SDL_GetError());
             // Si falla, se sigue con el tono normal (rate = 1.0f)
         }
@@ -221,10 +221,10 @@ bool Audio::PlayFx(int id, int repeat, float rate) {
 }
 void Audio::PauseMusic()
 {
-    // ????????????????????????
+    // 如果已经在暂停状态，或者没有音乐流，就不做任何事
     if (musicPaused || music_stream_ == nullptr) return;
 
-    // SDL3: ??????�??� (?????????)
+    // SDL3: 解绑音频流即“暂停” (停止向设备发送数据)
     SDL_UnbindAudioStream(music_stream_);
 
     musicPaused = true;
@@ -233,15 +233,17 @@ void Audio::PauseMusic()
 
 void Audio::ResumeMusic()
 {
-    // ?????????????????????????????
+    // 如果没有暂停，或者没有音乐流，或者设备没打开，就不做任何事
     if (!musicPaused || music_stream_ == nullptr || device_ == 0) return;
 
-    // SDL3: ????????�??�
-    if (SDL_BindAudioStream(device_, music_stream_) == 0) {
+    // 【修正点】SDL3 中成功返回 true (或者非0值)
+    // 直接把函数调用放在 if 里即可，或者写 == true
+    if (SDL_BindAudioStream(device_, music_stream_)) {
         musicPaused = false;
         LOG("Audio: Music resumed (stream rebound)");
     }
     else {
+        // 只有真的失败了（返回 false）才会进这里
         LOG("Audio: Failed to resume music: %s", SDL_GetError());
     }
 }

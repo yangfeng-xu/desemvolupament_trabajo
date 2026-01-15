@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Module.h"
 #include "Player.h"
@@ -55,6 +55,7 @@ public:
 	void LoadScene(SceneID newScene);
 	void UnloadCurrentScene();
 	void ChangeScene(SceneID newScene);
+	bool isGamePaused = false; // 游戏是否暂停
 private:
 	// L17 TODO 3: Define specific function for main menu scene: Load, Unload, Handle UI events
 	void LoadMainMenu();
@@ -100,9 +101,9 @@ private:
 	bool exitGameRequested = false;
 	bool gameOverShown = false;
 
-	bool isGamePaused = false; // ??????
-	SDL_Texture* iconPause = nullptr; // ???? (???????)
-	SDL_Texture* iconPlay = nullptr;  // ??/???? (???????)
-	// ???? ID ?????
+	
+	SDL_Texture* iconPause = nullptr; // 暂停图标 (游戏进行时显示)
+	SDL_Texture* iconPlay = nullptr;  // 播放/继续图标 (游戏暂停时显示)
+	// 定义一个 ID 给暂停按钮
 	const int PAUSE_TOGGLE_ID = 200;
 };
