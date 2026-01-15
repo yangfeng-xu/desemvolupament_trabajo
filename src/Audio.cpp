@@ -71,6 +71,7 @@ bool Audio::EnsureStreams() {
             music_stream_ = nullptr;
             return false;
         }
+        SDL_SetAudioStreamGain(music_stream_, musicVolume);
     }
     return true;
 }
@@ -115,10 +116,6 @@ bool Audio::CleanUp() {
     }
     FreeSound(music_data_);
 
-   /* if (sfx_stream_) {
-        SDL_DestroyAudioStream(sfx_stream_);
-        sfx_stream_ = nullptr;
-    }*/
     for (auto& s : sfx_) FreeSound(s);
     sfx_.clear();
 
@@ -155,6 +152,9 @@ bool Audio::PlayMusic(const char* path, float fadeTime) {
         LOG("Audio: SDL_SetAudioStreamFormat(music) failed: %s", SDL_GetError());
         return false;
     }
+
+    // 确保播放新音乐时应用当前音量
+    SDL_SetAudioStreamGain(music_stream_, musicVolume);
 
     // Queue once (simple play). For looping, requeue when drained (TODO).
     if (!SDL_PutAudioStreamData(music_stream_, music_data_.buf, music_data_.len)) {
@@ -246,6 +246,22 @@ void Audio::ResumeMusic()
         // 只有真的失败了（返回 false）才会进这里
         LOG("Audio: Failed to resume music: %s", SDL_GetError());
     }
+}
+
+// 新增：设置音量 (0.0f ~ 1.0f)
+void Audio::SetMusicVolume(float volume) {
+    if (volume < 0.0f) volume = 0.0f;
+    if (volume > 1.0f) volume = 1.0f;
+
+    musicVolume = volume;
+
+    if (music_stream_) {
+        SDL_SetAudioStreamGain(music_stream_, musicVolume);
+    }
+}
+
+float Audio::GetMusicVolume() const {
+    return musicVolume;
 }
 
 bool Audio::Update(float dt)

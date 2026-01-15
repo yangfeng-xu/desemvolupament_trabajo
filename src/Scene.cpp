@@ -79,13 +79,35 @@ bool Scene::Update(float dt)
 	default:
 		break;
 	}
+	// 绘制 Settings 背景 (如果在显示状态)
+if (showSettingsUI) {
+	int w, h;
+	Engine::GetInstance().window->GetWindowSize(w, h);
+	// 简单的半透明黑色背景遮罩
+	SDL_Rect bg = { w / 2 - 150, h / 2 - 200, 300, 400 };
+	Engine::GetInstance().render->DrawRectangle(bg, 50, 50, 50, 240, true, false); // 深灰色背景
+	Engine::GetInstance().render->DrawRectangle(bg, 255, 255, 255, 255, false, false); // 白色边框
 
+	// 绘制标题
+	Engine::GetInstance().render->DrawText("SETTINGS", w / 2 - 40, h / 2 - 180, 80, 30, { 255,255,255,255 });
+
+	// 绘制音量数值
+	float vol = Engine::GetInstance().audio->GetMusicVolume();
+	std::string volText = "Vol: " + std::to_string((int)(vol * 100)) + "%";
+	Engine::GetInstance().render->DrawText(volText.c_str(), w / 2 - 40, h / 2 + 20, 80, 20, { 255,255,255,255 });
+}
 	return true;
 }
 
 // Called each loop iteration
 bool Scene::PostUpdate()
 {
+	// 安全关闭设置界面（防止在 Update 循环中删除 UI 导致崩溃）
+	if (settingsCloseRequested) {
+		DestroySettingsUI();
+		settingsCloseRequested = false;
+		showSettingsUI = false;
+	}
 
 	if (sceneChangeRequested)
 	{
@@ -225,17 +247,58 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 	if (uiElement->id == 1) {
 		LOG("Start game");
 	}
-	if (uiElement->id == 2) {
-		LOG("Go to settings");
+	//if (uiElement->id == 2) {
+	//	LOG("Go to settings");
+	//}
+	// ID 2: Settings 按钮 (Main Menu)
+	// 【修正点】：这里之前只 Log 了，现在加上打开界面的逻辑
+	if (uiElement->id == BTN_MAIN_MENU_SETTINGS) { // 也就是 ID 2
+		LOG("Opening Settings from Main Menu");
+		if (!showSettingsUI) {
+			CreateSettingsUI();
+			showSettingsUI = true;
+		}
 	}
-	// ?? ID ???????? ?? Toggle ID (?? 100)
-	if (uiElement->id == 100)
-	{
-		// ???????????
+
+
+	// ---------------------- SETTINGS PANEL EVENTS ---------------------- //
+	if (uiElement->id == BTN_SETTINGS_CLOSE) {
+		LOG("Closing Settings");
+		settingsCloseRequested = true; // 在 PostUpdate 中销毁
+		// 如果是在游戏中暂停打开的，关闭设置同时是否要取消暂停？通常保持暂停比较好。
+	}
+
+	if (uiElement->id == TOGGLE_FULLSCREEN_ID) {
 		Engine::GetInstance().window->ToggleFullsreen();
 		LOG("Toggled Fullscreen Mode");
 	}
 
+	if (uiElement->id == TOGGLE_MUSIC_ID) {
+		// 简单的音乐开关 (静音/恢复)
+		float currentVol = Engine::GetInstance().audio->GetMusicVolume();
+		if (currentVol > 0.0f) {
+			Engine::GetInstance().audio->SetMusicVolume(0.0f); // 关
+			LOG("Music OFF");
+		}
+		else {
+			Engine::GetInstance().audio->SetMusicVolume(1.0f); // 开（恢复最大）
+			LOG("Music ON");
+		}
+	}
+
+	if (uiElement->id == BTN_VOL_PLUS) {
+		float vol = Engine::GetInstance().audio->GetMusicVolume();
+		vol += 0.1f;
+		Engine::GetInstance().audio->SetMusicVolume(vol);
+		LOG("Volume Up: %f", vol);
+	}
+
+	if (uiElement->id == BTN_VOL_MINUS) {
+		float vol = Engine::GetInstance().audio->GetMusicVolume();
+		vol -= 0.1f;
+		Engine::GetInstance().audio->SetMusicVolume(vol);
+		LOG("Volume Down: %f", vol);
+	}
 
 	// --------------------------------------------------------------------------Pause UI-----------------------------------------------------------------------------------//
 
@@ -250,10 +313,20 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 
 			LOG("Game Paused: %s", isGamePaused ? "YES" : "NO");
 
-			if (isGamePaused)
+			if (isGamePaused) {
 				Engine::GetInstance().audio->PauseMusic();
-			else
+				if (!showSettingsUI) {
+					CreateSettingsUI();
+					showSettingsUI = true;
+				}
+			}
+			else {
 				Engine::GetInstance().audio->ResumeMusic();
+				// 恢复时自动关闭设置界面
+				if (showSettingsUI) {
+					settingsCloseRequested = true;
+				}
+			}
 		}
 	}
 	
@@ -365,7 +438,16 @@ void Scene::LoadMainMenu() {//cargar audio en aqui
 	Engine::GetInstance().render->camera.x = 0;
 	Engine::GetInstance().render->camera.y = 0;
 	mainMenuBackground = Engine::GetInstance().textures->Load("Assets/Textures/menu_resized.png");
-	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "Start", { 520,350,120,20 }, this);
+	//Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "Start", { 520,350,120,20 }, this);
+	//// 新增：Settings Button (在 Start 下方)
+	//Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_MAIN_MENU_SETTINGS, "Setting", { 520, 380, 120, 20 }, this);
+
+	// 【修改】创建并保存 Start 按钮
+	mainMenuStartBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "Start", { 520,350,120,20 }, this);
+
+	// 【修改】创建并保存 Settings 按钮
+	mainMenuSettingBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_MAIN_MENU_SETTINGS, "Setting", { 520, 380, 120, 20 }, this);
+	showSettingsUI = false;
 
 }
 void Scene::UnloadMainMenu() {
@@ -374,7 +456,10 @@ void Scene::UnloadMainMenu() {
 		Engine::GetInstance().textures->UnLoad(mainMenuBackground);
 		mainMenuBackground = nullptr;
 	}
-	
+	//
+	mainMenuStartBtn = nullptr;
+	mainMenuSettingBtn = nullptr;
+	showSettingsUI = false;
 }
 void Scene::UpdateMainMenu(float dt) {
 	if (mainMenuBackground != nullptr) {
@@ -393,6 +478,46 @@ void Scene::HandleMainMenuUIVebets(UIElement* uiLement) {
 		break;
 	}
 }
+
+// *********************************************
+// SETTINGS UI functions
+// *********************************************
+void Scene::CreateSettingsUI() {
+	int w, h;
+	Engine::GetInstance().window->GetWindowSize(w, h);
+	int centerX = w / 2;
+	int centerY = h / 2;
+
+	// 【新增】隐藏主菜单按钮
+	if (mainMenuStartBtn != nullptr) mainMenuStartBtn->visible = false;
+	if (mainMenuSettingBtn != nullptr) mainMenuSettingBtn->visible = false;
+
+	// Fullscreen Toggle
+	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::TOGGLE, TOGGLE_FULLSCREEN_ID, "Fullscreen", { centerX - 50, centerY - 120, 100, 30 }, this);
+
+	// Music Toggle (On/Off)
+	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::TOGGLE, TOGGLE_MUSIC_ID, "Music", { centerX - 50, centerY - 70, 100, 30 }, this);
+
+	// Volume Control Buttons
+	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_VOL_MINUS, "Vol -", { centerX - 80, centerY - 20, 60, 30 }, this);
+	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_VOL_PLUS, "Vol +", { centerX + 20, centerY - 20, 60, 30 }, this);
+
+	// Close Button
+	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_SETTINGS_CLOSE, "Close", { centerX - 50, centerY + 100, 100, 30 }, this);
+}
+
+void Scene::DestroySettingsUI() {
+	// 销毁所有设置界面相关的元素
+	Engine::GetInstance().uiManager->DestroyUIElement(TOGGLE_FULLSCREEN_ID);
+	Engine::GetInstance().uiManager->DestroyUIElement(TOGGLE_MUSIC_ID);
+	Engine::GetInstance().uiManager->DestroyUIElement(BTN_VOL_PLUS);
+	Engine::GetInstance().uiManager->DestroyUIElement(BTN_VOL_MINUS);
+	Engine::GetInstance().uiManager->DestroyUIElement(BTN_SETTINGS_CLOSE);
+
+	// 【新增】重新显示主菜单按钮
+	if (mainMenuStartBtn != nullptr) mainMenuStartBtn->visible = true;
+	if (mainMenuSettingBtn != nullptr) mainMenuSettingBtn->visible = true;
+}
 // *********************************************
 // Level 1 functions
 // *********************************************
@@ -405,6 +530,7 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 	Engine::GetInstance().render->camera.y = 0;
 	isGameOver = false;
 	gameOverShown = false;
+	showSettingsUI = false; // 确保重置
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
 
@@ -451,8 +577,8 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 	//// L16: TODO 2: Instantiate a new GuiControlButton in the Scene
 	uiBt1 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, std::string("Start").c_str(), { 0,0,100,20 }, this));
 	uiBt2 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 2, std::string("Setting").c_str(), { 0,50,100,20 }, this));
-	//full sreen
-	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::TOGGLE, 100, "FullScreen", { 10, 10, 100, 30 }, this);
+	////full sreen
+	//Engine::GetInstance().uiManager->CreateUIElement(UIElementType::TOGGLE, 100, "FullScreen", { 10, 10, 100, 30 }, this);
 
 
 	//L08: TODO 4: Create a new item using the entity manager and set the position to (200, 672) to test
@@ -470,6 +596,7 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 }
 void Scene::UnloadLevel1() {//limpia la mapa y entity
 	Engine::GetInstance().uiManager->CleanUp();
+	showSettingsUI = false;
 	player.reset();//eliminar player para verificar que todo esta eliminado//opcional
 	Engine::GetInstance().entityManager->CleanUp();
 	Engine::GetInstance().map->CleanUp();
@@ -591,12 +718,12 @@ void Scene::LoadLevel2() {
 
 	isGameOver = false;
 	gameOverShown = false;
-
+	showSettingsUI = false;
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate2.tmx");
 	//L15 TODO 3: Call the function to load entities from the map
 	Engine::GetInstance().map->LoadEntities(player);
-	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::TOGGLE, 100, "FullScreen", { 10, 10, 100, 30 }, this);
+	//Engine::GetInstance().uiManager->CreateUIElement(UIElementType::TOGGLE, 100, "FullScreen", { 10, 10, 100, 30 }, this);
 	levelTimer = 60.0f * 1000.0f;
 
 	
@@ -604,12 +731,14 @@ void Scene::LoadLevel2() {
 }
 void Scene::UnloadLevel2() {
 	Engine::GetInstance().uiManager->CleanUp();
+	showSettingsUI = false;
 	player.reset();//eliminar player para verificar que todo esta eliminado//opcional
 	Engine::GetInstance().entityManager->CleanUp();
 	Engine::GetInstance().map->CleanUp();
 	isGameOver = false;
 	gameOverShown = false;
 	levelTimer = 60.0f * 1000.0f; // ????
+	
 }
 void Scene::UpdateLevel2(float dt) {//cambiar a nivell 1
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) {

@@ -73,6 +73,10 @@ private:
 	void UnloadLevel2();
 	void UpdateLevel2(float dt);
 	void PostUpdateLevel2();
+
+	// 新增：设置界面相关函数
+	void CreateSettingsUI();
+	void DestroySettingsUI();
 private:
 
 	//L03: TODO 3b: Declare a Player attribute
@@ -107,4 +111,21 @@ private:
 	SDL_Texture* iconPlay = nullptr;  // 播放/继续图标 (游戏暂停时显示)
 	// 定义一个 ID 给暂停按钮
 	const int PAUSE_TOGGLE_ID = 200;
+
+	// 【新增】保存主菜单按钮的指针
+	std::shared_ptr<UIElement> mainMenuStartBtn;
+	std::shared_ptr<UIElement> mainMenuSettingBtn;
+	// 新增：设置界面相关的 ID
+	const int BTN_MAIN_MENU_SETTINGS = 2; // 主菜单的 Setting 按钮 ID
+	const int SETTINGS_PANEL_BG_ID = 300; // 背景（可选，用 DrawRectangle 代替）
+	const int BTN_SETTINGS_CLOSE = 301;
+	const int TOGGLE_FULLSCREEN_ID = 100; // 沿用之前的 ID
+	const int TOGGLE_MUSIC_ID = 302;
+	const int BTN_VOL_PLUS = 303;
+	const int BTN_VOL_MINUS = 304;
+
+	bool showSettingsUI = false;
+	bool settingsCloseRequested = false; // 用于安全关闭
+
+
 };

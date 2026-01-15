@@ -26,7 +26,7 @@ public:
 
 	// Additional methods
 	std::shared_ptr<UIElement> CreateUIElement(UIElementType type, int id, const char* text, SDL_Rect bounds, Module* observer, SDL_Rect sliderBounds = { 0,0,0,0 });
-
+	void DestroyUIElement(int id);
 public:
 
 	std::list<std::shared_ptr<UIElement>> UIElementsList;

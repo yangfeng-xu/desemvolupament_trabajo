@@ -72,11 +72,23 @@ std::shared_ptr<UIElement> UIManager::GetElement(int id)
 	}
 	return nullptr; // 如果没找到，返回空指针
 }
+// 新增：根据 ID 销毁 UI 元素
+void UIManager::DestroyUIElement(int id)
+{
+	UIElementsList.remove_if([id](const std::shared_ptr<UIElement>& e) {
+		return e->id == id;
+		});
+}
+
 
 bool UIManager::Update(float dt)
 {	
 	for (const auto& control : UIElementsList)
 	{
+		if (!control->visible) {
+			continue;
+		}
+
 		control->Update(dt);
 	}
 

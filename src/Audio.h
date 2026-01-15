@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Module.h"
 #include <SDL3/SDL.h>
@@ -38,6 +38,9 @@ public:
     void PauseMusic();
     void ResumeMusic();
 
+    // 新增：设置和获取音乐音量
+    void SetMusicVolume(float volume);
+    float GetMusicVolume() const;
 
     bool Update(float dt) override;
 
@@ -74,4 +77,5 @@ private:
     bool EnsureDeviceOpen();
     bool EnsureStreams();
     bool musicPaused = false;
+    float musicVolume = 1.0f; // 默认音量 1.0
 };
