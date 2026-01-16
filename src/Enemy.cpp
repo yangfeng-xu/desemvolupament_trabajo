@@ -241,7 +241,7 @@ bool Enemy::Update(float dt)
 
 	if (enemyType == EnemyType::GROUND) Move();
 	else if (enemyType == EnemyType::FLYING) MoveFlying();
-	else if (enemyType == EnemyType::BOSS) Move();
+	else if (enemyType == EnemyType::BOSS) MoveBoss();
 	else velocity = { 0.0f, 0.0f };
 	ApplyPhysics();
 	Draw(dt);
@@ -442,6 +442,62 @@ void Enemy::MoveFlying() {
 		velocity.x = 0;
 		velocity.y = 0;
 	}
+}
+// Enemy.cpp 底部
+
+void Enemy::MoveBoss() {
+	// 1. 安全检查：如果没有路径，或者路径点太少，就待机
+	if (pathfinding->pathTiles.size() < 2) {
+		velocity.x = 0;
+		// 如果 Boss 是受重力影响的，不要强制设置 velocity.y = 0，除非你想让它悬浮
+		// velocity.y = 0; 
+		anims.SetCurrent("idle"); // 没路走就 Idle
+		return;
+	}
+
+	// 2. 获取下一个目标图块 (Next Tile)
+	auto it = pathfinding->pathTiles.rbegin();
+	it++; // 跳过起始点（自己当前的位置）
+	Vector2D nextTile = *it;
+	Vector2D targetPos = Engine::GetInstance().map->MapToWorld((int)nextTile.getX(), (int)nextTile.getY());
+
+	// 修正中心点 (假设 Tile 是 32x32)
+	targetPos.setX(targetPos.getX() + 16);
+	targetPos.setY(targetPos.getY() + 16);
+
+	Vector2D currentPos = GetPosition();
+	float xTolerance = 5.0f; // Boss 的容错距离可以稍微大一点
+
+	// 3. 移动逻辑 (Boss 只在 X 轴移动，跳跃由物理引擎或特殊技能处理)
+	// 这里的 speed 可以在 Enemy::Start 里的 BOSS 分支单独设置，比如 boss->speed = 2.0f;
+
+	if (currentPos.getX() < targetPos.getX() - xTolerance) {
+		velocity.x = speed;
+		anims.SetCurrent("walk"); // Boss 专属走路动画
+		flipState = SDL_FLIP_HORIZONTAL; // 根据素材方向调整
+	}
+	else if (currentPos.getX() > targetPos.getX() + xTolerance) {
+		velocity.x = -speed;
+		anims.SetCurrent("walk");
+		flipState = SDL_FLIP_NONE;
+	}
+	else {
+		// 横向到达目标，稍微减速防止抖动
+		velocity.x = 0;
+	}
+
+	// === Boss 特殊跳跃逻辑 (可选) ===
+	// 如果 Boss 遇到高墙，是跳过去？还是大招砸烂？
+	// 这里保留一个简单的跳跃检测：如果下一个目标比我高很多，就跳
+	// 注意：Box2D 的 Y 轴通常是向下的，所以 "Y 小" 意味着 "高"
+	/*
+	Vector2D currentTilePos = Engine::GetInstance().map->WorldToMap((int)currentPos.getX(), (int)currentPos.getY());
+	if (nextTile.getY() < currentTilePos.getY() - 1 && isGrounded) {
+		// 给一个巨大的向上冲量
+		Engine::GetInstance().physics->ApplyLinearImpulse(pbody, 0, -jumpForce * 1.5f); // Boss 跳得更高
+		isGrounded = false;
+	}
+	*/
 }
 
 void Enemy::ApplyPhysics() {

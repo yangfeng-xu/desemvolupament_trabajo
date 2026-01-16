@@ -47,7 +47,8 @@ private:
 	void PerformPathfinding(float dt);
 	void GetPhysicsValues();
 	void Move();
-	void MoveFlying();
+	void MoveFlying(); 
+	void MoveBoss();
 	void ApplyPhysics();
 	void Draw(float dt);
 
