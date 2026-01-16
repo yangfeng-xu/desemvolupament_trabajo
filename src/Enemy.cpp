@@ -163,14 +163,16 @@ bool Enemy::Start() {
 
 		// 设置初始状态
 		anims.SetCurrent("idle");
-		//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
-		
-		// 设置物理 (同之前)
+
+		// 注意：这里创建了 Boss 专属的大碰撞体
 		texW = 100; texH = 100;
 		pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), 40, bodyType::DYNAMIC);
 		pbody->listener = this;
 		pbody->ctype = ColliderType::ENEMY;
 		b2Body_SetGravityScale(pbody->body, 1.0f);
+
+		//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+	
 	}else if (enemyType == EnemyType::FLYING) {
 		std::unordered_map<int, std::string>EnemyFlying = { {0,"idleflying"},{4,"fly-right"},{8,"fly-down"},{12,"fly-left"} };
 		deathFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/monster-death.mp3"); // Carga el audio
@@ -190,31 +192,37 @@ bool Enemy::Start() {
 	}
 
 
+	if (pbody == nullptr) {
+		//Add physics to the enemy - initialize physics body
+		texW = 32;
+		texH = 32;
 
-	//Add physics to the enemy - initialize physics body
-	texW = 32;
-	texH = 32;
+		pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
 
-	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
+		//Assign enemy class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
+		pbody->listener = this;
 
-	//Assign enemy class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
-	pbody->listener = this;
+		//ssign collider type
+		pbody->ctype = ColliderType::ENEMY;
 
-	//ssign collider type
-	pbody->ctype = ColliderType::ENEMY;
-
-	if (enemyType == EnemyType::FLYING) {
-		b2Body_SetGravityScale(pbody->body, 0.0f);
-	}
-	else {
-		b2Body_SetGravityScale(pbody->body, 1.0f);
+		if (enemyType == EnemyType::FLYING) {
+			b2Body_SetGravityScale(pbody->body, 0.0f);
+		}
+		else {
+			b2Body_SetGravityScale(pbody->body, 1.0f);
+		}
 	}
 
 	// Inicializar pathfinding (igual que antes)
 	pathfinding = std::make_shared<Pathfinding>();
 	Vector2D pos = GetPosition();
-	Vector2D tilePos = Engine::GetInstance().map->WorldToMap((int)pos.getX(), (int)pos.getY() + 1);
-	pathfinding->ResetPath(tilePos);
+	//Vector2D tilePos = Engine::GetInstance().map->WorldToMap((int)pos.getX(), (int)pos.getY() + 1);
+	//pathfinding->ResetPath(tilePos);
+	// 确保 Map 模块已加载
+	if (Engine::GetInstance().map != nullptr) {
+		Vector2D tilePos = Engine::GetInstance().map->WorldToMap((int)pos.getX(), (int)pos.getY() + 1);
+		pathfinding->ResetPath(tilePos);
+	}
 
 	return true;
 }
@@ -445,36 +453,103 @@ void Enemy::MoveFlying() {
 }
 // Enemy.cpp 底部
 
+//void Enemy::MoveBoss() {
+//
+//	// 修复点：如果正在攻击，禁止移动，确保 Boss 站定播放攻击动画
+//	if (isAttacking) {
+//		velocity.x = 0;
+//		// 如果 Boss 会飞或受重力影响，这里保留 Y 轴速度可能更自然，
+//		// 但为了稳妥，也可以设为 0（如果是地面 Boss）
+//		return;
+//	}
+//
+//	// 1. 安全检查：如果没有路径，或者路径点太少，就待机
+//	if (pathfinding->pathTiles.size() < 2) {
+//		velocity.x = 0;
+//		// 如果 Boss 是受重力影响的，不要强制设置 velocity.y = 0，除非你想让它悬浮
+//		// velocity.y = 0; 
+//		anims.SetCurrent("idle"); // 没路走就 Idle
+//		return;
+//	}
+//
+//	// 2. 获取下一个目标图块 (Next Tile)
+//	auto it = pathfinding->pathTiles.rbegin();
+//	it++; // 跳过起始点（自己当前的位置）
+//	Vector2D nextTile = *it;
+//	Vector2D targetPos = Engine::GetInstance().map->MapToWorld((int)nextTile.getX(), (int)nextTile.getY());
+//
+//	// 修正中心点 (假设 Tile 是 32x32)
+//	targetPos.setX(targetPos.getX() + 16);
+//	targetPos.setY(targetPos.getY() + 16);
+//
+//	Vector2D currentPos = GetPosition();
+//	float xTolerance = 5.0f; // Boss 的容错距离可以稍微大一点
+//
+//	// 3. 移动逻辑 (Boss 只在 X 轴移动，跳跃由物理引擎或特殊技能处理)
+//	// 这里的 speed 可以在 Enemy::Start 里的 BOSS 分支单独设置，比如 boss->speed = 2.0f;
+//
+//	if (currentPos.getX() < targetPos.getX() - xTolerance) {
+//		velocity.x = speed;
+//		anims.SetCurrent("walk"); // Boss 专属走路动画
+//		flipState = SDL_FLIP_HORIZONTAL; // 根据素材方向调整
+//	}
+//	else if (currentPos.getX() > targetPos.getX() + xTolerance) {
+//		velocity.x = -speed;
+//		anims.SetCurrent("walk");
+//		flipState = SDL_FLIP_NONE;
+//	}
+//	else {
+//		// 横向到达目标，稍微减速防止抖动
+//		velocity.x = 0;
+//	}
+//
+//	// === Boss 特殊跳跃逻辑 (可选) ===
+//	// 如果 Boss 遇到高墙，是跳过去？还是大招砸烂？
+//	// 这里保留一个简单的跳跃检测：如果下一个目标比我高很多，就跳
+//	// 注意：Box2D 的 Y 轴通常是向下的，所以 "Y 小" 意味着 "高"
+//	/*
+//	Vector2D currentTilePos = Engine::GetInstance().map->WorldToMap((int)currentPos.getX(), (int)currentPos.getY());
+//	if (nextTile.getY() < currentTilePos.getY() - 1 && isGrounded) {
+//		// 给一个巨大的向上冲量
+//		Engine::GetInstance().physics->ApplyLinearImpulse(pbody, 0, -jumpForce * 1.5f); // Boss 跳得更高
+//		isGrounded = false;
+//	}
+//	*/
+//}
 void Enemy::MoveBoss() {
-	// 1. 安全检查：如果没有路径，或者路径点太少，就待机
-	if (pathfinding->pathTiles.size() < 2) {
+	// 修复点：如果正在攻击，禁止移动，确保 Boss 站定播放攻击动画
+	if (isAttacking) {
 		velocity.x = 0;
-		// 如果 Boss 是受重力影响的，不要强制设置 velocity.y = 0，除非你想让它悬浮
-		// velocity.y = 0; 
-		anims.SetCurrent("idle"); // 没路走就 Idle
+		// 如果 Boss 会飞或受重力影响，这里保留 Y 轴速度可能更自然，
+		// 但为了稳妥，也可以设为 0（如果是地面 Boss）
 		return;
 	}
 
-	// 2. 获取下一个目标图块 (Next Tile)
+	// 1. 安全检查：如果没有路径，或者路径点太少，就待机
+	if (pathfinding == nullptr || pathfinding->pathTiles.size() < 2) {
+		velocity.x = 0;
+		anims.SetCurrent("idle");
+		return;
+	}
+
+	// 2. 获取下一个目标图块
 	auto it = pathfinding->pathTiles.rbegin();
-	it++; // 跳过起始点（自己当前的位置）
+	it++; // 跳过起始点
 	Vector2D nextTile = *it;
 	Vector2D targetPos = Engine::GetInstance().map->MapToWorld((int)nextTile.getX(), (int)nextTile.getY());
 
-	// 修正中心点 (假设 Tile 是 32x32)
+	// 修正中心点
 	targetPos.setX(targetPos.getX() + 16);
 	targetPos.setY(targetPos.getY() + 16);
 
 	Vector2D currentPos = GetPosition();
-	float xTolerance = 5.0f; // Boss 的容错距离可以稍微大一点
+	float xTolerance = 5.0f;
 
-	// 3. 移动逻辑 (Boss 只在 X 轴移动，跳跃由物理引擎或特殊技能处理)
-	// 这里的 speed 可以在 Enemy::Start 里的 BOSS 分支单独设置，比如 boss->speed = 2.0f;
-
+	// 3. 移动逻辑
 	if (currentPos.getX() < targetPos.getX() - xTolerance) {
 		velocity.x = speed;
-		anims.SetCurrent("walk"); // Boss 专属走路动画
-		flipState = SDL_FLIP_HORIZONTAL; // 根据素材方向调整
+		anims.SetCurrent("walk");
+		flipState = SDL_FLIP_HORIZONTAL;
 	}
 	else if (currentPos.getX() > targetPos.getX() + xTolerance) {
 		velocity.x = -speed;
@@ -482,24 +557,9 @@ void Enemy::MoveBoss() {
 		flipState = SDL_FLIP_NONE;
 	}
 	else {
-		// 横向到达目标，稍微减速防止抖动
 		velocity.x = 0;
 	}
-
-	// === Boss 特殊跳跃逻辑 (可选) ===
-	// 如果 Boss 遇到高墙，是跳过去？还是大招砸烂？
-	// 这里保留一个简单的跳跃检测：如果下一个目标比我高很多，就跳
-	// 注意：Box2D 的 Y 轴通常是向下的，所以 "Y 小" 意味着 "高"
-	/*
-	Vector2D currentTilePos = Engine::GetInstance().map->WorldToMap((int)currentPos.getX(), (int)currentPos.getY());
-	if (nextTile.getY() < currentTilePos.getY() - 1 && isGrounded) {
-		// 给一个巨大的向上冲量
-		Engine::GetInstance().physics->ApplyLinearImpulse(pbody, 0, -jumpForce * 1.5f); // Boss 跳得更高
-		isGrounded = false;
-	}
-	*/
 }
-
 void Enemy::ApplyPhysics() {
 
 	// Apply velocity via helper
