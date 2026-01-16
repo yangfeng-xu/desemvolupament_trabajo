@@ -115,7 +115,7 @@ bool Enemy::Start() {
 			// 公式变了： 起始位置 + (第几个 * 宽度)
 			int currentX = i * frameWidth;
 
-			attack2Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
+			Midattack3Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
 		}
 		anims.AddClip("Midattack3", Midattack3Anim);
 
@@ -231,14 +231,18 @@ bool Enemy::Update(float dt)
 	}
 
 	GetPhysicsValues();
-
+	// === 【新增】Boss 逻辑处理 ===
+	if (enemyType == EnemyType::BOSS) {
+		UpdateBossBehavior(dt);
+	}
 	if (pathfinding != nullptr) {
 		PerformPathfinding(dt);		
 	}
 
 	if (enemyType == EnemyType::GROUND) Move();
 	else if (enemyType == EnemyType::FLYING) MoveFlying();
-
+	else if (enemyType == EnemyType::BOSS) Move();
+	else velocity = { 0.0f, 0.0f };
 	ApplyPhysics();
 	Draw(dt);
 
@@ -566,6 +570,79 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 			else {
 				anims.SetCurrent("death");
 			}
+		}
+	}
+}
+
+void Enemy::UpdateBossBehavior(float dt) {
+
+	// 只有在攻击状态下，我们要检查动画是否播放完毕
+	if (isAttacking) {
+		// 更新动画状态（必须在 Update 里调用 anims.Update，或者在这里确认状态）
+
+		if (anims.HasFinishedOnce()) {
+			switch (bossState) {
+			case BossState::ATTACK_NORMAL:
+				// 普通攻击结束 -> 回到空闲
+				isAttacking = false;
+				bossState = BossState::IDLE_CHASE;
+				anims.SetCurrent("idle");
+				break;
+
+			case BossState::SKILL_PRE:
+				// 大招前摇结束 -> 进入中段
+				bossState = BossState::SKILL_MID;
+				anims.SetCurrent("Midattack3");
+				break;
+
+			case BossState::SKILL_MID:
+				// 大招中段结束 -> 进入后摇
+				bossState = BossState::SKILL_END;
+				anims.SetCurrent("Endattack3");
+				break;
+
+			case BossState::SKILL_END:
+				// 大招完全结束 -> 回到空闲
+				isAttacking = false;
+				bossState = BossState::IDLE_CHASE;
+				anims.SetCurrent("idle");
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+	else {
+		// === 非攻击状态 (IDLE_CHASE) ===
+		// 1. 计时
+		normalAttackTimer += dt;
+		skillTimer += dt;
+
+		// 2. 检查大招 (优先级最高，11秒一次)
+		if (skillTimer >= 11.0f) {
+			skillTimer = 0.0f; // 重置计时
+			isAttacking = true;
+			bossState = BossState::SKILL_PRE;
+			velocity = { 0, 0 }; // 攻击时停止移动
+			anims.SetCurrent("Preattack3");
+			// 可选：播放大招音效
+		}
+		// 3. 检查普通攻击 (3秒一次)
+		else if (normalAttackTimer >= 3.0f) {
+			normalAttackTimer = 0.0f; // 重置计时
+			isAttacking = true;
+			bossState = BossState::ATTACK_NORMAL;
+			velocity = { 0, 0 }; // 攻击时停止移动
+
+			// 随机选择 attack1 或 attack2
+			if (rand() % 2 == 0) {
+				anims.SetCurrent("attack1");
+			}
+			else {
+				anims.SetCurrent("attack2");
+			}
+			// 可选：播放普攻音效
 		}
 	}
 }

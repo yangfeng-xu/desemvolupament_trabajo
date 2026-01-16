@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Entity.h"
 #include "Animation.h"
@@ -10,6 +10,14 @@
 #include <string>
 
 struct SDL_Texture;
+
+enum class BossState {
+	IDLE_CHASE,     // 空闲或追逐玩家
+	ATTACK_NORMAL,  // 普通攻击中
+	SKILL_PRE,      // 大招前摇
+	SKILL_MID,      // 大招中段
+	SKILL_END       // 大招后摇
+};
 
 enum class EnemyType {
 	GROUND,
@@ -64,4 +72,16 @@ private:
 	bool isGrounded = false;
 	bool isDead = false;
 	int deathFxId = 0; //ID del efecto de sonido de muerte del enemigo
+
+
+	// === 新增：Boss 专用变量 ===
+	BossState bossState = BossState::IDLE_CHASE; // 当前状态
+	float normalAttackTimer = 0.0f;              // 普通攻击计时器
+	float skillTimer = 0.0f;                     // 大招计时器
+	bool isAttacking = false;                    // 是否正在执行攻击动作（用于阻止移动）
+
+	// 辅助函数：处理 Boss 的逻辑
+	void UpdateBossBehavior(float dt);
+
+
 };
