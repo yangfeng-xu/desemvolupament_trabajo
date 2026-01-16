@@ -200,6 +200,7 @@ bool Item::CleanUp()
         texture = nullptr;
     }*/
     if (pbody) {
+        pbody->listener = nullptr;
         Engine::GetInstance().physics->DeletePhysBody(pbody);
         pbody = nullptr;
     }

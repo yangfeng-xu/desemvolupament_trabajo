@@ -409,6 +409,7 @@ bool Enemy::CleanUp()
 
 	// 1. Borrar física (ya lo tenías)
 	if (pbody != nullptr) {
+		pbody->listener = nullptr;
 		Engine::GetInstance().physics->DeletePhysBody(pbody);
 		pbody = nullptr;
 	}
@@ -424,10 +425,10 @@ bool Enemy::CleanUp()
 	}
 	bossTextures.clear();
 	// 3. Descargar textura
-	if (texture != nullptr) {
+	/*if (texture != nullptr) {
 		Engine::GetInstance().textures->UnLoad(texture);
 		texture = nullptr;
-	}
+	}*/
 
 	return true;
 }

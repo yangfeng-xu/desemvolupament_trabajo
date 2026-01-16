@@ -98,6 +98,8 @@ public:
     bool isOnGround(PhysBody* pbody);
 
     bool IsDebug() const { return debug; }
+
+    bool pendingToDelete = false;
 private:
     // helpers
     static b2BodyType ToB2Type(bodyType t);
