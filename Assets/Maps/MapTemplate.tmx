@@ -7917,7 +7917,7 @@
   <object id="134" name="Star" type="Item" x="1730.67" y="448">
    <point/>
   </object>
-  <object id="136" name="Boss" type="Enemy" x="740" y="538">
+  <object id="136" name="Boss" x="740" y="538">
    <point/>
   </object>
  </objectgroup>

@@ -1,4 +1,4 @@
-#include "Engine.h"
+﻿#include "Engine.h"
 #include "Render.h"
 #include "Textures.h"
 #include "Map.h"
@@ -108,7 +108,7 @@ bool Map::CleanUp()
     mapData.layers.clear();
 
     // ELIMINADO: Limpieza de savepointTexture y anims
-    // El m�dulo Map ya no posee estos assets.
+    // El módulo Map ya no posee estos assets.
 
      // ???????????
     for (const auto& body : mapBodies) {
@@ -324,7 +324,7 @@ MapLayer* Map::GetNavigationLayer() {
 
 void Map::LoadEntities(std::shared_ptr<Player>& player) {
 
-    // ELIMINADO: Carga de textura y animaci�n global del savepoint
+    // ELIMINADO: Carga de textura y animación global del savepoint
     Engine::GetInstance().entityManager->DestroyEntitiesForReload();
     for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup");
         objectGroupNode != NULL;
@@ -356,10 +356,10 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
                     float x = objectNode.attribute("x").as_float();
                     float y = objectNode.attribute("y").as_float();
 
-                    // Crear la entidad Enemigo a trav�s del EntityManager
+                    // Crear la entidad Enemigo a través del EntityManager
                     std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
 
-                    // Asignar la posici�n le�da del mapa
+                    // Asignar la posición leída del mapa
                     enemy->position = Vector2D(x, y);
 
                     // Cargar propiedades personalizadas (por ejemplo, para saber si vuela)
@@ -367,7 +367,7 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
                         enemy->SetEnemyType(EnemyType::GROUND);
                         LOG("Created Ground Enemy at x:%.2f y:%.2f", x, y);
                     }
-                    else if (name == "EnemyFlying") { // Asumiendo que llamar�s as?al otro
+                    else if (name == "EnemyFlying") { // Asumiendo que llamarás as?al otro
                         enemy->SetEnemyType(EnemyType::FLYING);
                         LOG("Created Flying Enemy at x:%.2f y:%.2f", x, y);
                     }
@@ -378,6 +378,31 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
                     }
                     enemy->Awake();
                     enemy->Start();
+                }
+                else if (entityType == std::string("Boss")) {
+
+                    float x = objectNode.attribute("x").as_float();
+                    float y = objectNode.attribute("y").as_float();
+
+                    // 1. 【修正】使用 EntityManager 创建实体，确保它被系统管理
+                    std::shared_ptr<Enemy> boss = std::dynamic_pointer_cast<Enemy>(
+                        Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY)
+                    );
+
+                    // 2. 设置位置 (注意：position 赋值通常要在 Start() 之前，
+                    //    或者你也可以用 SetPosition，但要确保物理身体还没创建或者创建时用了这个值)
+                    boss->position = Vector2D(x, y);
+
+                    // 3. 关键：设置类型为 BOSS
+                    boss->SetEnemyType(EnemyType::BOSS);
+
+                    // 4. 手动调用 Awake 和 Start (如果 EntityManager 没有自动在 Create 时调用的话)
+                    //    参考上面 Enemy 的写法，你也调用了 Awake 和 Start
+                    boss->Awake();
+                    boss->Start();
+
+                    LOG("Created BOSS at x:%.2f y:%.2f", x, y);
+              
                 }
 
                 // --- Carga de SAVEPOINTS ---
@@ -390,11 +415,11 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
                     std::shared_ptr<Item> savepoint =
                         std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
 
-                    // 2. Establecer el tipo como SAVEPOINT (CR�TICO para que Item::Start() lo inicialice correctamente)
+                    // 2. Establecer el tipo como SAVEPOINT (CRÍTICO para que Item::Start() lo inicialice correctamente)
                     savepoint->type = EntityType::SAVEPOINT;
 
-                    // 3. Asignar la posici�n con correcci�n de TMX: TMX da la base, ajustamos a la esquina superior izquierda.
-                    // Esto corrige que el dibujo aparezca m�s abajo.
+                    // 3. Asignar la posición con corrección de TMX: TMX da la base, ajustamos a la esquina superior izquierda.
+                    // Esto corrige que el dibujo aparezca más abajo.
                     savepoint->startPosition = Vector2D(x, y - mapData.tileHeight);
 
                     LOG("Created Savepoint Entity at x:%.2f y:%.2f", x, y);
@@ -412,7 +437,7 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
                     //// Guardar nombre para saber si es "Coin" o "Star"
                     //item->name = objectNode.attribute("name").as_string();
 
-                    //// Ajustar posici�n (Tiled suele poner el origen abajo-izquierda para objetos, SDL arriba-izquierda)
+                    //// Ajustar posición (Tiled suele poner el origen abajo-izquierda para objetos, SDL arriba-izquierda)
                     //item->position = Vector2D(x, y - mapData.tileHeight);
                     //item->startPosition = item->position;
 
@@ -420,16 +445,16 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
 
                     //item->Awake();
                     //item->Start();
-                    // --- PEGA ESTO AQU� (INICIO DEL BLOQUE) ---
-    // 1. Leer el ID �nico que le da Tiled al objeto
+                    // --- PEGA ESTO AQUÍ (INICIO DEL BLOQUE) ---
+    // 1. Leer el ID único que le da Tiled al objeto
  // 1. PRIMERO LEEMOS EL ID
                     int id = objectNode.attribute("id").as_int();
 
-                    // --- DIAGN�STICO: Imprimir qu� est� pasando ---
+                    // --- DIAGNÓSTICO: Imprimir qué está pasando ---
                     bool foundInList = false;
                     LOG("--- PROCESANDO ITEM ID: %d ---", id);
 
-                    // Imprimir toda la lista para ver qu� tenemos guardado
+                    // Imprimir toda la lista para ver qué tenemos guardado
                     /*Descomenta si quieres ver la lista completa:
                     for (int savedId : Engine::GetInstance().scene->collectedIDs) {
                         LOG("Lista tiene ID: %d", savedId);
@@ -444,15 +469,15 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
                     }
 
                     if (foundInList) {
-                        LOG(" -> �ENCONTRADO EN LISTA! No se crea.");
-                        continue; // Se salta la creaci�n
+                        LOG(" -> ¡ENCONTRADO EN LISTA! No se crea.");
+                        continue; // Se salta la creación
                     }
                     else {
                         LOG(" -> NO encontrado en lista. Creando objeto...");
                     }
                     // ----------------------------------------------
 
-                    // Tu c�digo normal de creaci�n
+                    // Tu código normal de creación
                     float x = objectNode.attribute("x").as_float();
                     float y = objectNode.attribute("y").as_float();
 
