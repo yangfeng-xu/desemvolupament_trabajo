@@ -58,9 +58,9 @@ bool Enemy::Start() {
      // 【新增】第一帧左上角的 X 坐标 (前面的空白宽度)
 		int frameWidth =247;  // 每一帧的宽度
 		int frameHeight = 87;
-		int frameCount = 14;
-
-		for (int i = 0; i < frameCount; i++) {
+		int frameCount1 = 14;
+		int frameCount2 = 10;
+		for (int i = 0; i < frameCount1; i++) {
 			// 公式变了： 起始位置 + (第几个 * 宽度)
 			int currentX =i * frameWidth;
 
@@ -70,7 +70,7 @@ bool Enemy::Start() {
 
 		// 3. 定义 ATTACK 动画
 		Animation attack1Anim;
-		for (int i = 0; i < frameCount; i++) {
+		for (int i = 0; i < frameCount2; i++) {
 			// 公式变了： 起始位置 + (第几个 * 宽度)
 			int currentX = i * frameWidth;
 
