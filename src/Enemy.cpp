@@ -43,16 +43,20 @@ bool Enemy::Start() {
 		LOG("Loading BOSS with Multiple Textures");
 
 		// 1. 加载所有独立的图片 (请改成你真实的文件名)
-		/*bossTextures["idle"] = Engine::GetInstance().textures->Load("Assets/Textures/Boss_idle.png");*/
 		bossTextures["idle"] = Engine::GetInstance().textures->Load("Assets/Textures/Bidle.png");
 		bossTextures["attack1"] = Engine::GetInstance().textures->Load("Assets/Textures/Boss_Attack_1.png");
-		bossTextures["attack2"] = Engine::GetInstance().textures->Load("Assets/Textures/Boss_Attack2.png");
+		bossTextures["attack2"] = Engine::GetInstance().textures->Load("Assets/Textures/Boss_Attack_2.png");
 		bossTextures["walk"] = Engine::GetInstance().textures->Load("Assets/Textures/Boss_walk.png");
+		bossTextures["hit"] = Engine::GetInstance().textures->Load("Assets/Textures/hit.png");
+		bossTextures["Preattack3"] = Engine::GetInstance().textures->Load("Assets/Textures/Pre-Attack-3.png");
+		bossTextures["Midattack3"] = Engine::GetInstance().textures->Load("Assets/Textures/mid-Attack-3.png");
+		bossTextures["Endattack3"] = Engine::GetInstance().textures->Load("Assets/Textures/end_Attack-3.png");
+		bossTextures["death"] = Engine::GetInstance().textures->Load("Assets/Textures/death.png");
 
 		// 默认当前图片设为 idle
-		texture = bossTextures["attack1"];
+		texture = bossTextures["idle"];
 
-		//------------------------------------------------------------------------Boss idle-------------------------------------------------------------------------------//
+		//------------------------------------------------------------------------Boss Anim-------------------------------------------------------------------------------//
 		Animation idleAnim;
 		// 因为是独立图片，第一帧通常就是从 0,0 开始！不用在大图里找位置了
      // 【新增】第一帧左上角的 X 坐标 (前面的空白宽度)
@@ -60,6 +64,13 @@ bool Enemy::Start() {
 		int frameHeight = 87;
 		int frameCount1 = 14;
 		int frameCount2 = 10;
+		int frameCount3 = 9;
+		int frameCount4 = 1;
+		int frameCount5 = 4;
+		int frameCount6 = 3;
+		int frameCount7 = 7;
+		int frameCount8 = 33;
+
 		for (int i = 0; i < frameCount1; i++) {
 			// 公式变了： 起始位置 + (第几个 * 宽度)
 			int currentX =i * frameWidth;
@@ -78,13 +89,82 @@ bool Enemy::Start() {
 		}
 		anims.AddClip("attack1", attack1Anim);
 
-		// 4. 定义 WALK 动画 (如果有)
-		// Animation walkAnim; ...
-		// anims.AddClip("walk", walkAnim);
+		Animation attack2Anim;
+		for (int i = 0; i < frameCount3; i++) {
+			// 公式变了： 起始位置 + (第几个 * 宽度)
+			int currentX = i * frameWidth;
+
+			attack2Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
+		}
+		anims.AddClip("attack2", attack2Anim);
+
+
+		Animation Preattack3Anim;
+		for (int i = 0; i < frameCount6; i++) {
+			// 公式变了： 起始位置 + (第几个 * 宽度)
+			int currentX = i * frameWidth;
+
+			Preattack3Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
+		}
+		anims.AddClip("Preattack3", Preattack3Anim);
+
+
+
+		Animation Midattack3Anim;
+		for (int i = 0; i < frameCount5; i++) {
+			// 公式变了： 起始位置 + (第几个 * 宽度)
+			int currentX = i * frameWidth;
+
+			attack2Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
+		}
+		anims.AddClip("Midattack3", Midattack3Anim);
+
+
+
+		Animation Endattack3Anim;
+		for (int i = 0; i < frameCount7; i++) {
+			// 公式变了： 起始位置 + (第几个 * 宽度)
+			int currentX = i * frameWidth;
+
+			Endattack3Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
+		}
+		anims.AddClip("Endattack3", Endattack3Anim);
+
+
+		//Walk Anim
+		Animation WalkAnim;
+		for (int i = 0; i < frameCount1; i++) {
+			// 公式变了： 起始位置 + (第几个 * 宽度)
+			int currentX = i * frameWidth;
+
+			WalkAnim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
+		}
+		anims.AddClip("walk", WalkAnim);
+
+		//Hit and Death Anim
+		Animation HitAnim;
+		for (int i = 0; i < frameCount4; i++) {
+			// 公式变了： 起始位置 + (第几个 * 宽度)
+			int currentX = i * frameWidth;
+
+			HitAnim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
+		}
+		anims.AddClip("hit", HitAnim);
+
+		Animation DeathAnim;
+
+		for (int i = 0; i < frameCount8; i++) {
+			// 公式变了： 起始位置 + (第几个 * 宽度)
+			int currentX = i * frameWidth;
+
+			DeathAnim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
+		}
+		anims.AddClip("death", DeathAnim);
 
 		// 设置初始状态
-		anims.SetCurrent("attack1");
-
+		anims.SetCurrent("idle");
+		//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+		
 		// 设置物理 (同之前)
 		texW = 100; texH = 100;
 		pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), 40, bodyType::DYNAMIC);
