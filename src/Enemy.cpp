@@ -45,11 +45,12 @@ bool Enemy::Start() {
 		// 1. 加载所有独立的图片 (请改成你真实的文件名)
 		/*bossTextures["idle"] = Engine::GetInstance().textures->Load("Assets/Textures/Boss_idle.png");*/
 		bossTextures["idle"] = Engine::GetInstance().textures->Load("Assets/Textures/Bidle.png");
-		bossTextures["attack"] = Engine::GetInstance().textures->Load("Assets/Textures/Boss_Attack1.png");
+		bossTextures["attack1"] = Engine::GetInstance().textures->Load("Assets/Textures/Boss_Attack_1.png");
+		bossTextures["attack2"] = Engine::GetInstance().textures->Load("Assets/Textures/Boss_Attack2.png");
 		bossTextures["walk"] = Engine::GetInstance().textures->Load("Assets/Textures/Boss_walk.png");
 
 		// 默认当前图片设为 idle
-		texture = bossTextures["idle"];
+		texture = bossTextures["attack1"];
 
 		//------------------------------------------------------------------------Boss idle-------------------------------------------------------------------------------//
 		Animation idleAnim;
@@ -57,9 +58,9 @@ bool Enemy::Start() {
      // 【新增】第一帧左上角的 X 坐标 (前面的空白宽度)
 		int frameWidth =247;  // 每一帧的宽度
 		int frameHeight = 87;
-		int frameCount = 14;
-
-		for (int i = 0; i < frameCount; i++) {
+		int frameCount1 = 14;
+		int frameCount2 = 10;
+		for (int i = 0; i < frameCount1; i++) {
 			// 公式变了： 起始位置 + (第几个 * 宽度)
 			int currentX =i * frameWidth;
 
@@ -68,18 +69,21 @@ bool Enemy::Start() {
 		anims.AddClip("idle", idleAnim);
 
 		// 3. 定义 ATTACK 动画
-		Animation attackAnim;
-		// 攻击动作在另一张图里，也是从 0,0 开始
-		attackAnim.AddFrame({ 0, 0, 200, 150 }, 150);
-		attackAnim.AddFrame({ 200, 0, 200, 150 }, 150);
-		anims.AddClip("attack", attackAnim);
+		Animation attack1Anim;
+		for (int i = 0; i < frameCount2; i++) {
+			// 公式变了： 起始位置 + (第几个 * 宽度)
+			int currentX = i * frameWidth;
+
+			attack1Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
+		}
+		anims.AddClip("attack1", attack1Anim);
 
 		// 4. 定义 WALK 动画 (如果有)
 		// Animation walkAnim; ...
 		// anims.AddClip("walk", walkAnim);
 
 		// 设置初始状态
-		anims.SetCurrent("idle");
+		anims.SetCurrent("attack1");
 
 		// 设置物理 (同之前)
 		texW = 100; texH = 100;
