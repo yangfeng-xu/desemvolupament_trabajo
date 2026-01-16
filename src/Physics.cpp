@@ -243,8 +243,25 @@ bool Physics::PostUpdate()
 // Called before quitting
 bool Physics::CleanUp()
 {
+    //LOG("Destroying physics world");
+
+    //if (!B2_IS_NULL(world))
+    //{
+    //    b2DestroyWorld(world);
+    //    world = b2_nullWorldId;
+    //}
+
+    //return true;
     LOG("Destroying physics world");
 
+    // 1. Limpiamos la lista de cuerpos pendientes de borrar para evitar
+    // que la nueva partida intente acceder a memoria de la partida vieja.
+    for (auto body : bodiesToDelete) {
+        delete body; // Solo borramos el wrapper, el world se destruye abajo
+    }
+    bodiesToDelete.clear();
+
+    // 2. Destruimos el mundo (esto borra todos los b2Body internos)
     if (!B2_IS_NULL(world))
     {
         b2DestroyWorld(world);
@@ -316,8 +333,23 @@ void Physics::EndContact(b2ShapeId shapeA, b2ShapeId shapeB)
 
 void Physics::DeletePhysBody(PhysBody* physBody)
 {
-    // Validación de seguridad
+    //// Validación de seguridad
+    //if (physBody == nullptr) return;
+
+    //// Verificar si ya está en la lista para evitar duplicados
+    //for (auto& body : bodiesToDelete) {
+    //    if (body == physBody) return;
+    //}
+
+    //// En lugar de borrarlo aquí, lo añadimos a la lista de pendientes
+    //bodiesToDelete.push_back(physBody);
     if (physBody == nullptr) return;
+
+    // --- BLINDAJE ANTI-CRASH ---
+    // Cortamos la comunicación inmediatamente. Si Box2D intenta llamar al listener
+    // después de esto, se encontrará con nullptr y no hará nada, evitando el error 0xFF...
+    physBody->listener = nullptr;
+    // ---------------------------
 
     // Verificar si ya está en la lista para evitar duplicados
     for (auto& body : bodiesToDelete) {
