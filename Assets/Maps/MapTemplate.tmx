@@ -7917,7 +7917,6 @@
   <object id="134" name="Star" type="Item" x="1730.67" y="448">
    <point/>
   </object>
-  <object id="135" name="Moneda" type="Item" gid="576" x="244" y="596" width="32" height="32"/>
  </objectgroup>
  <layer id="15" name="Item" width="64" height="24" visible="0">
   <data>
