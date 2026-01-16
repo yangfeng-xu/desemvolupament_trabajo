@@ -473,6 +473,7 @@ void Scene::HandleMainMenuUIVebets(UIElement* uiLement) {
 	switch (uiLement->id)
 	{
 	case 1:
+		collectedIDs.clear();
 		ChangeScene(SceneID::LEVEL_1);
 		break;
 	default:

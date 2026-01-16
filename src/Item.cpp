@@ -34,6 +34,14 @@ bool Item::Awake() {
 
 bool Item::Start() {
 
+    for (int collectedId : Engine::GetInstance().scene->collectedIDs) {
+        if (id != -1 && id == collectedId) {
+            // Si el ID coincide, desactivamos la entidad y no cargamos nada
+            active = false;
+            return true;
+        }
+    }
+
     if (pbody != nullptr) return true;
     position = startPosition;
 
@@ -127,11 +135,11 @@ bool Item::Update(float dt)
    /* int x, y;
     SDL_Rect* srcRect = NULL;*/
 
-    if (isPicked) {
-        CleanUp();   // Esto borrará el pbody y la textura
-        active = false; // Desactiva la entidad para siempre
-        return true;
-    }
+    //if (isPicked) {
+    //    CleanUp();   // Esto borrará el pbody y la textura
+    //    active = false; // Desactiva la entidad para siempre
+    //    return true;
+    //}
 
     // 3. Inicializamos variables (¡ESTO FALTABA!)
     int x = (int)position.getX();
@@ -187,10 +195,10 @@ bool Item::Update(float dt)
 bool Item::CleanUp()
 {
     // Limpieza de recursos
-    if (texture) {
+   /* if (texture) {
         Engine::GetInstance().textures->UnLoad(texture);
         texture = nullptr;
-    }
+    }*/
     if (pbody) {
         Engine::GetInstance().physics->DeletePhysBody(pbody);
         pbody = nullptr;

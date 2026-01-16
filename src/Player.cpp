@@ -171,11 +171,11 @@ bool Player::Update(float dt)
 			Engine::GetInstance().render->camera.y = 0;
 			std::cout << "YOU ARE DEAD";
 
-			for (const auto& entity : Engine::GetInstance().entityManager->entities) {
+			/*for (const auto& entity : Engine::GetInstance().entityManager->entities) {
 				if (entity->type == EntityType::ITEM) {
 					entity->Enable();
 				}
-			}
+			}*/
 		}
 		velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 		velocity.x = 0;
