@@ -50,7 +50,7 @@ bool Enemy::Start() {
 		bossTextures["hit"] = Engine::GetInstance().textures->Load("Assets/Textures/hit.png");
 		bossTextures["Preattack3"] = Engine::GetInstance().textures->Load("Assets/Textures/Pre-Attack-3.png");
 		bossTextures["Midattack3"] = Engine::GetInstance().textures->Load("Assets/Textures/mid-Attack-3.png");
-		bossTextures["Endattack3"] = Engine::GetInstance().textures->Load("Assets/Textures/end_Attack-3.png");
+		bossTextures["Endattack3"] = Engine::GetInstance().textures->Load("Assets/Textures/end-Attack-3.png");
 		bossTextures["death"] = Engine::GetInstance().textures->Load("Assets/Textures/death.png");
 
 		// 默认当前图片设为 idle
@@ -79,87 +79,168 @@ bool Enemy::Start() {
 		}
 		anims.AddClip("idle", idleAnim);
 
-		// 3. 定义 ATTACK 动画
-		Animation attack1Anim;
-		for (int i = 0; i < frameCount2; i++) {
-			// 公式变了： 起始位置 + (第几个 * 宽度)
-			int currentX = i * frameWidth;
+		//// 3. 定义 ATTACK 动画
+		//Animation attack1Anim;
+	
+		//for (int i = 0; i < frameCount2; i++) {
+		//	// 公式变了： 起始位置 + (第几个 * 宽度)
+		//	int currentX = i * frameWidth;
 
+		//	attack1Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
+		//}
+		//anims.AddClip("attack1", attack1Anim);
+
+		//Animation attack2Anim;
+		//for (int i = 0; i < frameCount3; i++) {
+		//	// 公式变了： 起始位置 + (第几个 * 宽度)
+		//	int currentX = i * frameWidth;
+
+		//	attack2Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
+		//}
+		//anims.AddClip("attack2", attack2Anim);
+
+
+		//Animation Preattack3Anim;
+		//for (int i = 0; i < frameCount6; i++) {
+		//	// 公式变了： 起始位置 + (第几个 * 宽度)
+		//	int currentX = i * frameWidth;
+
+		//	Preattack3Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
+		//}
+		//anims.AddClip("Preattack3", Preattack3Anim);
+
+
+
+		//Animation Midattack3Anim;
+		//for (int i = 0; i < frameCount5; i++) {
+		//	// 公式变了： 起始位置 + (第几个 * 宽度)
+		//	int currentX = i * frameWidth;
+
+		//	Midattack3Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
+		//}
+		//anims.AddClip("Midattack3", Midattack3Anim);
+
+
+
+		//Animation Endattack3Anim;
+		//for (int i = 0; i < frameCount7; i++) {
+		//	// 公式变了： 起始位置 + (第几个 * 宽度)
+		//	int currentX = i * frameWidth;
+
+		//	Endattack3Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
+		//}
+		//anims.AddClip("Endattack3", Endattack3Anim);
+
+
+		////Walk Anim
+		//Animation WalkAnim;
+		//for (int i = 0; i < frameCount1; i++) {
+		//	// 公式变了： 起始位置 + (第几个 * 宽度)
+		//	int currentX = i * frameWidth;
+
+		//	WalkAnim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
+		//}
+		//anims.AddClip("walk", WalkAnim);
+
+		////Hit and Death Anim
+		//Animation HitAnim;
+		//for (int i = 0; i < frameCount4; i++) {
+		//	// 公式变了： 起始位置 + (第几个 * 宽度)
+		//	int currentX = i * frameWidth;
+
+		//	HitAnim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
+		//}
+		//anims.AddClip("hit", HitAnim);
+
+		//Animation DeathAnim;
+
+		//for (int i = 0; i < frameCount8; i++) {
+		//	// 公式变了： 起始位置 + (第几个 * 宽度)
+		//	int currentX = i * frameWidth;
+
+		//	DeathAnim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
+		//}
+		//anims.AddClip("death", DeathAnim);
+
+
+		// 3. 定义 ATTACK 动画 (必须设置为不循环！)
+		Animation attack1Anim;
+		attack1Anim.SetLoop(false); // 【新增】设置为不循环
+		for (int i = 0; i < frameCount2; i++) {
+			int currentX = i * frameWidth;
 			attack1Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
 		}
 		anims.AddClip("attack1", attack1Anim);
 
 		Animation attack2Anim;
+		attack2Anim.SetLoop(false); // 【新增】设置为不循环
 		for (int i = 0; i < frameCount3; i++) {
-			// 公式变了： 起始位置 + (第几个 * 宽度)
 			int currentX = i * frameWidth;
-
 			attack2Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
 		}
 		anims.AddClip("attack2", attack2Anim);
 
 
 		Animation Preattack3Anim;
+		Preattack3Anim.SetLoop(false); // 【新增】设置为不循环
 		for (int i = 0; i < frameCount6; i++) {
-			// 公式变了： 起始位置 + (第几个 * 宽度)
 			int currentX = i * frameWidth;
-
 			Preattack3Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
 		}
 		anims.AddClip("Preattack3", Preattack3Anim);
 
 
-
 		Animation Midattack3Anim;
+		Midattack3Anim.SetLoop(false); // 【新增】设置为不循环
 		for (int i = 0; i < frameCount5; i++) {
-			// 公式变了： 起始位置 + (第几个 * 宽度)
 			int currentX = i * frameWidth;
-
 			Midattack3Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
 		}
 		anims.AddClip("Midattack3", Midattack3Anim);
 
 
-
 		Animation Endattack3Anim;
+		Endattack3Anim.SetLoop(false); // 【新增】设置为不循环
 		for (int i = 0; i < frameCount7; i++) {
-			// 公式变了： 起始位置 + (第几个 * 宽度)
 			int currentX = i * frameWidth;
-
 			Endattack3Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
 		}
 		anims.AddClip("Endattack3", Endattack3Anim);
 
 
-		//Walk Anim
+		// Walk Anim (走路需要循环)
 		Animation WalkAnim;
+		WalkAnim.SetLoop(true); // 显式设置为 true (虽然默认也是 true)
 		for (int i = 0; i < frameCount1; i++) {
-			// 公式变了： 起始位置 + (第几个 * 宽度)
 			int currentX = i * frameWidth;
-
 			WalkAnim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
 		}
 		anims.AddClip("walk", WalkAnim);
 
-		//Hit and Death Anim
+		// Hit and Death Anim
 		Animation HitAnim;
+		HitAnim.SetLoop(false); // 【新增】受伤不循环
 		for (int i = 0; i < frameCount4; i++) {
-			// 公式变了： 起始位置 + (第几个 * 宽度)
 			int currentX = i * frameWidth;
-
 			HitAnim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
 		}
 		anims.AddClip("hit", HitAnim);
 
 		Animation DeathAnim;
-
+		DeathAnim.SetLoop(false); // 【新增】死亡不循环，停在最后一帧
 		for (int i = 0; i < frameCount8; i++) {
-			// 公式变了： 起始位置 + (第几个 * 宽度)
 			int currentX = i * frameWidth;
-
 			DeathAnim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 150);
 		}
 		anims.AddClip("death", DeathAnim);
+
+
+
+
+
+
+
+
 
 		// 设置初始状态
 		anims.SetCurrent("idle");
@@ -170,6 +251,19 @@ bool Enemy::Start() {
 		pbody->listener = this;
 		pbody->ctype = ColliderType::ENEMY;
 		b2Body_SetGravityScale(pbody->body, 1.0f);
+
+
+		// ================== 【新增：Boss 独立参数设置】 ==================
+		// 1. 设置更大的检测范围 (假设 1格 = 32像素，5格 = 160像素，或者直接增加半径数值)
+		// 原本 detectionRadius 是 10 (单位取决于你的距离计算方式，通常是 Tile 数量)
+		detectionRadius = 15; // 10 + 5格
+
+		// 2. 性能优化：寻路计算间隔
+		// 普通怪是 0.5s，Boss 可以保持一样，或者因为范围大，稍微加长一点点也没关系
+		pathfindingInterval = 0.5f;
+
+		// 3. Boss 移动速度
+		speed = 2.0f; // 稍微慢一点显得有压迫感，或者快一点增加难度
 
 		//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 	
@@ -239,18 +333,22 @@ bool Enemy::Update(float dt)
 	}
 
 	GetPhysicsValues();
-	// === 【新增】Boss 逻辑处理 ===
+	// 1. 先更新行为状态 (决定是否 isAttacking)
 	if (enemyType == EnemyType::BOSS) {
 		UpdateBossBehavior(dt);
 	}
+
+	// 2. 再执行寻路 (如果 isAttacking 为 true，上面的修改会通过 PerformPathfinding 直接 return)
 	if (pathfinding != nullptr) {
-		PerformPathfinding(dt);		
+		PerformPathfinding(dt);
 	}
 
+	// 3. 最后执行移动 (MoveBoss 内部也已经有 isAttacking 的检查了)
 	if (enemyType == EnemyType::GROUND) Move();
 	else if (enemyType == EnemyType::FLYING) MoveFlying();
 	else if (enemyType == EnemyType::BOSS) MoveBoss();
 	else velocity = { 0.0f, 0.0f };
+
 	ApplyPhysics();
 	Draw(dt);
 
@@ -258,6 +356,13 @@ bool Enemy::Update(float dt)
 }
 void Enemy::PerformPathfinding(float dt) {
 
+
+	// ================== 【修复：攻击时禁止寻路逻辑干扰】 ==================
+	// 如果是 Boss 且正在攻击，直接退出，不更新路径，也不重置为 Idle
+	// 这样可以保护 Attack 动画不被覆盖，同时节省性能
+	if (enemyType == EnemyType::BOSS && isAttacking) {
+		return;
+	}
 	// Pathfinding testing inputs
 
 	// Reset pathfinding with R key
@@ -266,41 +371,68 @@ void Enemy::PerformPathfinding(float dt) {
 
 	// 2. Obtener mi posición (Origen)
 	Vector2D myPos = GetPosition();
+	int offsetY = (enemyType == EnemyType::BOSS) ? 32 : 0;
 	Vector2D myTile = Engine::GetInstance().map->WorldToMap((int)myPos.getX(), (int)myPos.getY());
 
 	float distance = myTile.distanceEuclidean(playerTile);
 
-	float verticalDist = abs(playerPos.getY() - myPos.getY());
+	// Boss 忽略高度差检查 (targetTooHigh)，因为它可能需要跳下来或者单纯为了保持追踪
 	bool targetTooHigh = false;
 	if (enemyType == EnemyType::GROUND) {
-		// 如果高度差大于 64 像素（根据你的图块大小调整，这里假设32x32）
+		float verticalDist = abs(playerPos.getY() - myPos.getY());
 		if (verticalDist > 64.0f) {
 			targetTooHigh = true;
 		}
 	}
-	// 修改判断条件：加入 && !targetTooHigh
-	if (distance < detectionRadius && !targetTooHigh) {
-		// 3. Calcular el camino automáticamente
-		// Usamos MANHATTAN como heurística por defecto
 
+
+
+	//float verticalDist = abs(playerPos.getY() - myPos.getY());
+	//bool targetTooHigh = false;
+
+	// 3. 执行寻路
+	if (distance < detectionRadius && !targetTooHigh) {
 		pathfindingTimer += dt;
 		if (pathfindingTimer >= pathfindingInterval) {
+
+			// 计算路径
 			pathfinding->ComputeFullPathAStar(myTile, MANHATTAN);
+
+			// ================== 【调试日志】 ==================
+			// 如果 Boss 还是不动，请查看 Output 窗口
+			if (enemyType == EnemyType::BOSS) {
+				if (pathfinding->pathTiles.empty()) {
+					LOG("BOSS: Path not found! I am at Tile(%d, %d), Player at Tile(%d, %d)",
+						(int)myTile.getX(), (int)myTile.getY(), (int)playerTile.getX(), (int)playerTile.getY());
+				}
+				else {
+					// LOG("BOSS: Path found! Steps: %d", pathfinding->pathTiles.size());
+				}
+			}
+			// ================================================
+
 			pathfindingTimer = 0.0f;
 		}
 	}
 	else {
-		// 目标太远 或者 目标太高 -> 停止移动，进入 Idle
+		// 目标太远 -> 清空路径 -> MoveBoss 会检测到并 Idle
 		pathfinding->pathTiles.clear();
 		velocity.x = 0;
+
 		if (enemyType == EnemyType::FLYING) {
 			velocity.y = 0;
 		}
 
-		// 3. Poner animación de Idle
-		anims.SetCurrent("idle");
+		// 只有当前不是 idle 时才重置，防止动画鬼畜
+		if (anims.GetCurrentName() != "idle") {
+			anims.SetCurrent("idle");
+		}
 	}
 
+
+
+	
+	
 	// Propagate BFS with J key
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_J) == KEY_DOWN) {
 		pathfinding->PropagateBFS();
@@ -453,69 +585,7 @@ void Enemy::MoveFlying() {
 }
 // Enemy.cpp 底部
 
-//void Enemy::MoveBoss() {
-//
-//	// 修复点：如果正在攻击，禁止移动，确保 Boss 站定播放攻击动画
-//	if (isAttacking) {
-//		velocity.x = 0;
-//		// 如果 Boss 会飞或受重力影响，这里保留 Y 轴速度可能更自然，
-//		// 但为了稳妥，也可以设为 0（如果是地面 Boss）
-//		return;
-//	}
-//
-//	// 1. 安全检查：如果没有路径，或者路径点太少，就待机
-//	if (pathfinding->pathTiles.size() < 2) {
-//		velocity.x = 0;
-//		// 如果 Boss 是受重力影响的，不要强制设置 velocity.y = 0，除非你想让它悬浮
-//		// velocity.y = 0; 
-//		anims.SetCurrent("idle"); // 没路走就 Idle
-//		return;
-//	}
-//
-//	// 2. 获取下一个目标图块 (Next Tile)
-//	auto it = pathfinding->pathTiles.rbegin();
-//	it++; // 跳过起始点（自己当前的位置）
-//	Vector2D nextTile = *it;
-//	Vector2D targetPos = Engine::GetInstance().map->MapToWorld((int)nextTile.getX(), (int)nextTile.getY());
-//
-//	// 修正中心点 (假设 Tile 是 32x32)
-//	targetPos.setX(targetPos.getX() + 16);
-//	targetPos.setY(targetPos.getY() + 16);
-//
-//	Vector2D currentPos = GetPosition();
-//	float xTolerance = 5.0f; // Boss 的容错距离可以稍微大一点
-//
-//	// 3. 移动逻辑 (Boss 只在 X 轴移动，跳跃由物理引擎或特殊技能处理)
-//	// 这里的 speed 可以在 Enemy::Start 里的 BOSS 分支单独设置，比如 boss->speed = 2.0f;
-//
-//	if (currentPos.getX() < targetPos.getX() - xTolerance) {
-//		velocity.x = speed;
-//		anims.SetCurrent("walk"); // Boss 专属走路动画
-//		flipState = SDL_FLIP_HORIZONTAL; // 根据素材方向调整
-//	}
-//	else if (currentPos.getX() > targetPos.getX() + xTolerance) {
-//		velocity.x = -speed;
-//		anims.SetCurrent("walk");
-//		flipState = SDL_FLIP_NONE;
-//	}
-//	else {
-//		// 横向到达目标，稍微减速防止抖动
-//		velocity.x = 0;
-//	}
-//
-//	// === Boss 特殊跳跃逻辑 (可选) ===
-//	// 如果 Boss 遇到高墙，是跳过去？还是大招砸烂？
-//	// 这里保留一个简单的跳跃检测：如果下一个目标比我高很多，就跳
-//	// 注意：Box2D 的 Y 轴通常是向下的，所以 "Y 小" 意味着 "高"
-//	/*
-//	Vector2D currentTilePos = Engine::GetInstance().map->WorldToMap((int)currentPos.getX(), (int)currentPos.getY());
-//	if (nextTile.getY() < currentTilePos.getY() - 1 && isGrounded) {
-//		// 给一个巨大的向上冲量
-//		Engine::GetInstance().physics->ApplyLinearImpulse(pbody, 0, -jumpForce * 1.5f); // Boss 跳得更高
-//		isGrounded = false;
-//	}
-//	*/
-//}
+
 void Enemy::MoveBoss() {
 	// 修复点：如果正在攻击，禁止移动，确保 Boss 站定播放攻击动画
 	if (isAttacking) {
@@ -525,10 +595,13 @@ void Enemy::MoveBoss() {
 		return;
 	}
 
-	// 1. 安全检查：如果没有路径，或者路径点太少，就待机
+	// 2. 没路走 (或者路径被清除) -> Idle
 	if (pathfinding == nullptr || pathfinding->pathTiles.size() < 2) {
 		velocity.x = 0;
-		anims.SetCurrent("idle");
+		// 只有不是 idle 才切换，微小优化
+		if (anims.GetCurrentName() != "idle") {
+			anims.SetCurrent("idle");
+		}
 		return;
 	}
 
@@ -548,12 +621,13 @@ void Enemy::MoveBoss() {
 	// 3. 移动逻辑
 	if (currentPos.getX() < targetPos.getX() - xTolerance) {
 		velocity.x = speed;
-		anims.SetCurrent("walk");
+		// 强制播放走路动画
+		if (anims.GetCurrentName() != "walk") anims.SetCurrent("walk");
 		flipState = SDL_FLIP_HORIZONTAL;
 	}
 	else if (currentPos.getX() > targetPos.getX() + xTolerance) {
 		velocity.x = -speed;
-		anims.SetCurrent("walk");
+		if (anims.GetCurrentName() != "walk") anims.SetCurrent("walk");
 		flipState = SDL_FLIP_NONE;
 	}
 	else {
@@ -597,9 +671,33 @@ void Enemy::Draw(float dt) {
 	if (Engine::GetInstance().physics->IsDebug()) {
 		pathfinding->DrawPath();
 	}
+
+	// 额外的 offsetY：有些 Boss 素材脚下有很多空白，你可能需要微调这个值让它脚踩地
+	int drawOffsetX = animFrame.w / 2;
+	int drawOffsetY = animFrame.h / 2;
+
+	// 如果是 Boss，可能需要特殊的微调（根据你的图片实际情况调整这个 -10 或 +10）
+	if (enemyType == EnemyType::BOSS) {
+		// drawOffsetY += 10; // 举例：如果 Boss 看起来飘在空中，增加这个值
+	}
+
+
+
 	//Draw the player using the texture and the current animation frame
 
-	Engine::GetInstance().render->DrawTexture(texture, (int)position.getX() - texW / 2, (int)position.getY() - texH / 2, &animFrame,1.0f,0.0f,INT_MAX,INT_MAX,flipState);
+	/*Engine::GetInstance().render->DrawTexture(texture, (int)position.getX() - texW / 2, (int)position.getY() - texH / 2, &animFrame,1.0f,0.0f,INT_MAX,INT_MAX,flipState);*/
+
+	Engine::GetInstance().render->DrawTexture(
+		texture,
+		(int)position.getX() - drawOffsetX,
+		(int)position.getY() - drawOffsetY,
+		&animFrame,
+		1.0f,
+		0.0f,
+		INT_MAX,
+		INT_MAX,
+		flipState
+	);
 
 }
 
