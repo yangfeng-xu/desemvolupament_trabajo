@@ -66,6 +66,17 @@ public:
 	PhysBody* pbody = nullptr;
 	float jumpForce = 2.5f; // The force to apply when jumping
 	bool isJumping = false; // Flag to check if the player is currently jumping
+
+	// 在 Player.h 的 public: 区域加入这个函数
+	void TakeDamage(int damage) {
+		if (invulnerabilityTimer <= 0.0f) {
+			lives -= damage;
+			invulnerabilityTimer = 2.0f; // 受伤后无敌2秒
+			if (lives <= 0) {
+				Die();
+			}
+		}
+	}
 private:
 	b2Vec2 velocity = { 0.0f,0.0f };
 	AnimationSet anims;

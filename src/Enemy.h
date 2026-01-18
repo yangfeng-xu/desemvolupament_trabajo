@@ -41,6 +41,12 @@ public:
 	void SetEnemyType(EnemyType type);
 	SDL_FlipMode flipState = SDL_FLIP_NONE;
 	std::unordered_map<std::string, SDL_Texture*> bossTextures;
+
+	// === Boss 核心属性 ===
+	int health = 10;
+	int maxHealth = 10;
+	float detectionRange = 15.0f; // 追踪范围
+	float attackRange = 2.0f;     // 攻击范围
 private:
 	float pathfindingTimer = 0.0f;
 	float pathfindingInterval = 0.5f;//calcular la ruta de pathfinding cada 0,5 segundo
@@ -52,6 +58,8 @@ private:
 	void ApplyPhysics();
 	void Draw(float dt);
 
+	// 辅助函数：处理 Boss 的逻辑
+	void UpdateBossBehavior(float dt);
 public:
 
 	//Declare enemy parameters
@@ -81,8 +89,7 @@ private:
 	float skillTimer = 0.0f;                     // 大招计时器
 	bool isAttacking = false;                    // 是否正在执行攻击动作（用于阻止移动）
 
-	// 辅助函数：处理 Boss 的逻辑
-	void UpdateBossBehavior(float dt);
+
 
 
 };
