@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <list>
 #include <queue>
 #include "Vector2D.h"
@@ -34,7 +34,9 @@ public:
     // L13: A* Pathfinding methods
     void PropagateAStar(ASTAR_HEURISTICS heuristic);
 
-    void ComputeFullPathAStar(Vector2D startPos, ASTAR_HEURISTICS heuristic);
+   /* void ComputeFullPathAStar(Vector2D startPos, ASTAR_HEURISTICS heuristic);*/
+    // 【修改】增加 destination 参数
+    void ComputeFullPathAStar(Vector2D startPos, Vector2D targetPos, ASTAR_HEURISTICS heuristic);
 
 private:
     int Find(std::list<Vector2D> vector, Vector2D elem);
