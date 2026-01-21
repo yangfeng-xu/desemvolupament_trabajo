@@ -511,7 +511,7 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 				if (invulnerabilityTimer <= 0.0f) {
 					lives--;
 					if (lives > 0) {
-						invulnerabilityTimer = 2.0f; // 注意：你之前写的是 2000.0f，单位通常是秒，请确认为 2.0f
+						invulnerabilityTimer = 2000.0f; // 注意：你之前写的是 2000.0f，单位通常是秒，请确认为 2.0f
 						LOG("Player HIT by Enemy! Lives: %d", lives);
 						Engine::GetInstance().audio->PlayFx(deathFxId);
 

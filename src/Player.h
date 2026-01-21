@@ -73,7 +73,7 @@ public:
 	void TakeDamage(int damage) {
 		if (invulnerabilityTimer <= 0.0f) {
 			lives -= damage;
-			invulnerabilityTimer = 2.0f; // 受伤后无敌2秒
+			invulnerabilityTimer = 2000.0f; // 受伤后无敌2秒
 			if (lives <= 0) {
 				Die();
 			}
