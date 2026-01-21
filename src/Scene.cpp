@@ -443,15 +443,12 @@ void Scene::LoadMainMenu() {//cargar audio en aqui
 	Engine::GetInstance().render->camera.x = 0;
 	Engine::GetInstance().render->camera.y = 0;
 	mainMenuBackground = Engine::GetInstance().textures->Load("Assets/Textures/menu_resized.png");
-	//Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "Start", { 520,350,120,20 }, this);
-	//// 新增：Settings Button (在 Start 下方)
-	//Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_MAIN_MENU_SETTINGS, "Setting", { 520, 380, 120, 20 }, this);
 
 	// 【修改】创建并保存 Start 按钮
-	mainMenuStartBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "Start", { 520,350,120,20 }, this);
+	mainMenuStartBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "Start", { 575,350,120,20 }, this);
 
 	// 【修改】创建并保存 Settings 按钮
-	mainMenuSettingBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_MAIN_MENU_SETTINGS, "Setting", { 520, 380, 120, 20 }, this);
+	mainMenuSettingBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_MAIN_MENU_SETTINGS, "Setting", { 575, 380, 120, 20 }, this);
 	showSettingsUI = false;
 
 }
