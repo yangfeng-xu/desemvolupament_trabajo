@@ -1261,6 +1261,109 @@ void Enemy::MoveFlying() {
 	}
 }
 
+//void Enemy::MoveBoss() {
+//	// 1. 攻击状态完全停止移动
+//	if (isAttacking) {
+//		velocity.x = 0;
+//		return;
+//	}
+//
+//	Vector2D playerPos = Engine::GetInstance().scene->GetPlayerPosition();
+//	Vector2D currentPos = GetPosition();
+//
+//	// 2. 智能补救/空中追踪逻辑 (保持不变)
+//	if (pathfinding == nullptr || pathfinding->pathTiles.size() < 2) {
+//		float xDiff = playerPos.getX() - currentPos.getX();
+//		float yDiff = abs(playerPos.getY() - currentPos.getY());
+//		if (abs(xDiff) < 500.0f && yDiff < 250.0f) {
+//			if (xDiff > 10.0f) {
+//				velocity.x = speed; flipState = SDL_FLIP_NONE;
+//				if (anims.GetCurrentName() != "walk") anims.SetCurrent("walk");
+//			}
+//			else if (xDiff < -10.0f) {
+//				velocity.x = -speed; flipState = SDL_FLIP_HORIZONTAL;
+//				if (anims.GetCurrentName() != "walk") anims.SetCurrent("walk");
+//			}
+//			else velocity.x = 0;
+//			return;
+//		}
+//		velocity.x = 0;
+//		if (anims.GetCurrentName() != "idle") anims.SetCurrent("idle");
+//		if (playerPos.getX() > currentPos.getX()) flipState = SDL_FLIP_NONE; else flipState = SDL_FLIP_HORIZONTAL;
+//		return;
+//	}
+//
+//	// 3. 【平滑寻路逻辑 - 增强版】
+//	Vector2D targetPos;
+//	bool hasTarget = false;
+//
+//	while (pathfinding->pathTiles.size() > 1) {
+//		auto it = pathfinding->pathTiles.rbegin();
+//		it++;
+//		Vector2D nextTile = *it;
+//
+//		targetPos = Engine::GetInstance().map->MapToWorld((int)nextTile.getX(), (int)nextTile.getY());
+//		targetPos.setX(targetPos.getX() + 16);
+//		targetPos.setY(targetPos.getY() + 16);
+//
+//		float distX = targetPos.getX() - currentPos.getX();
+//
+//		// === 核心修复 2：防回头检查 ===
+//		// 如果我们正在向右走 (speed > 0)，但目标点在左边 (distX < -5)，说明路径计算滞后了
+//		// 直接删掉这个点，去下一个点，绝不回头！
+//		bool isMovingRightAndTargetIsLeft = (velocity.x > 0.5f && distX < -5.0f);
+//		bool isMovingLeftAndTargetIsRight = (velocity.x < -0.5f && distX > 5.0f);
+//
+//		// 距离太近 (<8) 或者 方向完全反了 -> 删掉该点
+//		if (abs(distX) < 8.0f || isMovingRightAndTargetIsLeft || isMovingLeftAndTargetIsRight) {
+//			pathfinding->pathTiles.pop_back();
+//		}
+//		else {
+//			hasTarget = true;
+//			break;
+//		}
+//	}
+//
+//	if (!hasTarget) {
+//		velocity.x = 0;
+//		return;
+//	}
+//
+//	// 4. 执行移动
+//	float xTolerance = 2.0f;
+//	if (currentPos.getX() < targetPos.getX() - xTolerance) {
+//		velocity.x = speed;
+//		if (anims.GetCurrentName() != "walk") anims.SetCurrent("walk");
+//	}
+//	else if (currentPos.getX() > targetPos.getX() + xTolerance) {
+//		velocity.x = -speed;
+//		if (anims.GetCurrentName() != "walk") anims.SetCurrent("walk");
+//	}
+//	else {
+//		velocity.x = 0;
+//	}
+//
+//	// 5. 跳跃
+//	if (isGrounded && targetPos.getY() < currentPos.getY() - 32.0f) {
+//		velocity.y = -jumpForce;
+//		isGrounded = false;
+//	}
+//
+//	// 6. 朝向
+//	float distToTargetX = abs(currentPos.getX() - targetPos.getX());
+//	if (distToTargetX > 20.0f) {
+//		if (velocity.x > 0) flipState = SDL_FLIP_NONE;
+//		else if (velocity.x < 0) flipState = SDL_FLIP_HORIZONTAL;
+//	}
+//	else {
+//		if (playerPos.getX() > currentPos.getX()) flipState = SDL_FLIP_NONE;
+//		else flipState = SDL_FLIP_HORIZONTAL;
+//	}
+//}
+
+// ================== 【优化后的 Boss 移动逻辑】 ==================
+// 在 Enemy.cpp 中替换这个函数
+
 void Enemy::MoveBoss() {
 	// 1. 攻击状态完全停止移动
 	if (isAttacking) {
@@ -1270,30 +1373,46 @@ void Enemy::MoveBoss() {
 
 	Vector2D playerPos = Engine::GetInstance().scene->GetPlayerPosition();
 	Vector2D currentPos = GetPosition();
+	float distanceToPlayerX = abs(playerPos.getX() - currentPos.getX());
 
-	// 2. 智能补救/空中追踪逻辑 (保持不变)
-	if (pathfinding == nullptr || pathfinding->pathTiles.size() < 2) {
-		float xDiff = playerPos.getX() - currentPos.getX();
-		float yDiff = abs(playerPos.getY() - currentPos.getY());
-		if (abs(xDiff) < 500.0f && yDiff < 250.0f) {
-			if (xDiff > 10.0f) {
-				velocity.x = speed; flipState = SDL_FLIP_NONE;
-				if (anims.GetCurrentName() != "walk") anims.SetCurrent("walk");
-			}
-			else if (xDiff < -10.0f) {
-				velocity.x = -speed; flipState = SDL_FLIP_HORIZONTAL;
-				if (anims.GetCurrentName() != "walk") anims.SetCurrent("walk");
-			}
-			else velocity.x = 0;
-			return;
-		}
+	// 2. 如果已经在攻击范围内（或者非常接近），就停止移动
+	if (distanceToPlayerX <= attackRange - 10.0f) {
 		velocity.x = 0;
+
+		// 站立时确保面向玩家
 		if (anims.GetCurrentName() != "idle") anims.SetCurrent("idle");
-		if (playerPos.getX() > currentPos.getX()) flipState = SDL_FLIP_NONE; else flipState = SDL_FLIP_HORIZONTAL;
+
+		if (playerPos.getX() > currentPos.getX()) flipState = SDL_FLIP_NONE;
+		else flipState = SDL_FLIP_HORIZONTAL;
+
 		return;
 	}
 
-	// 3. 【平滑寻路逻辑 - 增强版】
+	// 3. 寻路异常时的简单追踪逻辑
+	if (pathfinding == nullptr || pathfinding->pathTiles.size() < 2) {
+		float yDiff = abs(playerPos.getY() - currentPos.getY());
+		if (distanceToPlayerX < 500.0f && yDiff < 250.0f) {
+			float moveDir = playerPos.getX() - currentPos.getX();
+			if (moveDir > 10.0f) {
+				velocity.x = speed;
+				flipState = SDL_FLIP_NONE; // 向右：不翻转
+				if (anims.GetCurrentName() != "walk") anims.SetCurrent("walk");
+			}
+			else if (moveDir < -10.0f) {
+				velocity.x = -speed;
+				flipState = SDL_FLIP_HORIZONTAL; // 向左：翻转
+				if (anims.GetCurrentName() != "walk") anims.SetCurrent("walk");
+			}
+			else velocity.x = 0;
+		}
+		else {
+			velocity.x = 0;
+			if (anims.GetCurrentName() != "idle") anims.SetCurrent("idle");
+		}
+		return;
+	}
+
+	// 4. 标准寻路移动
 	Vector2D targetPos;
 	bool hasTarget = false;
 
@@ -1308,13 +1427,10 @@ void Enemy::MoveBoss() {
 
 		float distX = targetPos.getX() - currentPos.getX();
 
-		// === 核心修复 2：防回头检查 ===
-		// 如果我们正在向右走 (speed > 0)，但目标点在左边 (distX < -5)，说明路径计算滞后了
-		// 直接删掉这个点，去下一个点，绝不回头！
+		// 防回头检查
 		bool isMovingRightAndTargetIsLeft = (velocity.x > 0.5f && distX < -5.0f);
 		bool isMovingLeftAndTargetIsRight = (velocity.x < -0.5f && distX > 5.0f);
 
-		// 距离太近 (<8) 或者 方向完全反了 -> 删掉该点
 		if (abs(distX) < 8.0f || isMovingRightAndTargetIsLeft || isMovingLeftAndTargetIsRight) {
 			pathfinding->pathTiles.pop_back();
 		}
@@ -1329,82 +1445,37 @@ void Enemy::MoveBoss() {
 		return;
 	}
 
-	// 4. 执行移动
+	// 执行最终移动
 	float xTolerance = 2.0f;
+
+	// === 【修复点在这里】 ===
 	if (currentPos.getX() < targetPos.getX() - xTolerance) {
+		// 目标在右边 -> 速度为正 -> 面向右(无翻转)
 		velocity.x = speed;
 		if (anims.GetCurrentName() != "walk") anims.SetCurrent("walk");
+		flipState = SDL_FLIP_NONE; // 之前这里写成了 HORIZONTAL
 	}
 	else if (currentPos.getX() > targetPos.getX() + xTolerance) {
+		// 目标在左边 -> 速度为负 -> 面向左(水平翻转)
 		velocity.x = -speed;
 		if (anims.GetCurrentName() != "walk") anims.SetCurrent("walk");
+		flipState = SDL_FLIP_HORIZONTAL; // 之前这里写成了 NONE
 	}
 	else {
 		velocity.x = 0;
 	}
 
-	// 5. 跳跃
+	// 跳跃逻辑
 	if (isGrounded && targetPos.getY() < currentPos.getY() - 32.0f) {
 		velocity.y = -jumpForce;
 		isGrounded = false;
 	}
-
-	// 6. 朝向
-	float distToTargetX = abs(currentPos.getX() - targetPos.getX());
-	if (distToTargetX > 20.0f) {
-		if (velocity.x > 0) flipState = SDL_FLIP_NONE;
-		else if (velocity.x < 0) flipState = SDL_FLIP_HORIZONTAL;
-	}
-	else {
-		if (playerPos.getX() > currentPos.getX()) flipState = SDL_FLIP_NONE;
-		else flipState = SDL_FLIP_HORIZONTAL;
-	}
 }
+
 void Enemy::ApplyPhysics() {
 	Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
 }
 
-//void Enemy::Draw(float dt) {
-//
-//	anims.Update(dt);
-//
-//	// ================== 【自动切换图片】 ==================
-//	if (enemyType == EnemyType::BOSS) {
-//		std::string currentAnimName = anims.GetCurrentName();
-//		if (bossTextures.find(currentAnimName) != bossTextures.end()) {
-//			texture = bossTextures[currentAnimName];
-//		}
-//	}
-//	// ==========================================================
-//	const SDL_Rect& animFrame = anims.GetCurrentFrame();
-//
-//	if (pbody != nullptr) {
-//		int x, y;
-//		pbody->GetPosition(x, y);
-//		position.setX((float)x);
-//		position.setY((float)y);
-//	}
-//
-//	if (Engine::GetInstance().physics->IsDebug()) {
-//		pathfinding->DrawPath();
-//
-//	}
-//
-//	int drawOffsetX = animFrame.w / 2;
-//	int drawOffsetY = animFrame.h / 2;
-//
-//	Engine::GetInstance().render->DrawTexture(
-//		texture,
-//		(int)position.getX() - drawOffsetX,
-//		(int)position.getY() - drawOffsetY,
-//		&animFrame,
-//		1.0f,
-//		0.0f,
-//		INT_MAX,
-//		INT_MAX,
-//		flipState
-//	);
-//}
 void Enemy::Draw(float dt) {
 	anims.Update(dt);
 
@@ -1532,51 +1603,69 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 }
 
 // === Boss 行为逻辑 ===
+// ================== 【优化后的 Boss 行为逻辑】 ==================
 void Enemy::UpdateBossBehavior(float dt) {
 	Vector2D playerPos = Engine::GetInstance().scene->GetPlayerPosition();
 	Vector2D myPos = GetPosition();
-	float distanceToPlayer = abs(playerPos.getX() - myPos.getX());
+
+	// 计算 X 轴距离 (Boss通常只看水平距离攻击)
+	// 如果你的游戏也看Y轴，可以用 distanceEuclidean，但横版游戏通常宽容度高一点
+	float distanceToPlayerX = abs(playerPos.getX() - myPos.getX());
 	float yDiff = abs(playerPos.getY() - myPos.getY());
 
-	// 注意：这里需要从 Scene 获取 public player 指针
-	// 如果 Scene::player 还是 private，请务必去 Scene.h 改为 public
 	Player* player = Engine::GetInstance().scene->player.get();
 
-	// 1. 攻击中
+	// ---------------------------------------------------
+	// 1. 正在攻击中 (优先级最高)
+	// ---------------------------------------------------
 	if (isAttacking) {
-		velocity.x = 0;
+		velocity.x = 0; // 锁死移动
 		int currentFrame = anims.GetCurrentFrameIndex();
 
+		// 伤害判定 (假设攻击动画的关键帧是 3 到 6)
 		if (!hasDealtDamage && currentFrame >= 3 && currentFrame <= 6) {
-			if (distanceToPlayer < attackRange + 30.0f && yDiff < 50.0f) {
+			// 再次检查范围，防止玩家已经跑远了还受到伤害 (稍微给点宽容度 +30)
+			if (distanceToPlayerX < attackRange + 30.0f && yDiff < 60.0f) {
 				if (player != nullptr) {
-					player->TakeDamage(1);
+					player->TakeDamage(attackDamage); // 使用变量而不是硬编码
 					LOG("BOSS HIT PLAYER!");
 				}
 				hasDealtDamage = true;
 			}
 		}
 
+		// 检查动画是否结束
 		if (anims.HasFinishedOnce()) {
 			isAttacking = false;
 			bossState = BossState::IDLE_CHASE;
-			attackCooldownTimer = attackCooldown;
+			attackCooldownTimer = attackCooldown; // 重置冷却
 			anims.SetCurrent("idle");
 		}
-		return;
+		return; // 攻击中直接返回，不执行下面的逻辑
 	}
 
-	// 2. 冷却
+	// ---------------------------------------------------
+	// 2. 冷却处理
+	// ---------------------------------------------------
 	if (attackCooldownTimer > 0.0f) {
 		attackCooldownTimer -= dt;
 	}
 
-	// 3. 触发攻击
-	if (distanceToPlayer <= attackRange && attackCooldownTimer <= 0.0f && yDiff < 50.0f) {
+	// ---------------------------------------------------
+	// 3. 攻击触发判定
+	// ---------------------------------------------------
+	// 条件：距离足够近 && 冷却完毕 && 高度差不大
+	if (distanceToPlayerX <= attackRange && attackCooldownTimer <= 0.0f && yDiff < 60.0f) {
+		// --- 触发攻击 ---
 		isAttacking = true;
 		hasDealtDamage = false;
-		velocity.x = 0;
+		velocity.x = 0; // 攻击开始瞬间停止
 
+		// 面向修正：攻击前最后确认一下朝向
+		if (playerPos.getX() > myPos.getX()) flipState = SDL_FLIP_NONE;
+		else flipState = SDL_FLIP_HORIZONTAL;
+
+		// 轮流切换攻击动画
 		if (nextAttackIsOne) {
 			anims.SetCurrent("attack1");
 			bossState = BossState::ATTACK_NORMAL;
@@ -1585,15 +1674,15 @@ void Enemy::UpdateBossBehavior(float dt) {
 			anims.SetCurrent("attack2");
 			bossState = BossState::ATTACK_NORMAL;
 		}
+		// 切换下一次的攻击
 		nextAttackIsOne = !nextAttackIsOne;
-
-		if (playerPos.getX() > myPos.getX()) flipState = SDL_FLIP_NONE;
-		else flipState = SDL_FLIP_HORIZONTAL;
 	}
 	else {
+		// 不在攻击状态，也不是正在攻击 -> 处于追逐或等待状态
 		bossState = BossState::IDLE_CHASE;
 	}
-}void Enemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
+}
+void Enemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 {
 	if (physB->ctype == ColliderType::PLATFORM) {
 		isGrounded = false;

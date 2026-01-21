@@ -46,7 +46,7 @@ public:
 	int health = 10;
 	int maxHealth = 10;
 	float detectionRange = 15.0f; // 追踪范围
-	float attackRange = 2.0f;     // 攻击范围
+	float attackRange = 100.0f;     // 攻击范围
 private:
 	float pathfindingTimer = 0.0f;
 	float pathfindingInterval = 0.5f;//calcular la ruta de pathfinding cada 0,5 segundo
