@@ -1531,38 +1531,69 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 	}
 }
 
-// ================== 【修改重点 1：重写 UpdateBossBehavior】 ==================
+// === Boss 行为逻辑 ===
 void Enemy::UpdateBossBehavior(float dt) {
-	// =============================================================
-	// 【调试模式】强制让 Boss 动起来
-	// 暂时注释掉所有的攻击触发逻辑，确保 Boss 不会进入 isAttacking 状态
-	// =============================================================
+	Vector2D playerPos = Engine::GetInstance().scene->GetPlayerPosition();
+	Vector2D myPos = GetPosition();
+	float distanceToPlayer = abs(playerPos.getX() - myPos.getX());
+	float yDiff = abs(playerPos.getY() - myPos.getY());
 
-	// 1. 如果意外进入了攻击状态，强制重置（防止卡死）
+	// 注意：这里需要从 Scene 获取 public player 指针
+	// 如果 Scene::player 还是 private，请务必去 Scene.h 改为 public
+	Player* player = Engine::GetInstance().scene->player.get();
+
+	// 1. 攻击中
 	if (isAttacking) {
-		// 强制重置
-		isAttacking = false;
+		velocity.x = 0;
+		int currentFrame = anims.GetCurrentFrameIndex();
+
+		if (!hasDealtDamage && currentFrame >= 3 && currentFrame <= 6) {
+			if (distanceToPlayer < attackRange + 30.0f && yDiff < 50.0f) {
+				if (player != nullptr) {
+					player->TakeDamage(1);
+					LOG("BOSS HIT PLAYER!");
+				}
+				hasDealtDamage = true;
+			}
+		}
+
+		if (anims.HasFinishedOnce()) {
+			isAttacking = false;
+			bossState = BossState::IDLE_CHASE;
+			attackCooldownTimer = attackCooldown;
+			anims.SetCurrent("idle");
+		}
+		return;
+	}
+
+	// 2. 冷却
+	if (attackCooldownTimer > 0.0f) {
+		attackCooldownTimer -= dt;
+	}
+
+	// 3. 触发攻击
+	if (distanceToPlayer <= attackRange && attackCooldownTimer <= 0.0f && yDiff < 50.0f) {
+		isAttacking = true;
+		hasDealtDamage = false;
+		velocity.x = 0;
+
+		if (nextAttackIsOne) {
+			anims.SetCurrent("attack1");
+			bossState = BossState::ATTACK_NORMAL;
+		}
+		else {
+			anims.SetCurrent("attack2");
+			bossState = BossState::ATTACK_NORMAL;
+		}
+		nextAttackIsOne = !nextAttackIsOne;
+
+		if (playerPos.getX() > myPos.getX()) flipState = SDL_FLIP_NONE;
+		else flipState = SDL_FLIP_HORIZONTAL;
+	}
+	else {
 		bossState = BossState::IDLE_CHASE;
-		anims.SetCurrent("idle");
-		LOG("DEBUG: Force reset Boss to IDLE/MOVE state");
 	}
-
-	// 2. 正常计时（保留代码结构，但暂时不起作用）
-	normalAttackTimer += dt;
-	skillTimer += dt;
-
-	// 3. 原本的攻击触发逻辑 —— 全部已屏蔽！
-	/*
-	if (skillTimer >= 11.0f) {
-	   // ...
-	}
-	else if (normalAttackTimer >= 3.0f) {
-	   // ...
-	}
-	*/
-}
-
-void Enemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
+}void Enemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 {
 	if (physB->ctype == ColliderType::PLATFORM) {
 		isGrounded = false;

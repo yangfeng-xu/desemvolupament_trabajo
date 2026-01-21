@@ -1,4 +1,4 @@
-#include "Player.h"
+﻿#include "Player.h"
 #include "Engine.h"
 #include "Textures.h"
 #include "Audio.h"
@@ -82,7 +82,7 @@ bool Player::Update(float dt)
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN) {
 		LOG("Debug: Returning to Start Position (F9)");
 
-		// 1. Forzar posici�n del cuerpo f�sico a la posici�n de inicio
+		// 1. Forzar posición del cuerpo físico a la posición de inicio
 		// Usamos startPosition para el respawn
 		b2BodyId body = pbody->body;
 		b2Vec2 startPosMeters = {
@@ -96,12 +96,12 @@ bool Player::Update(float dt)
 		b2Body_SetLinearVelocity(body, vel);
 		b2Body_SetAwake(body, true); // Asegura que el cuerpo se despierte
 
-		// 3. Restablecer estados (si es necesario, aunque al inicio deber�an ser correctos)
+		// 3. Restablecer estados (si es necesario, aunque al inicio deberían ser correctos)
 		isJumping = false;
 		IsDead = false;
 		anims.SetCurrent("idle");
 
-		// 4. Forzar la c�mara a seguir la posici�n inicial
+		// 4. Forzar la cámara a seguir la posición inicial
 		float limitLeft = Engine::GetInstance().render->camera.w / 4;
 		float cameraX = -(startPosition.getX() - limitLeft);
 		Engine::GetInstance().render->camera.x = (int)cameraX;
@@ -133,10 +133,10 @@ bool Player::Update(float dt)
 		//// Crear proyectil
 		//auto projectile = std::dynamic_pointer_cast<Projectile>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PROJECTILE));
 
-		//// Configurar posici�n inicial (centro del jugador)
+		//// Configurar posición inicial (centro del jugador)
 		//projectile->SetPosition(position);
 
-		//// Determinar direcci�n basada en hacia d�nde mira el jugador (flipState)
+		//// Determinar dirección basada en hacia dónde mira el jugador (flipState)
 		//if (flipState == SDL_FLIP_NONE) {
 		//	projectile->SetVelocity(Vector2D(1, 0)); // Derecha
 		//}
@@ -145,8 +145,8 @@ bool Player::Update(float dt)
 		//}
 
 		//// Inicializar el proyectil
-		//projectile->Awake(); // EntityManager suele llamar awake, pero si lo creas en runtime aseg�rate de su ciclo.
-		//projectile->Start(); // Importante llamarlo para crear su cuerpo f�sico
+		//projectile->Awake(); // EntityManager suele llamar awake, pero si lo creas en runtime asegúrate de su ciclo.
+		//projectile->Start(); // Importante llamarlo para crear su cuerpo físico
 
 		//shootCooldown = 500.0f;
 
@@ -155,10 +155,10 @@ bool Player::Update(float dt)
 			// Crear proyectil
 			auto projectile = std::dynamic_pointer_cast<Projectile>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PROJECTILE));
 
-			// Configurar posici�n inicial (centro del jugador)
+			// Configurar posición inicial (centro del jugador)
 			projectile->SetPosition(position);
 
-			// Determinar direcci�n basada en hacia d�nde mira el jugador
+			// Determinar dirección basada en hacia dónde mira el jugador
 			if (flipState == SDL_FLIP_NONE) {
 				projectile->SetVelocity(Vector2D(1, 0)); // Derecha
 			}
@@ -177,8 +177,8 @@ bool Player::Update(float dt)
 			shootCooldown = 500.0f;
 		}
 		else {
-			LOG("�Sin munici�n! No puedes disparar.");
-			// Aqu� podr�as poner un sonido de "click" o error
+			LOG("¡Sin munición! No puedes disparar.");
+			// Aquí podrías poner un sonido de "click" o error
 		}
 
 	}// 0.5 segundos de espera
@@ -202,7 +202,7 @@ bool Player::Update(float dt)
 			float limitLeft = Engine::GetInstance().render->camera.w / 4;
 			float cameraX = -(savePosition.getX() - limitLeft);
 
-			// 2. Aplicar la nueva posici�n de la c�mara
+			// 2. Aplicar la nueva posición de la cámara
 			Engine::GetInstance().render->camera.x = (int)cameraX;
 			Engine::GetInstance().render->camera.y = 0;
 			std::cout << "YOU ARE DEAD";
@@ -228,16 +228,16 @@ bool Player::Update(float dt)
 
 		ApplyPhysics();
 
-		Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();//coger tama�o de la mapa para ponerla un limite
+		Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();//coger tamaño de la mapa para ponerla un limite
 		float limitLeft = Engine::GetInstance().render->camera.w / 4;
 		float limitRight = mapSize.getX() - Engine::GetInstance().render->camera.w * 3 / 4;
 		if (position.getX() - limitLeft > 0 && position.getX() < limitRight) {//decir a donde empieza a mover la camara respectando el limite
 			Engine::GetInstance().render->camera.x = -position.getX() + Engine::GetInstance().render->camera.w / 4;//se mueve contrario para solucionar lo, ponemos un - para invertirlo
 		}
 
-		//comprovamos si el player esta fuera de la tama�o de la mapa, es dacir se cae al hueco donde no es plataforma, si lo es player se muere
+		//comprovamos si el player esta fuera de la tamaño de la mapa, es dacir se cae al hueco donde no es plataforma, si lo es player se muere
 		float mapBottom = mapSize.getY();
-		// Solo muere por ca�da si NO est?en God Mode
+		// Solo muere por caída si NO est?en God Mode
 		if (!isGodMode && position.getY() > mapBottom + (texH)) {
 			LOG("player fell off the map");
 			Die();
@@ -293,13 +293,13 @@ void Player::Move() {
 		anims.SetCurrent("run");
 		flipState = SDL_FLIP_NONE;
 	}
-	// L�gica para ir a 'idle'
+	// Lógica para ir a 'idle'
 	else if (!isGodMode || (velocity.x == 0.0f && velocity.y == 0.0f)) {
 		velocity.x = 0.0f;
 		anims.SetCurrent("idle");
 	}
 
-	// En God Mode, si el jugador se mueve (horizontal o vertical), usa la animaci�n de correr
+	// En God Mode, si el jugador se mueve (horizontal o vertical), usa la animación de correr
 	if (isGodMode && (velocity.x != 0.0f || velocity.y != 0.0f)) {
 		if (anims.GetCurrentName() == "idle" || anims.GetCurrentName() == "jump") {
 			anims.SetCurrent("run");
@@ -392,7 +392,7 @@ void Player::Die()
 	LOG("Player Died!");
 
 
-	// 1. Obt�n el cuerpo de f�sicas
+	// 1. Obtén el cuerpo de físicas
 	IsDead = true;
 	Engine::GetInstance().audio->PlayFx(deathFxId);
 	anims.SetCurrent("death");
@@ -404,7 +404,7 @@ void Player::Die()
 	// 2. Resetea la velocidad a cero
 	b2Vec2 vel = b2Body_GetLinearVelocity(body);
 
-	// 3. Resetea la posici�n a la de inicio (convirtiendo de p�xeles a metros)
+	// 3. Resetea la posición a la de inicio (convirtiendo de píxeles a metros)
 	vel.x = 0.0f;
 	vel.y = 0.0f;
 	b2Body_SetLinearVelocity(body, vel);
@@ -455,13 +455,13 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		//		score += 100; // Sumar 100 puntos
 		//		// Reproducir sonido de estrella (si no lo hace el Item.cpp)
 		//		Engine::GetInstance().audio->PlayFx(Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/star_collection.wav"));
-		//		LOG("Estrella recogida! Puntuaci�n: %d", score);
+		//		LOG("Estrella recogida! Puntuación: %d", score);
 		//	}
 		//	else if (item->isCoin) {
 		//		ammo += 1; // Sumar 1 bala
 		//		// Reproducir sonido de moneda
 		//		Engine::GetInstance().audio->PlayFx(pickCoinFxId);
-		//		LOG("Moneda recogida! Munici�n: %d", ammo);
+		//		LOG("Moneda recogida! Munición: %d", ammo);
 		//	}
 		//}
 
@@ -469,16 +469,16 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::DEATH:
 		LOG("Collision DEATH");
-		Die(); // Llama a la funci�n de muerte (ya tiene la comprobaci�n de God Mode)
+		Die(); // Llama a la función de muerte (ya tiene la comprobación de God Mode)
 		break;
 	case ColliderType::SAVEPOINT:
-		// Cuando colisiona con el Savepoint, actualiza la posici�n de guardado
-		// Obtenemos la posici�n del centro del savepoint para que el respawn sea m�s preciso
+		// Cuando colisiona con el Savepoint, actualiza la posición de guardado
+		// Obtenemos la posición del centro del savepoint para que el respawn sea más preciso
 		int spX, spY;
 		physB->GetPosition(spX, spY);
-		// El cuerpo del savepoint es el centro. La posici�n del player se ajusta en Die/Update.
+		// El cuerpo del savepoint es el centro. La posición del player se ajusta en Die/Update.
 		savePosition.setX((float)spX - texW / 2); // Ajustamos para que sea la esquina superior izquierda (Entity::position)
-		savePosition.setY((float)spY - texH / 2); // Usando texW/2 como ajuste de p�xeles para el tama�o del player.
+		savePosition.setY((float)spY - texH / 2); // Usando texW/2 como ajuste de píxeles para el tamaño del player.
 		LOG("Collision SAVEPOINT. Position updated to (%.2f, %.2f)", savePosition.getX(), savePosition.getY());
 		Engine::GetInstance().audio->PlayFx(Engine::GetInstance().scene->saveFxId, 0, 10.0f);
 
@@ -492,30 +492,44 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 
 		break;
 	case ColliderType::ENEMY:
+	{
 		LOG("Collision ENEMY");
-		if (invulnerabilityTimer <= 0.0f) {
-			lives--;
-			if (lives>0) {
-				invulnerabilityTimer = 2000.0f;
-				LOG("Player HIT!!! Lives remaining %d",lives);
-				// ?????? (???? deathFxId ???????? hurtFxId)
-				Engine::GetInstance().audio->PlayFx(deathFxId);
 
-				b2Vec2 velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
+		// 【修改开始】：区分是普通小怪还是 Boss
+		// 我们需要获取碰撞到的那个 Enemy 对象来判断类型
+		Enemy* enemy = (Enemy*)physB->listener; // 获取碰撞到的敌人指针
 
-				float knockDir = (velocity.x > 0) ? -1.0f : 1.0f;
-				Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, knockDir * 1.5f, -2.0f, true);
-
+		if (enemy != nullptr) {
+			// 如果是 Boss，我们在 OnCollision 里 *不扣血*！
+			// 因为 Boss 的扣血逻辑已经移到了 Enemy::UpdateBossBehavior 里由动画触发了
+			if (enemy->enemyType == EnemyType::BOSS) {
+				// 这里可以留空，或者只处理击退效果(Knockback)，但不扣 lives
+				// 如果你想保留被 Boss 身体撞到的物理击退，可以保留 ApplyLinearImpulseToCenter
 			}
+			// 如果是普通小怪 (Ground/Flying)，保持原来的“碰到就伤”逻辑
 			else {
-				Die();
+				if (invulnerabilityTimer <= 0.0f) {
+					lives--;
+					if (lives > 0) {
+						invulnerabilityTimer = 2.0f; // 注意：你之前写的是 2000.0f，单位通常是秒，请确认为 2.0f
+						LOG("Player HIT by Enemy! Lives: %d", lives);
+						Engine::GetInstance().audio->PlayFx(deathFxId);
+
+						// 击退逻辑
+						b2Vec2 velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
+						float knockDir = (velocity.x > 0) ? -1.0f : 1.0f;
+						Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, knockDir * 1.5f, -2.0f, true);
+					}
+					else {
+						Die();
+					}
+				}
 			}
 		}
-
-
-
-		//Die(); // Llama a la funci�n de muerte del jugador
+	
+		//Die(); // Llama a la función de muerte del jugador
 		break;
+	}
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
 		break;
