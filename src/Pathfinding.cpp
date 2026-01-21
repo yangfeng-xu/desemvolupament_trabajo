@@ -1,4 +1,4 @@
-#include "Pathfinding.h"
+﻿#include "Pathfinding.h"
 #include "Engine.h"
 #include "Textures.h"
 #include "Map.h"
@@ -21,20 +21,95 @@ Pathfinding::~Pathfinding() {
 
 }
 
-void Pathfinding::ComputeFullPathAStar(Vector2D startPos, ASTAR_HEURISTICS heuristic) {
-    // 1. Limpiar y reiniciar desde la posici�n actual
+//void Pathfinding::ComputeFullPathAStar(Vector2D startPos, ASTAR_HEURISTICS heuristic) {
+//    // 1. Limpiar y reiniciar desde la posición actual
+//    ResetPath(startPos);
+//    pathTiles.clear();
+//
+//    // 2. Bucle para propagar hasta encontrar el destino o agotar pasos
+//    // (Ponemos un límite de 500 pasos para evitar que el juego se congele si no hay camino)
+//    int maxSteps = 500;
+//    int steps = 0;
+//
+//    // Mientras no tengamos un camino calculado (pathTiles vacío) y queden pasos
+//    while (pathTiles.empty() && steps < maxSteps && !frontierAStar.empty()) {
+//        PropagateAStar(heuristic);
+//        steps++;
+//    }
+//}
+
+// 1. 修改 ComputeFullPathAStar 以接受并保存 destination
+void Pathfinding::ComputeFullPathAStar(Vector2D startPos, Vector2D targetPos, ASTAR_HEURISTICS heuristic) {
+    // 1. 清理并从当前位置开始
     ResetPath(startPos);
+
+    // 【新增】保存目标点到类成员变量 destination
+    // 注意：Pathfinding.h 里已经有 destination 变量了，我们直接用
+    this->destination = targetPos;
+
     pathTiles.clear();
 
-    // 2. Bucle para propagar hasta encontrar el destino o agotar pasos
-    // (Ponemos un l�mite de 500 pasos para evitar que el juego se congele si no hay camino)
+    // 2. 循环传播
     int maxSteps = 500;
     int steps = 0;
 
-    // Mientras no tengamos un camino calculado (pathTiles vac�o) y queden pasos
     while (pathTiles.empty() && steps < maxSteps && !frontierAStar.empty()) {
         PropagateAStar(heuristic);
         steps++;
+    }
+}
+
+// 2. 修改 PropagateAStar 以使用 this->destination
+void Pathfinding::PropagateAStar(ASTAR_HEURISTICS heuristic) {
+    // 【修改】不再获取 Engine::GetPlayerPosition，而是直接使用 this->destination
+    // 因为 destination 已经是我们传入的“Boss脚下高度修正后的目标”了
+    Vector2D targetTile = this->destination;
+
+    bool foundDestination = false;
+    if (frontierAStar.size() > 0) {
+        Vector2D frontierTile = frontierAStar.top().second;
+
+        if (frontierTile == targetTile) { // 【修改】对比 targetTile
+            foundDestination = true;
+            ComputePath(frontierTile.getX(), frontierTile.getY());
+        }
+    }
+
+    if (frontierAStar.size() > 0 && !foundDestination) {
+        Vector2D frontierTile = frontierAStar.top().second;
+        frontierAStar.pop();
+
+        std::list<Vector2D> neighbors;
+        if (IsWalkable(frontierTile.getX() + 1, frontierTile.getY())) neighbors.push_back(Vector2D(frontierTile.getX() + 1, frontierTile.getY()));
+        if (IsWalkable(frontierTile.getX(), frontierTile.getY() + 1)) neighbors.push_back(Vector2D(frontierTile.getX(), frontierTile.getY() + 1));
+        if (IsWalkable(frontierTile.getX() - 1, frontierTile.getY())) neighbors.push_back(Vector2D(frontierTile.getX() - 1, frontierTile.getY()));
+        if (IsWalkable(frontierTile.getX(), frontierTile.getY() - 1)) neighbors.push_back(Vector2D(frontierTile.getX(), frontierTile.getY() - 1));
+
+        for (const auto& neighbor : neighbors) {
+            int g = costSoFar[(int)frontierTile.getX()][(int)frontierTile.getY()] + MovementCost((int)neighbor.getX(), (int)neighbor.getY());
+            int h = 0;
+
+            switch (heuristic) {
+            case ASTAR_HEURISTICS::MANHATTAN:
+                h = neighbor.distanceMahattan(targetTile); // 【修改】用 targetTile
+                break;
+            case ASTAR_HEURISTICS::EUCLIDEAN:
+                h = neighbor.distanceEuclidean(targetTile); // 【修改】用 targetTile
+                break;
+            case ASTAR_HEURISTICS::SQUARED:
+                h = neighbor.distanceSquared(targetTile); // 【修改】用 targetTile
+                break;
+            }
+
+            int f = g + h;
+
+            if (std::find(visited.begin(), visited.end(), neighbor) == visited.end() || g < costSoFar[neighbor.getX()][neighbor.getY()]) {
+                costSoFar[neighbor.getX()][neighbor.getY()] = g;
+                frontierAStar.push(std::make_pair(f, neighbor));
+                visited.push_back(neighbor);
+                breadcrumbs.push_back(frontierTile);
+            }
+        }
     }
 }
 
@@ -290,82 +365,82 @@ void Pathfinding::PropagateDijkstra() {
 
 }
 
-void Pathfinding::PropagateAStar(ASTAR_HEURISTICS heuristic) {
-
-    // L13: TODO 2: Adapt Dijkstra algorithm for AStar. Consider the different heuristics
-
-    Vector2D playerPos = Engine::GetInstance().scene.get()->GetPlayerPosition();
-    Vector2D playerPosTile = Engine::GetInstance().map.get()->WorldToMap((int)playerPos.getX(), (int)playerPos.getY());
-
-    bool foundDestination = false;
-    if (frontierAStar.size() > 0) {
-        Vector2D frontierTile = frontierAStar.top().second;
-
-        if (frontierTile == playerPosTile) {
-            foundDestination = true;
-
-            //When the destination is reach, call the function ComputePath
-            ComputePath(frontierTile.getX(), frontierTile.getY());
-        }
-    }
-
-    //If frontier queue contains elements pop the first element and find the neighbors
-    if (frontierAStar.size() > 0 && !foundDestination) {
-
-        //Get the value of the firt element in the queue
-        Vector2D frontierTile = frontierAStar.top().second;
-        //remove the first element from the queue
-        frontierAStar.pop();
-
-        std::list<Vector2D> neighbors;
-        if (IsWalkable(frontierTile.getX() + 1, frontierTile.getY())) {
-            neighbors.push_back(Vector2D((int)frontierTile.getX() + 1, (int)frontierTile.getY()));
-        }
-        if (IsWalkable(frontierTile.getX(), frontierTile.getY() + 1)) {
-            neighbors.push_back(Vector2D((int)frontierTile.getX(), (int)frontierTile.getY() + 1));
-        }
-        if (IsWalkable(frontierTile.getX() - 1, frontierTile.getY())) {
-            neighbors.push_back(Vector2D((int)frontierTile.getX() - 1, (int)frontierTile.getY()));
-        }
-        if (IsWalkable(frontierTile.getX(), frontierTile.getY() - 1)) {
-            neighbors.push_back(Vector2D((int)frontierTile.getX(), (int)frontierTile.getY() - 1));
-        }
-
-        //For each neighbor, if not visited, add it to the frontier queue and visited list
-        for (const auto& neighbor : neighbors) {
-
-            // the movement cost from the start point A to the current tile.
-            int g = costSoFar[(int)frontierTile.getX()][(int)frontierTile.getY()] + MovementCost((int)neighbor.getX(), (int)neighbor.getY());
-
-            // the estimated movement cost from the current square to the destination point.
-            int h = 0;
-
-            switch (heuristic)
-            {
-            case ASTAR_HEURISTICS::MANHATTAN:
-                h = neighbor.distanceMahattan(playerPosTile);
-                break;
-            case ASTAR_HEURISTICS::EUCLIDEAN:
-                h = neighbor.distanceEuclidean(playerPosTile);
-                break;
-            case ASTAR_HEURISTICS::SQUARED:
-                h = neighbor.distanceSquared(playerPosTile);
-                break;
-            }
-
-            // A* Priority function
-            int f = g + h;
-
-            if (std::find(visited.begin(), visited.end(), neighbor) == visited.end() || g < costSoFar[neighbor.getX()][neighbor.getY()]) {
-                costSoFar[neighbor.getX()][neighbor.getY()] = g;
-                frontierAStar.push(std::make_pair(f, neighbor));
-                visited.push_back(neighbor);
-                breadcrumbs.push_back(frontierTile);
-            }
-        }
-
-    }
-}
+//void Pathfinding::PropagateAStar(ASTAR_HEURISTICS heuristic) {
+//
+//    // L13: TODO 2: Adapt Dijkstra algorithm for AStar. Consider the different heuristics
+//
+//    Vector2D playerPos = Engine::GetInstance().scene.get()->GetPlayerPosition();
+//    Vector2D playerPosTile = Engine::GetInstance().map.get()->WorldToMap((int)playerPos.getX(), (int)playerPos.getY());
+//
+//    bool foundDestination = false;
+//    if (frontierAStar.size() > 0) {
+//        Vector2D frontierTile = frontierAStar.top().second;
+//
+//        if (frontierTile == playerPosTile) {
+//            foundDestination = true;
+//
+//            //When the destination is reach, call the function ComputePath
+//            ComputePath(frontierTile.getX(), frontierTile.getY());
+//        }
+//    }
+//
+//    //If frontier queue contains elements pop the first element and find the neighbors
+//    if (frontierAStar.size() > 0 && !foundDestination) {
+//
+//        //Get the value of the firt element in the queue
+//        Vector2D frontierTile = frontierAStar.top().second;
+//        //remove the first element from the queue
+//        frontierAStar.pop();
+//
+//        std::list<Vector2D> neighbors;
+//        if (IsWalkable(frontierTile.getX() + 1, frontierTile.getY())) {
+//            neighbors.push_back(Vector2D((int)frontierTile.getX() + 1, (int)frontierTile.getY()));
+//        }
+//        if (IsWalkable(frontierTile.getX(), frontierTile.getY() + 1)) {
+//            neighbors.push_back(Vector2D((int)frontierTile.getX(), (int)frontierTile.getY() + 1));
+//        }
+//        if (IsWalkable(frontierTile.getX() - 1, frontierTile.getY())) {
+//            neighbors.push_back(Vector2D((int)frontierTile.getX() - 1, (int)frontierTile.getY()));
+//        }
+//        if (IsWalkable(frontierTile.getX(), frontierTile.getY() - 1)) {
+//            neighbors.push_back(Vector2D((int)frontierTile.getX(), (int)frontierTile.getY() - 1));
+//        }
+//
+//        //For each neighbor, if not visited, add it to the frontier queue and visited list
+//        for (const auto& neighbor : neighbors) {
+//
+//            // the movement cost from the start point A to the current tile.
+//            int g = costSoFar[(int)frontierTile.getX()][(int)frontierTile.getY()] + MovementCost((int)neighbor.getX(), (int)neighbor.getY());
+//
+//            // the estimated movement cost from the current square to the destination point.
+//            int h = 0;
+//
+//            switch (heuristic)
+//            {
+//            case ASTAR_HEURISTICS::MANHATTAN:
+//                h = neighbor.distanceMahattan(playerPosTile);
+//                break;
+//            case ASTAR_HEURISTICS::EUCLIDEAN:
+//                h = neighbor.distanceEuclidean(playerPosTile);
+//                break;
+//            case ASTAR_HEURISTICS::SQUARED:
+//                h = neighbor.distanceSquared(playerPosTile);
+//                break;
+//            }
+//
+//            // A* Priority function
+//            int f = g + h;
+//
+//            if (std::find(visited.begin(), visited.end(), neighbor) == visited.end() || g < costSoFar[neighbor.getX()][neighbor.getY()]) {
+//                costSoFar[neighbor.getX()][neighbor.getY()] = g;
+//                frontierAStar.push(std::make_pair(f, neighbor));
+//                visited.push_back(neighbor);
+//                breadcrumbs.push_back(frontierTile);
+//            }
+//        }
+//
+//    }
+//}
 
 
 int Pathfinding::MovementCost(int x, int y)

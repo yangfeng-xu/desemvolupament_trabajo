@@ -14,6 +14,7 @@
 #include "Enemy.h"
 #include "UIManager.h"
 #include "UIToggle.h"
+#include <time.h>
 Scene::Scene() : Module()
 {
 	name = "scene";
@@ -39,6 +40,7 @@ bool Scene::Awake()
 // Called before the first frame
 bool Scene::Start()
 {
+	srand(time(NULL));
 	collectedIDs.clear();
 	Engine::GetInstance().entityManager->CleanUp();
 	/*Engine::GetInstance().map->Load("Assets/Maps/MapTemplate.tmx");*/
