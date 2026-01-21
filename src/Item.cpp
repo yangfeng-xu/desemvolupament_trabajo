@@ -35,13 +35,16 @@ bool Item::Awake() {
 
 bool Item::Start() {
 
-    for (int collectedId : Engine::GetInstance().scene->collectedIDs) {
-        if (id != -1 && id == collectedId) {
-            // Si el ID coincide, desactivamos la entidad y no cargamos nada
-            active = false;
-            return true;
-        }
-    }
+    isPicked = false;
+    active = true;
+
+    //for (int collectedId : Engine::GetInstance().scene->collectedIDs) {
+    //    if (id != -1 && id == collectedId) {
+    //        // Si el ID coincide, desactivamos la entidad y no cargamos nada
+    //        active = false;
+    //        return true;
+    //    }
+    //}
 
     if (pbody != nullptr) return true;
     position = startPosition;
@@ -117,7 +120,7 @@ bool Item::Start() {
 
         // PHYSICS (Sensor estático para que no caiga y se pueda atravesar)
         // Usamos STATIC para que flote en el aire, si quieres que caiga usa DYNAMIC
-        pbody = Engine::GetInstance().physics->CreateCircle(
+        pbody = Engine::GetInstance().physics->CreateCircleSensor(
             (int)position.getX() + radius,
             (int)position.getY() + radius,
             radius, bodyType::STATIC);

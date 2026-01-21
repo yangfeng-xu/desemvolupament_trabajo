@@ -127,6 +127,32 @@ PhysBody* Physics::CreateCircle(int x, int y, int radious, bodyType type)
     return pbody;
 }
 
+PhysBody* Physics::CreateCircleSensor(int x, int y, int radius, bodyType type)
+{
+    b2BodyDef def = b2DefaultBodyDef();
+    def.type = ToB2Type(type);
+    def.position = { PIXEL_TO_METERS(x), PIXEL_TO_METERS(y) };
+
+    b2BodyId b = b2CreateBody(world, &def);
+
+    b2Circle circle;
+    circle.center = { 0.0f, 0.0f };
+    circle.radius = PIXEL_TO_METERS(radius);
+
+    b2ShapeDef sdef = b2DefaultShapeDef();
+    sdef.density = 1.0f;
+    sdef.isSensor = true; // <--- LA CLAVE: Esto elimina la respuesta física (choque)
+    sdef.enableContactEvents = true; // Mantiene la detección de eventos
+    sdef.enableSensorEvents = true;
+
+    b2CreateCircleShape(b, &sdef, &circle);
+
+    PhysBody* pbody = new PhysBody();
+    pbody->body = b;
+    b2Body_SetUserData(b, ToUserData(pbody));
+    return pbody;
+}
+
 PhysBody* Physics::CreateRectangleSensor(int x, int y, int width, int height, bodyType type)
 {
     b2BodyDef def = b2DefaultBodyDef();

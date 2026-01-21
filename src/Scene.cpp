@@ -39,8 +39,11 @@ bool Scene::Awake()
 // Called before the first frame
 bool Scene::Start()
 {
-	/*collectedIDs.clear();*/
+	collectedIDs.clear();
+	Engine::GetInstance().entityManager->CleanUp();
+	/*Engine::GetInstance().map->Load("Assets/Maps/MapTemplate.tmx");*/
 	LoadScene(currentScene);
+	Engine::GetInstance().entityManager->Start();
 
 	return true;
 }
@@ -617,6 +620,7 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 
 
 	levelTimer = 60.0f * 1000.0f;
+	//Engine::GetInstance().entityManager->Start();
 	
 }
 void Scene::UnloadLevel1() {//limpia la mapa y entity

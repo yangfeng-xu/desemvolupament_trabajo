@@ -75,6 +75,8 @@ public:
     PhysBody* CreateRectangleSensor(int x, int y, int width, int height, bodyType type);
     PhysBody* CreateChain(int x, int y, int* points, int size, bodyType type);
 
+    PhysBody* CreateCircleSensor(int x, int y, int radius, bodyType type);
+
     // Invoked from our event processing
     void BeginContact(b2ShapeId shapeA, b2ShapeId shapeB);
     void EndContact(b2ShapeId shapeA, b2ShapeId shapeB);
