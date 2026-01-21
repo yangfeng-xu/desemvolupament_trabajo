@@ -7917,9 +7917,6 @@
   <object id="134" name="Star" type="Item" x="1730.67" y="448">
    <point/>
   </object>
-  <object id="136" name="Boss" type="Boss" x="740" y="538">
-   <point/>
-  </object>
  </objectgroup>
  <layer id="15" name="Item" width="64" height="24" visible="0">
   <data>

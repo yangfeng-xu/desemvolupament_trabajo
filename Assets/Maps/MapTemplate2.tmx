@@ -11415,7 +11415,7 @@
   <object id="56" name="Save" type="Map" x="78.6667" y="152">
    <point/>
   </object>
-  <object id="58" name="Boss" type="Enemy" x="2521.33" y="701.333">
+  <object id="58" name="Boss" type="Boss" x="2521.33" y="701.333">
    <point/>
   </object>
   <object id="60" name="Player" type="Player" x="14.6667" y="144">
