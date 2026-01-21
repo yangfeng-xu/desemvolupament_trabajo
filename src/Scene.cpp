@@ -714,6 +714,16 @@ void Scene::PostUpdateLevel1() {//code especifico de level 1
 		Engine::GetInstance().map->SaveEntities(player);
 	}
 
+	if (player != nullptr) {
+		// Mostrar Puntuación (Debajo del tiempo)
+		std::string scoreStr = "Score: " + std::to_string(player->score);
+		Engine::GetInstance().render->DrawText(scoreStr.c_str(), 50, 80, 120, 30, { 255, 255, 0, 255 }); // Color amarillo
+
+		// Mostrar Munición (Debajo de la puntuación)
+		std::string ammoStr = "Ammo: " + std::to_string(player->ammo);
+		Engine::GetInstance().render->DrawText(ammoStr.c_str(), 50, 110, 100, 30, { 0, 255, 255, 255 }); // Color cian
+	}
+
 	// ???????
 	int secondsLeft = (int)(levelTimer / 1000.0f);
 

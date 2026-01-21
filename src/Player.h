@@ -46,6 +46,8 @@ public:
 	const int maxLives = 3;
 	SDL_Texture* heartTexture = nullptr;
 
+	int score = 0;
+	int ammo = 5;
 
 	//Declare player parameters
 	float speed = 4.0f;

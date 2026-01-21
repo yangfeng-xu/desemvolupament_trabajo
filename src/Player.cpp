@@ -12,6 +12,7 @@
 #include"Animation.h"
 #include"Projectile.h"
 #include <box2d/box2d.h> 
+#include "Item.h"
 
 
 Player::Player() : Entity(EntityType::PLAYER), IsDead(false)
@@ -44,6 +45,9 @@ bool Player::Start() {
 	heartTexture = Engine::GetInstance().textures->Load("Assets/Textures/heart.png");
 	lives = maxLives;
 	invulnerabilityTimer = 0.0f;
+
+	score = 0;
+	ammo = 5;
 
 	// L08 TODO 5: Add physics to the player - initialize physics body
 
@@ -126,25 +130,57 @@ bool Player::Update(float dt)
 	// Disparar con tecla F (por ejemplo)
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && shootCooldown <= 0) {
 
-		// Crear proyectil
-		auto projectile = std::dynamic_pointer_cast<Projectile>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PROJECTILE));
+		//// Crear proyectil
+		//auto projectile = std::dynamic_pointer_cast<Projectile>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PROJECTILE));
 
-		// Configurar posición inicial (centro del jugador)
-		projectile->SetPosition(position);
+		//// Configurar posición inicial (centro del jugador)
+		//projectile->SetPosition(position);
 
-		// Determinar dirección basada en hacia dónde mira el jugador (flipState)
-		if (flipState == SDL_FLIP_NONE) {
-			projectile->SetVelocity(Vector2D(1, 0)); // Derecha
+		//// Determinar dirección basada en hacia dónde mira el jugador (flipState)
+		//if (flipState == SDL_FLIP_NONE) {
+		//	projectile->SetVelocity(Vector2D(1, 0)); // Derecha
+		//}
+		//else {
+		//	projectile->SetVelocity(Vector2D(-1, 0)); // Izquierda
+		//}
+
+		//// Inicializar el proyectil
+		//projectile->Awake(); // EntityManager suele llamar awake, pero si lo creas en runtime asegúrate de su ciclo.
+		//projectile->Start(); // Importante llamarlo para crear su cuerpo físico
+
+		//shootCooldown = 500.0f;
+
+		if (ammo > 0) {
+
+			// Crear proyectil
+			auto projectile = std::dynamic_pointer_cast<Projectile>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PROJECTILE));
+
+			// Configurar posición inicial (centro del jugador)
+			projectile->SetPosition(position);
+
+			// Determinar dirección basada en hacia dónde mira el jugador
+			if (flipState == SDL_FLIP_NONE) {
+				projectile->SetVelocity(Vector2D(1, 0)); // Derecha
+			}
+			else {
+				projectile->SetVelocity(Vector2D(-1, 0)); // Izquierda
+			}
+
+			// Inicializar el proyectil
+			projectile->Awake();
+			projectile->Start();
+
+			// 2. NUEVO: Restamos la bala
+			ammo--;
+			LOG("Disparo realizado! Balas restantes: %d", ammo);
+
+			shootCooldown = 500.0f;
 		}
 		else {
-			projectile->SetVelocity(Vector2D(-1, 0)); // Izquierda
+			LOG("¡Sin munición! No puedes disparar.");
+			// Aquí podrías poner un sonido de "click" o error
 		}
 
-		// Inicializar el proyectil
-		projectile->Awake(); // EntityManager suele llamar awake, pero si lo creas en runtime asegúrate de su ciclo.
-		projectile->Start(); // Importante llamarlo para crear su cuerpo físico
-
-		shootCooldown = 500.0f;
 	}// 0.5 segundos de espera
 	if (IsDead) {
 		if (anims.HasFinishedOnce()) {
@@ -411,8 +447,25 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
-		Engine::GetInstance().audio->PlayFx(pickCoinFxId);
-		physB->listener->Destroy();
+		//Engine::GetInstance().audio->PlayFx(pickCoinFxId);
+
+		//Item* item = (Item*)physB->listener;
+		//if (item != nullptr) {
+		//	if (item->isStar) {
+		//		score += 100; // Sumar 100 puntos
+		//		// Reproducir sonido de estrella (si no lo hace el Item.cpp)
+		//		Engine::GetInstance().audio->PlayFx(Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/star_collection.wav"));
+		//		LOG("Estrella recogida! Puntuación: %d", score);
+		//	}
+		//	else if (item->isCoin) {
+		//		ammo += 1; // Sumar 1 bala
+		//		// Reproducir sonido de moneda
+		//		Engine::GetInstance().audio->PlayFx(pickCoinFxId);
+		//		LOG("Moneda recogida! Munición: %d", ammo);
+		//	}
+		//}
+
+	/*	physB->listener->Destroy();*/
 		break;
 	case ColliderType::DEATH:
 		LOG("Collision DEATH");

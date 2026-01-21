@@ -10,6 +10,7 @@
 #include "EntityManager.h"
 #include "Animation.h" // AÑADIDO
 #include "Map.h"
+#include "Player.h"
 
 Item::Item() : Entity(EntityType::ITEM) // Se crea inicialmente como ITEM
 {
@@ -135,11 +136,11 @@ bool Item::Update(float dt)
    /* int x, y;
     SDL_Rect* srcRect = NULL;*/
 
-    //if (isPicked) {
-    //    CleanUp();   // Esto borrará el pbody y la textura
-    //    active = false; // Desactiva la entidad para siempre
-    //    return true;
-    //}
+    if (isPicked) {
+        CleanUp();   // Esto borrará el pbody y la textura
+        active = false; // Desactiva la entidad para siempre
+        return true;
+    }
 
     // 3. Inicializamos variables (¡ESTO FALTABA!)
     int x = (int)position.getX();
@@ -226,6 +227,22 @@ void Item::OnCollision(PhysBody* physA, PhysBody* physB) {
 
         // 1. Marcar como recogido
         isPicked = true;
+
+        Player* player = (Player*)physB->listener; // Obtenemos el puntero al jugador
+        if (player != nullptr) {
+            if (isStar) {
+                player->score += 100; // Sumar Puntos
+                LOG("Star collected! Score: %d", player->score);
+                // Sonido estrella
+                Engine::GetInstance().audio->PlayFx(Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/star_collection.wav"));
+            }
+            else if (isCoin) {
+                player->ammo += 1;   // Sumar Balas
+                LOG("Coin collected! Ammo: %d", player->ammo);
+                // Sonido moneda
+                Engine::GetInstance().audio->PlayFx(Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav"));
+            }
+        }
 
         if (id != -1) {
             Engine::GetInstance().scene->collectedIDs.push_back(id);
