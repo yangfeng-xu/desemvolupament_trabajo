@@ -1033,7 +1033,7 @@ bool Enemy::Start() {
 
 		// ================== 【新增：Boss 独立参数设置】 ==================
 		// 1. 设置更大的检测范围 (假设 1格 = 32像素，5格 = 160像素，或者直接增加半径数值)
-		detectionRadius = 15; // 10 + 5格
+		detectionRadius = 30; // 10 + 5格
 
 		// 2. 性能优化：寻路计算间隔
 		pathfindingInterval = 0.5f;
@@ -1146,7 +1146,9 @@ void Enemy::PerformPathfinding(float dt) {
 
 	// 2. Obtener mi posición (Origen)
 	Vector2D myPos = GetPosition();
-	Vector2D myTile = Engine::GetInstance().map->WorldToMap((int)myPos.getX(), (int)myPos.getY());
+
+	int yOffset = (enemyType == EnemyType::BOSS) ? 20 : 0;
+	Vector2D myTile = Engine::GetInstance().map->WorldToMap((int)myPos.getX(), (int)myPos.getY()+yOffset);
 
 	float distance = myTile.distanceEuclidean(playerTile);
 
@@ -1167,10 +1169,10 @@ void Enemy::PerformPathfinding(float dt) {
 			// 计算路径
 			pathfinding->ComputeFullPathAStar(myTile, MANHATTAN);
 
-			// ================== 【调试日志】 ==================
-			if (enemyType == EnemyType::BOSS && pathfinding->pathTiles.empty()) {
-				// LOG("BOSS: Path not found!");
-			}
+			//// ================== 【调试日志】 ==================
+			//if (enemyType == EnemyType::BOSS && pathfinding->pathTiles.empty()) {
+			//	// LOG("BOSS: Path not found!");
+			//}
 			pathfindingTimer = 0.0f;
 		}
 	}
@@ -1281,20 +1283,25 @@ void Enemy::MoveBoss() {
 		return;
 	}
 
-	// 2. 路径检查：如果没有路径或路径太短 -> 停下 + 切回 Idle
+	
+	
+	// 2. 无路径或路径过短 -> 待机
 	if (pathfinding == nullptr || pathfinding->pathTiles.size() < 2) {
 		velocity.x = 0;
+		if (anims.GetCurrentName() != "idle") anims.SetCurrent("idle");
 
-		// 只有当前不是 idle 时才切换，避免动画重置鬼畜
-		if (anims.GetCurrentName() != "idle") {
-			anims.SetCurrent("idle");
+		// 【优化】：待机时始终面向玩家
+		// 需要获取玩家位置，增加压迫感，同时防止无意义的转向
+		Vector2D playerPos = Engine::GetInstance().scene->GetPlayerPosition();
+		if (playerPos.getX() > GetPosition().getX()) {
+			flipState = SDL_FLIP_NONE; // 假设素材默认朝右
 		}
-
-		// 【修改】：这里不再强行面朝玩家了。
-		// Boss 会保持它最后一次移动时的朝向 (flipState 不变)。
-
+		else {
+			flipState = SDL_FLIP_HORIZONTAL;
+		}
 		return;
 	}
+
 
 	// 3. 获取目标 (下一个格子)
 	auto it = pathfinding->pathTiles.rbegin();
@@ -1307,33 +1314,67 @@ void Enemy::MoveBoss() {
 	targetPos.setY(targetPos.getY() + 16);
 
 	Vector2D currentPos = GetPosition();
-	float xTolerance = 5.0f; // 容差，避免在中心点抖动
+	
+	
+	// === 判定是否到达了当前目标点 ===
+		// 如果距离非常近（例如 X轴差距小于5像素，Y轴差距小于10像素）
+	if (abs(currentPos.getX() - targetPos.getX()) < 5.0f && abs(currentPos.getY() - targetPos.getY()) < 10.0f) {
+		// 【关键】：到达了！把这个点删掉 (pop_back)，让 Boss 立刻去追下一个点！
+		pathfinding->pathTiles.pop_back();
 
-	// 4. 执行移动与转向 (完全根据 Boss 自己的移动方向)
+		// 如果删完之后没路了，就停止
+		if (pathfinding->pathTiles.size() < 2) {
+			velocity.x = 0;
+			return;
+		}
+
+		// 立即更新目标为新的点，防止有一帧的停顿
+		it = pathfinding->pathTiles.rbegin();
+		it++;
+		nextTile = *it;
+		targetPos = Engine::GetInstance().map->MapToWorld((int)nextTile.getX(), (int)nextTile.getY());
+		targetPos.setX(targetPos.getX() + 16);
+		targetPos.setY(targetPos.getY() + 16);
+	}
+
+	// 4. 计算移动 (X轴)
+	float xTolerance = 4.0f;
 	if (currentPos.getX() < targetPos.getX() - xTolerance) {
-		// ================= 往右走 =================
 		velocity.x = speed;
-
-		// 假设素材默认是【面朝右】的：
-		flipState = SDL_FLIP_NONE;
-		// 如果素材默认是【面朝左】的，请把上面改成 SDL_FLIP_HORIZONTAL
-
 		if (anims.GetCurrentName() != "walk") anims.SetCurrent("walk");
 	}
 	else if (currentPos.getX() > targetPos.getX() + xTolerance) {
-		// ================= 往左走 =================
 		velocity.x = -speed;
-
-		// 假设素材默认是【面朝右】的：
-		flipState = SDL_FLIP_HORIZONTAL;
-		// 如果素材默认是【面朝左】的，请把上面改成 SDL_FLIP_NONE
-
 		if (anims.GetCurrentName() != "walk") anims.SetCurrent("walk");
 	}
 	else {
-		// 到达了X轴目标位置 (可能是垂直移动或已到达)
+		// X轴对齐了
 		velocity.x = 0;
-		// flipState 保持不变
+	}
+
+	// 5. 【新增：跳跃逻辑】
+	// 如果目标点在上方（Y值更小），且 Boss 在地面上，就跳！
+	// 32.0f 是大约一个格子的高度，判定高低差
+	if (isGrounded && targetPos.getY() < currentPos.getY() - 32.0f) {
+		// 给一个向上的速度 (jumpForce 在头文件里定义过是 8.0f)
+		velocity.y = -jumpForce;
+		isGrounded = false;
+	}
+
+	// 6. 视觉朝向优化 (防止鬼畜)
+	float distToTargetX = abs(currentPos.getX() - targetPos.getX());
+	float visualThreshold = 10.0f;
+
+	if (distToTargetX > visualThreshold) {
+		// 距离远，看移动方向
+		if (velocity.x > 0) flipState = SDL_FLIP_NONE;
+		else if (velocity.x < 0) flipState = SDL_FLIP_HORIZONTAL;
+	}
+	else {
+		// 距离近，看玩家方向
+		Vector2D playerPos = Engine::GetInstance().scene->GetPlayerPosition();
+		if (playerPos.getX() > currentPos.getX()) flipState = SDL_FLIP_NONE;
+		else flipState = SDL_FLIP_HORIZONTAL;
 	}
 }
 
@@ -1364,6 +1405,27 @@ void Enemy::Draw(float dt) {
 
 	if (Engine::GetInstance().physics->IsDebug()) {
 		pathfinding->DrawPath();
+
+
+
+		// 2. 【新增】绘制 Boss 物理中心所在的格子 (红色)
+		// 这样你可以对比“脚下判定点”和“身体中心点”的位置
+		Vector2D centerPos = GetPosition(); // 获取物理中心
+		// 算出中心点在哪一个格子上
+		Vector2D centerTile = Engine::GetInstance().map->WorldToMap((int)centerPos.getX(), (int)centerPos.getY());
+		// 把格子坐标转回世界坐标 (为了画框框)
+		Vector2D rectPos = Engine::GetInstance().map->MapToWorld((int)centerTile.getX(), (int)centerTile.getY());
+
+		SDL_Rect rect;
+		rect.x = (int)rectPos.getX();
+		rect.y = (int)rectPos.getY();
+		rect.w = 32; // 假设游戏图块大小是 32x32，如果不同请修改这里
+		rect.h = 32;
+
+		// 调用渲染器画红色矩形 (R=255, G=0, B=0, Alpha=150)
+		// 注意：如果你的 DrawRectangle 参数不同，请根据 Render.h 调整
+		Engine::GetInstance().render->DrawRectangle(rect, 255, 0, 0, 150);
+
 	}
 
 	int drawOffsetX = animFrame.w / 2;
