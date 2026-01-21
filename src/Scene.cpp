@@ -341,6 +341,7 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 		if (uiElement->id == RESUME_BTN_ID) {
 		
 			LOG("Restarting Level 1...");	
+			Engine::GetInstance().scene->collectedIDs.clear();
 			ChangeScene(SceneID::LEVEL_1);		
 		}
 		else if (uiElement->id == EXIT_BTN_ID) {
