@@ -234,6 +234,11 @@ bool Enemy::Start() {
 
 bool Enemy::Update(float dt)
 {
+
+	if (isDead && pbody != nullptr) {
+		Engine::GetInstance().physics->DeletePhysBody(pbody);
+		pbody = nullptr;
+	}
 	if (isDead) {
 		anims.Update(dt);
 		if (anims.HasFinishedOnce()) {
@@ -546,7 +551,10 @@ void Enemy::Draw(float dt) {
 
 	// === 调试绘制 ===
 	if (Engine::GetInstance().physics->IsDebug()) {
-		pathfinding->DrawPath();
+	/*	pathfinding->DrawPath();*/
+		if (pathfinding != nullptr) {
+			pathfinding->DrawPath();
+		}
 
 		Vector2D centerPos = GetPosition();
 
@@ -638,9 +646,13 @@ void Enemy::SetPosition(Vector2D pos) {
 }
 
 Vector2D Enemy::GetPosition() {
-	int x, y;
-	pbody->GetPosition(x, y);
-	return Vector2D((float)x, (float)y);
+	if (pbody != nullptr) {
+		int x, y;
+		pbody->GetPosition(x, y);
+		return Vector2D((float)x, (float)y);
+	}
+	// 如果物理身体没了，就返回最后记录的坐标
+	return position;
 }
 
 void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
@@ -662,8 +674,8 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 				if (health <= 0) {
 					isDead = true;
 					Engine::GetInstance().audio->PlayFx(deathFxId, 0, 5.0f);
-					Engine::GetInstance().physics->DeletePhysBody(pbody);
-					pbody = nullptr;
+					//Engine::GetInstance().physics->DeletePhysBody(pbody);
+					//pbody = nullptr;
 					anims.SetCurrent("death"); // 播放死亡动画
 				}
 			}
@@ -671,8 +683,8 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 			else {
 				isDead = true;
 				Engine::GetInstance().audio->PlayFx(deathFxId, 0, 5.0f);
-				Engine::GetInstance().physics->DeletePhysBody(pbody);
-				pbody = nullptr;
+				/*Engine::GetInstance().physics->DeletePhysBody(pbody);
+				pbody = nullptr;*/
 
 				if (enemyType == EnemyType::FLYING) {
 					Engine::GetInstance().entityManager->DestroyEntity(shared_from_this());
@@ -686,8 +698,8 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 	else if (physB->ctype == ColliderType::DEATH) {
 		if (!isDead) {
 			isDead = true;
-			Engine::GetInstance().physics->DeletePhysBody(pbody);
-			pbody = nullptr;
+		/*	Engine::GetInstance().physics->DeletePhysBody(pbody);
+			pbody = nullptr;*/
 
 			if (enemyType == EnemyType::FLYING) {
 				Engine::GetInstance().entityManager->DestroyEntity(shared_from_this());
