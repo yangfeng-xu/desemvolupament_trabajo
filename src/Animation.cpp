@@ -1,4 +1,4 @@
-#include "Animation.h"
+﻿#include "Animation.h"
 #include <pugixml.hpp>
 #include <cstdio>
 
@@ -21,7 +21,10 @@ void Animation::Reset() {
 }
 
 bool Animation::HasFinishedOnce() const { return finishedOnce_ && !loop_; }
-
+// 【新增实现】
+int Animation::GetCurrentFrameIndex() const {
+    return currentIndex_;
+}
 void Animation::Update(float dt) {
     if (frames_.empty()) return;
 
@@ -153,4 +156,12 @@ bool AnimationSet::Has(const std::string& name) const {
 bool AnimationSet::HasFinishedOnce() const {
     if (Has(currentName_)) return clips_.at(currentName_).HasFinishedOnce();
     return false;
+}
+//
+
+int AnimationSet::GetCurrentFrameIndex() const {
+    if (clips_.find(currentName_) != clips_.end()) {
+        return clips_.at(currentName_).GetCurrentFrameIndex();
+    }
+    return 0;
 }

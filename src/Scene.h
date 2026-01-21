@@ -58,7 +58,7 @@ public:
 	bool isGamePaused = false; // 游戏是否暂停
 
 	std::list<int> collectedIDs;
-	
+	std::shared_ptr<Player> player;
 private:
 	// L17 TODO 3: Define specific function for main menu scene: Load, Unload, Handle UI events
 	void LoadMainMenu();
@@ -82,7 +82,7 @@ private:
 private:
 
 	//L03: TODO 3b: Declare a Player attribute
-	std::shared_ptr<Player> player;
+
 	SDL_Texture* mouseTileTex = nullptr;
 	std::string tilePosDebug = "[0,0]";
 	bool showHelpMenu = false;

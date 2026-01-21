@@ -20,7 +20,7 @@ public:
     void Update(float dt);
     const SDL_Rect& GetCurrentFrame() const;
     int GetFrameCount() const;
-
+    int GetCurrentFrameIndex() const;
 private:
     std::vector<AnimFrame> frames_;
     int currentIndex_ = 0;
@@ -55,7 +55,7 @@ public:
     const std::string& GetCurrentName() const;
     bool HasFinishedOnce() const;
     bool Has(const std::string& name) const;
-
+    int GetCurrentFrameIndex() const;
 private:
     int tileW_ = 0, tileH_ = 0, columns_ = 0;
     std::unordered_map<std::string, Animation> clips_;
