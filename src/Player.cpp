@@ -47,7 +47,7 @@ bool Player::Start() {
 	invulnerabilityTimer = 0.0f;
 
 	score = 0;
-	ammo = 5;
+	ammo = 15;
 
 	// L08 TODO 5: Add physics to the player - initialize physics body
 
