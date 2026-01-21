@@ -722,8 +722,8 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 
 
 	//// L16: TODO 2: Instantiate a new GuiControlButton in the Scene
-	uiBt1 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, std::string("Start").c_str(), { 0,0,100,20 }, this));
-	uiBt2 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 2, std::string("Setting").c_str(), { 0,50,100,20 }, this));
+	//uiBt1 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, std::string("Start").c_str(), { 0,0,100,20 }, this));
+	//uiBt2 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 2, std::string("Setting").c_str(), { 0,50,100,20 }, this));
 	////full sreen
 	//Engine::GetInstance().uiManager->CreateUIElement(UIElementType::TOGGLE, 100, "FullScreen", { 10, 10, 100, 30 }, this);
 
@@ -862,11 +862,11 @@ void Scene::PostUpdateLevel1() {//code especifico de level 1
 	if (player != nullptr) {
 		// Mostrar Puntuación (Debajo del tiempo)
 		std::string scoreStr = "Score: " + std::to_string(player->score);
-		Engine::GetInstance().render->DrawText(scoreStr.c_str(), 50, 80, 120, 30, { 255, 255, 0, 255 }); // Color amarillo
+		Engine::GetInstance().render->DrawText(scoreStr.c_str(), 20, 80, 100, 30, { 255, 255, 0, 255 }); // Color amarillo
 
 		// Mostrar Munición (Debajo de la puntuación)
 		std::string ammoStr = "Ammo: " + std::to_string(player->ammo);
-		Engine::GetInstance().render->DrawText(ammoStr.c_str(), 50, 110, 100, 30, { 0, 255, 255, 255 }); // Color cian
+		Engine::GetInstance().render->DrawText(ammoStr.c_str(), 20, 110, 100, 30, { 0, 255, 255, 255 }); // Color cian
 	}
 
 	// ???????
@@ -878,7 +878,7 @@ void Scene::PostUpdateLevel1() {//code especifico de level 1
 	// ?????????? (?? x=10, y=10)
 	// ????? {255, 255, 255, 255}
 	// ???? DrawText ????
-	Engine::GetInstance().render->DrawText(timeText.c_str(), 50, 50, 100, 30, { 255, 255, 255, 255 });
+	Engine::GetInstance().render->DrawText(timeText.c_str(), 20, 50, 100, 30, { 255, 255, 255, 255 });
 
 	// ????????????????? "GAME OVER" ???
 	if (isGameOver) {
@@ -906,6 +906,33 @@ void Scene::LoadLevel2() {
 	//Engine::GetInstance().uiManager->CreateUIElement(UIElementType::TOGGLE, 100, "FullScreen", { 10, 10, 100, 30 }, this);
 	levelTimer = 60.0f * 1000.0f;
 
+	// --- AÑADIR ESTO: Lógica del Botón de Pausa ---
+	int windowW, windowH;
+	Engine::GetInstance().window->GetWindowSize(windowW, windowH);
+
+	int iconSize = 32;
+	int margin = 20;
+	int posX = windowW - iconSize - margin;
+	int posY = margin;
+
+	// Cargar texturas (reutilizamos las variables de la clase Scene)
+	iconPause = Engine::GetInstance().textures->Load("Assets/Textures/Pause.png");
+	iconPlay = Engine::GetInstance().textures->Load("Assets/Textures/Resume.png");
+
+	// Crear el Toggle
+	auto pauseToggle = Engine::GetInstance().uiManager->CreateUIElement(
+		UIElementType::TOGGLE,
+		PAUSE_TOGGLE_ID,
+		"",
+		{ posX, posY, iconSize, iconSize },
+		this
+	);
+
+	// Configurar texturas del Toggle
+	auto togglePtr = std::dynamic_pointer_cast<UIToggle>(pauseToggle);
+	if (togglePtr) {
+		togglePtr->SetTextures(iconPause, iconPlay);
+	}
 	
 	
 }
@@ -918,7 +945,14 @@ void Scene::UnloadLevel2() {
 	isGameOver = false;
 	gameOverShown = false;
 	levelTimer = 60.0f * 1000.0f; // ????
-	
+	if (iconPause != nullptr) {
+		Engine::GetInstance().textures->UnLoad(iconPause);
+		iconPause = nullptr;
+	}
+	if (iconPlay != nullptr) {
+		Engine::GetInstance().textures->UnLoad(iconPlay);
+		iconPlay = nullptr;
+	}
 }
 void Scene::UpdateLevel2(float dt) {//cambiar a nivell 1
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) {
@@ -969,6 +1003,18 @@ void Scene::PostUpdateLevel2() {
 		Engine::GetInstance().map->SaveEntities(player);
 	}
 
+	if (player != nullptr) {
+		// Mostrar Puntuación (Debajo del tiempo)
+		std::string scoreStr = "Score: " + std::to_string(player->score);
+		// Posición Y=80 (debajo del Time que está en 50)
+		Engine::GetInstance().render->DrawText(scoreStr.c_str(), 20, 80, 100, 30, { 255, 255, 0, 255 }); // Amarillo
+
+		// Mostrar Munición (Debajo de la puntuación)
+		std::string ammoStr = "Ammo: " + std::to_string(player->ammo);
+		// Posición Y=110
+		Engine::GetInstance().render->DrawText(ammoStr.c_str(), 20, 110, 100, 30, { 0, 255, 255, 255 }); // Cian
+	}
+
 	// ???????
 	int secondsLeft = (int)(levelTimer / 1000.0f);
 
@@ -976,7 +1022,7 @@ void Scene::PostUpdateLevel2() {
 	std::string timeText = "Time: " + std::to_string(secondsLeft);
 
 	//  DrawText 
-	Engine::GetInstance().render->DrawText(timeText.c_str(), 50, 50, 100, 30, { 255, 255, 255, 255 });
+	Engine::GetInstance().render->DrawText(timeText.c_str(), 20, 50, 100, 30, { 255, 255, 255, 255 });
 
 	// GAME OVER
 	if (isGameOver) {
