@@ -93,6 +93,8 @@ private:
 	std::shared_ptr<UIButton>uiBt1;
 	std::shared_ptr<UIButton>uiBt2;
 
+	bool showCreditsUI;
+
 	
 	// L17 TODO 1: Current scene attribute with initial value
 	bool sceneChangeRequested = false;
@@ -127,6 +129,7 @@ private:
 	const int TOGGLE_MUSIC_ID = 302;
 	const int BTN_VOL_PLUS = 303;
 	const int BTN_VOL_MINUS = 304;
+	const int BTN_SETTINGS_CREDITS = 9;
 
 	bool showSettingsUI = false;
 	bool settingsCloseRequested = false; // 用于安全关闭
