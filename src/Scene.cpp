@@ -86,23 +86,80 @@ bool Scene::Update(float dt)
 	default:
 		break;
 	}
-	// 绘制 Settings 背景 (如果在显示状态)
-if (showSettingsUI) {
-	int w, h;
-	Engine::GetInstance().window->GetWindowSize(w, h);
-	// 简单的半透明黑色背景遮罩
-	SDL_Rect bg = { w / 2 - 150, h / 2 - 200, 300, 400 };
-	Engine::GetInstance().render->DrawRectangle(bg, 50, 50, 50, 240, true, false); // 深灰色背景
-	Engine::GetInstance().render->DrawRectangle(bg, 255, 255, 255, 255, false, false); // 白色边框
 
-	// 绘制标题
-	Engine::GetInstance().render->DrawText("SETTINGS", w / 2 - 40, h / 2 - 180, 80, 30, { 255,255,255,255 });
+	if (showSettingsUI) {
+		int w, h;
+		Engine::GetInstance().window->GetWindowSize(w, h);
 
-	// 绘制音量数值
-	float vol = Engine::GetInstance().audio->GetMusicVolume();
-	std::string volText = "Vol: " + std::to_string((int)(vol * 100)) + "%";
-	Engine::GetInstance().render->DrawText(volText.c_str(), w / 2 - 40, h / 2 + 20, 80, 20, { 255,255,255,255 });
-}
+		// 1. Dibujamos el fondo de Settings (Tu código existente)
+		SDL_Rect bg = { w / 2 - 150, h / 2 - 200, 300, 400 };
+		Engine::GetInstance().render->DrawRectangle(bg, 50, 50, 50, 240, true, false);
+		Engine::GetInstance().render->DrawRectangle(bg, 255, 255, 255, 255, false, false);
+
+		// Si NO estamos en créditos, mostramos el título normal y volumen
+		if (!showCreditsUI) {
+			Engine::GetInstance().render->DrawText("SETTINGS", w / 2 - 40, h / 2 - 180, 80, 30, { 255,255,255,255 });
+
+			float vol = Engine::GetInstance().audio->GetMusicVolume();
+			std::string volText = "Vol: " + std::to_string((int)(vol * 100)) + "%";
+			Engine::GetInstance().render->DrawText(volText.c_str(), w / 2 - 40, h / 2 + 20, 80, 20, { 255,255,255,255 });
+		}
+
+		// 2. LÓGICA DE CRÉDITOS (SE DIBUJA ENCIMA)
+		else {
+			// Fondo oscuro (un poco más grande para que quepa todo)
+			SDL_Rect creditsBg = { w / 2 + 200, h / 2 - 200, 320, 420 };
+			Engine::GetInstance().render->DrawRectangle(creditsBg, 20, 20, 20, 255, true, false);
+			Engine::GetInstance().render->DrawRectangle(creditsBg, 255, 255, 255, 255, false, false); // Borde blanco
+
+			int centerX = w / 2;
+			int centerY = h / 2;
+
+			int creditsX = centerX + 350;
+
+			// --- TÍTULO ---
+			Engine::GetInstance().render->DrawText("CREDITS", creditsX - 50, centerY - 170, 100, 30, { 255, 255, 0, 255 });
+
+			// --- SECCIÓN 1: Game Designer ---
+			Engine::GetInstance().render->DrawText("Game Designer", creditsX - 60, centerY - 120, 120, 20, { 200, 200, 200, 255 });
+			Engine::GetInstance().render->DrawText("Yangfeng Xu and Bole Wu", creditsX - 95, centerY - 90, 220, 20, { 255, 255, 255, 255 });
+
+			// --- SECCIÓN 2: Programmer ---
+			Engine::GetInstance().render->DrawText("Programmer", creditsX - 50, centerY - 40, 100, 20, { 200, 200, 200, 255 });
+			Engine::GetInstance().render->DrawText("Yangfeng Xu and Bole Wu", creditsX - 95, centerY - 10, 220, 20, { 255, 255, 255, 255 });
+
+			// --- SECCIÓN 3: Assets ---
+			Engine::GetInstance().render->DrawText("Assets & Audio", creditsX - 60, centerY + 40, 120, 20, { 200, 200, 200, 255 });
+			Engine::GetInstance().render->DrawText("Free License", creditsX - 50, centerY + 70, 100, 20, { 255, 255, 255, 255 });
+
+			// --- INSTRUCCIÓN SALIDA ---
+			Engine::GetInstance().render->DrawText("[Click to Close]", creditsX - 70, centerY + 150, 140, 20, { 150, 150, 150, 255 });
+
+			// Lógica para cerrar al hacer clic
+			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_DOWN) {
+				showCreditsUI = false;
+			}
+		}
+
+		// 绘制 Settings 背景 (如果在显示状态)
+		//if (showSettingsUI) {
+		//int w, h;
+		//Engine::GetInstance().window->GetWindowSize(w, h);
+		//// 简单的半透明黑色背景遮罩
+		//SDL_Rect bg = { w / 2 - 150, h / 2 - 200, 300, 400 };
+		//Engine::GetInstance().render->DrawRectangle(bg, 50, 50, 50, 240, true, false); // 深灰色背景
+		//Engine::GetInstance().render->DrawRectangle(bg, 255, 255, 255, 255, false, false); // 白色边框
+
+		//// 绘制标题
+		//Engine::GetInstance().render->DrawText("SETTINGS", w / 2 - 40, h / 2 - 180, 80, 30, { 255,255,255,255 });
+
+		//// 绘制音量数值
+		//float vol = Engine::GetInstance().audio->GetMusicVolume();
+		//std::string volText = "Vol: " + std::to_string((int)(vol * 100)) + "%";
+		//Engine::GetInstance().render->DrawText(volText.c_str(), w / 2 - 40, h / 2 + 20, 80, 20, { 255,255,255,255 });
+		//}
+		//return true;
+	}
 	return true;
 }
 
@@ -387,6 +444,20 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 		LOG("Exiting Application from Main Menu");
 		exitGameRequested = true; // Aquí SÍ cerramos la aplicación
 	}
+	//if (uiElement->id == BTN_SETTINGS_CREDITS) {
+	//	LOG("CREDITS: Created by Yangfeng Xu and Bole Wu");
+	//	// Aquí podrías cambiar a una escena de créditos o mostrar una imagen
+	//}
+	if (uiElement->id == BTN_SETTINGS_CREDITS) {
+	LOG("Opening Credits UI");
+	showCreditsUI = true; // Activamos la pantalla de créditos
+	}
+
+// --- AÑADIR ESTO PARA PODER CERRAR CRÉDITOS AL CERRAR SETTINGS ---
+	if (uiElement->id == BTN_SETTINGS_CLOSE) {
+	settingsCloseRequested = true;
+	showCreditsUI = false; // Aseguramos que se cierren también
+	}
 	//if (uiElement->id == 2) {
 	//	LOG("Go to settings");
 	//}
@@ -591,6 +662,7 @@ void Scene::LoadMainMenu() {//cargar audio en aqui
 	mainMenuExitBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_MAIN_MENU_EXIT, "Exit Game", { 575, 410, 120, 20 }, this);
 
 	showSettingsUI = false;
+	showCreditsUI = false;
 
 }
 void Scene::UnloadMainMenu() {
@@ -648,6 +720,14 @@ void Scene::CreateSettingsUI() {
 	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_VOL_MINUS, "Vol -", { centerX - 80, centerY - 20, 60, 30 }, this);
 	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_VOL_PLUS, "Vol +", { centerX + 20, centerY - 20, 60, 30 }, this);
 
+	Engine::GetInstance().uiManager->CreateUIElement(
+		UIElementType::BUTTON,
+		BTN_SETTINGS_CREDITS,
+		"Credits",
+		{ centerX - 50, centerY + 40, 100, 30 },
+		this
+	);
+
 	// Close Button
 	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_SETTINGS_CLOSE, "Close", { centerX - 50, centerY + 100, 100, 30 }, this);
 }
@@ -659,6 +739,7 @@ void Scene::DestroySettingsUI() {
 	Engine::GetInstance().uiManager->DestroyUIElement(BTN_VOL_PLUS);
 	Engine::GetInstance().uiManager->DestroyUIElement(BTN_VOL_MINUS);
 	Engine::GetInstance().uiManager->DestroyUIElement(BTN_SETTINGS_CLOSE);
+	Engine::GetInstance().uiManager->DestroyUIElement(BTN_SETTINGS_CREDITS);
 
 	// 【新增】重新显示主菜单按钮
 	if (mainMenuStartBtn != nullptr) mainMenuStartBtn->visible = true;

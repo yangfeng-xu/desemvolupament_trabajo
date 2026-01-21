@@ -47,7 +47,7 @@ public:
 	SDL_Texture* heartTexture = nullptr;
 
 	int score = 0;
-	int ammo = 5;
+	int ammo = 15;
 
 	//Declare player parameters
 	float speed = 4.0f;
