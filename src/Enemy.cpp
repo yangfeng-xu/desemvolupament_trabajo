@@ -173,6 +173,9 @@ bool Enemy::Start() {
 		// 3. Boss 移动速度
 		speed = 2.0f; // 稍微慢一点显得有压迫感，或者快一点增加难度
 
+		// === 新增/修改：设置 Boss 血量 ===
+		maxHealth = 20;  // 设置最大血量为 20
+		health = maxHealth; // 当前血量初始化
 		//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 	}
@@ -578,6 +581,35 @@ void Enemy::Draw(float dt) {
 		INT_MAX,
 		flipState
 	);
+
+	// === 新增：Boss 血条绘制逻辑 ===
+	if (enemyType == EnemyType::BOSS && !isDead) {
+		// 1. 定义血条尺寸
+		int barWidth = 60;  // 血条总宽度
+		int barHeight = 8;  // 血条高度
+		int yOffset = 50;   // 距离 Boss 中心的垂直偏移量 (向上)
+
+		// 2. 计算位置 (居中显示在 Boss 头顶)
+		// position 是物理身体的中心点
+		int barX = (int)position.getX() - (barWidth / 2);
+		int barY = (int)position.getY() - yOffset;
+
+		// 3. 计算当前血量比例
+		float healthPercentage = (float)health / (float)maxHealth;
+		// 确保不小于 0
+		if (healthPercentage < 0) healthPercentage = 0;
+
+		// 4. 绘制背景 (红色或黑色)
+		SDL_Rect bgRect = { barX, barY, barWidth, barHeight };
+		Engine::GetInstance().render->DrawRectangle(bgRect, 255, 0, 0, 255); // 红色背景
+
+		// 5. 绘制前景 (绿色 - 根据血量缩放宽度)
+		SDL_Rect fgRect = { barX, barY, (int)(barWidth * healthPercentage), barHeight };
+		Engine::GetInstance().render->DrawRectangle(fgRect, 0, 255, 0, 255); // 绿色前景
+
+		// (可选) 绘制边框 (白色)
+		// Engine::GetInstance().render->DrawRectangle(bgRect, 255, 255, 255, 255, false); 
+	}
 }
 bool Enemy::CleanUp()
 {
@@ -615,19 +647,39 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 	if (physB->ctype == ColliderType::PLATFORM) {
 		isGrounded = true;
 	}
+
+	//}// === 修改开始：子弹碰撞逻辑 ===
 	if (physB->ctype == ColliderType::PROJECTILE) {
 		if (!isDead) {
-			isDead = true;
-			Engine::GetInstance().audio->PlayFx(deathFxId, 0, 5.0f);
+			//如果是 Boss，扣血而不是直接死
+			if (enemyType == EnemyType::BOSS) {
+				health--; // 假设子弹伤害为 1
+				LOG("Boss Hit! HP: %d / %d", health, maxHealth);
 
-			Engine::GetInstance().physics->DeletePhysBody(pbody);
-			pbody = nullptr;
+				// 可以加一个受伤音效或变色效果
+				// Engine::GetInstance().audio->PlayFx(hitFxId); 
 
-			if (enemyType == EnemyType::FLYING) {
-				Engine::GetInstance().entityManager->DestroyEntity(shared_from_this());
+				if (health <= 0) {
+					isDead = true;
+					Engine::GetInstance().audio->PlayFx(deathFxId, 0, 5.0f);
+					Engine::GetInstance().physics->DeletePhysBody(pbody);
+					pbody = nullptr;
+					anims.SetCurrent("death"); // 播放死亡动画
+				}
 			}
+			// 如果是普通敌人，直接死亡 (保持原有逻辑)
 			else {
-				anims.SetCurrent("death");
+				isDead = true;
+				Engine::GetInstance().audio->PlayFx(deathFxId, 0, 5.0f);
+				Engine::GetInstance().physics->DeletePhysBody(pbody);
+				pbody = nullptr;
+
+				if (enemyType == EnemyType::FLYING) {
+					Engine::GetInstance().entityManager->DestroyEntity(shared_from_this());
+				}
+				else {
+					anims.SetCurrent("death");
+				}
 			}
 		}
 	}
