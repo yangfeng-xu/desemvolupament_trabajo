@@ -105,15 +105,93 @@ if (showSettingsUI) {
 }
 
 // Called each loop iteration
+//bool Scene::PostUpdate()
+//{
+//	// 安全关闭设置界面（防止在 Update 循环中删除 UI 导致崩溃）
+//	if (settingsCloseRequested) {
+//		DestroySettingsUI();
+//		settingsCloseRequested = false;
+//		showSettingsUI = false;
+//	}
+//
+//	if (sceneChangeRequested)
+//	{
+//		UnloadCurrentScene();
+//		currentScene = nextScene;
+//		LoadScene(currentScene);
+//		sceneChangeRequested = false;
+//		isGameOver = false;
+//		exitGameRequested = false;
+//	}
+//
+//	if (exitGameRequested) {
+//		return false; // ???? false ??? Engine ???????????????
+//	}
+//	bool ret = true;
+//	//L15 TODO 3: Call the function to load entities from the map
+//	if (showHelpMenu)
+//	{
+//		int windowWidth, windowHeight;
+//		Engine::GetInstance().window->GetWindowSize(windowWidth, windowHeight);
+//
+//		// CALCULAR POSICIÓN Y TAMAÑO CENTRADO (2/3 de la pantalla)
+//		int menuWidth = windowWidth * 2 / 3;
+//		int menuHeight = windowHeight * 2 / 3;
+//
+//		int menuX = (windowWidth - menuWidth) / 2;
+//		int menuY = (windowHeight - menuHeight) / 2;
+//
+//		//Dibuja un fondo oscuro para asegurar que el área est?definida.
+//		SDL_Rect backgroundRect = { menuX, menuY, menuWidth, menuHeight };
+//		Engine::GetInstance().render->DrawRectangle(backgroundRect, 0, 0, 0, 200, true, false);
+//
+//		// 2. DIBUJA LA IMAGEN DEL MEN?("menu.png")
+//		if (helpMenuTexture != nullptr)
+//		{
+//			// Usamos las coordenadas de inicio del men?(menuX, menuY)
+//			// speed = 0.0f asegura que la imagen no se mueva con el offset de la cámara.
+//			Engine::GetInstance().render->DrawTexture(
+//				helpMenuTexture,
+//				menuX,
+//				menuY,
+//				nullptr, // section: Dibuja la textura completa
+//				0.0f,    // speed: 0.0f (sin movimiento de cámara)
+//				0.0,     // angle
+//				INT_MAX, // pivotX 
+//				INT_MAX  // pivotY 
+//			);
+//
+//			if (currentScene == SceneID::LEVEL_1) PostUpdateLevel1();
+//		}
+//
+//		//Dibuja un borde blanco.
+//		Engine::GetInstance().render->DrawRectangle(backgroundRect, 255, 255, 255, 255, false, false);
+//
+//		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)//para salir el juego
+//			//ret = false;
+//			// Si estamos jugando (Nivel 1 o 2), volvemos al Menú Principal
+//        if (currentScene == SceneID::LEVEL_1 || currentScene == SceneID::LEVEL_2) {
+//            collectedIDs.clear();       // Limpiamos datos temporales si es necesario
+//            ChangeScene(SceneID::MAIN_MENU);
+//        }
+//        // Si estamos en el Menú Principal (o Intro), entonces sí cerramos el juego
+//        else if (currentScene == SceneID::MAIN_MENU || currentScene == SceneID::INTRO_SCR) {
+//            ret = false; 
+//        }
+//        else {
+//            ret = false;
+//        }
+//	}
 bool Scene::PostUpdate()
 {
-	// 安全关闭设置界面（防止在 Update 循环中删除 UI 导致崩溃）
+	// 1. Cerrar Settings si se ha solicitado
 	if (settingsCloseRequested) {
 		DestroySettingsUI();
 		settingsCloseRequested = false;
 		showSettingsUI = false;
 	}
 
+	// 2. Gestión de cambio de escena
 	if (sceneChangeRequested)
 	{
 		UnloadCurrentScene();
@@ -124,52 +202,103 @@ bool Scene::PostUpdate()
 		exitGameRequested = false;
 	}
 
+	// 3. Salida del juego solicitada por botón UI
 	if (exitGameRequested) {
-		return false; // ???? false ??? Engine ???????????????
+		return false;
 	}
+
 	bool ret = true;
-	//L15 TODO 3: Call the function to load entities from the map
+
+	// 4. Dibujar Menú de Ayuda (sin lógica de salir aquí dentro)
 	if (showHelpMenu)
 	{
 		int windowWidth, windowHeight;
 		Engine::GetInstance().window->GetWindowSize(windowWidth, windowHeight);
 
-		// CALCULAR POSICIÓN Y TAMAÑO CENTRADO (2/3 de la pantalla)
 		int menuWidth = windowWidth * 2 / 3;
 		int menuHeight = windowHeight * 2 / 3;
-
 		int menuX = (windowWidth - menuWidth) / 2;
 		int menuY = (windowHeight - menuHeight) / 2;
 
-		//Dibuja un fondo oscuro para asegurar que el área est?definida.
 		SDL_Rect backgroundRect = { menuX, menuY, menuWidth, menuHeight };
 		Engine::GetInstance().render->DrawRectangle(backgroundRect, 0, 0, 0, 200, true, false);
 
-		// 2. DIBUJA LA IMAGEN DEL MEN?("menu.png")
 		if (helpMenuTexture != nullptr)
 		{
-			// Usamos las coordenadas de inicio del men?(menuX, menuY)
-			// speed = 0.0f asegura que la imagen no se mueva con el offset de la cámara.
-			Engine::GetInstance().render->DrawTexture(
-				helpMenuTexture,
-				menuX,
-				menuY,
-				nullptr, // section: Dibuja la textura completa
-				0.0f,    // speed: 0.0f (sin movimiento de cámara)
-				0.0,     // angle
-				INT_MAX, // pivotX 
-				INT_MAX  // pivotY 
-			);
-
+			Engine::GetInstance().render->DrawTexture(helpMenuTexture, menuX, menuY, nullptr, 0.0f, 0.0, INT_MAX, INT_MAX);
 			if (currentScene == SceneID::LEVEL_1) PostUpdateLevel1();
 		}
-
-		//Dibuja un borde blanco.
 		Engine::GetInstance().render->DrawRectangle(backgroundRect, 255, 255, 255, 255, false, false);
-
-		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)//para salir el juego
-			ret = false;
 	}
+
+	// ---------------------------------------------------------
+	// Gestión de Escenas
+	// ---------------------------------------------------------
+	switch (currentScene) {
+	case SceneID::INTRO_SCR:
+		break;
+	case SceneID::MAIN_MENU:
+		break;
+	case SceneID::LEVEL_1:
+		PostUpdateLevel1();
+		break;
+	case SceneID::LEVEL_2:
+		PostUpdateLevel2();
+		break;
+	default:
+		break;
+	}
+
+	// ---------------------------------------------------------
+	// Teclas de función (F5, F6, F11)
+	// ---------------------------------------------------------
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
+		Engine::GetInstance().map->LoadEntities(player);
+		reloadCooldown = 500.0f;
+	}
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
+		Engine::GetInstance().map->SaveEntities(player);
+		Engine::GetInstance().audio->PlayFx(saveFxId);
+	}
+
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F11) == KEY_DOWN) {
+		int currentFps = Engine::GetInstance().GetTargetFrameRate();
+		if (currentFps == 60) {
+			Engine::GetInstance().SetTargetFrameRate(30);
+			LOG("FPS limit changed to 30");
+		}
+		else {
+			Engine::GetInstance().SetTargetFrameRate(60);
+			LOG("FPS limit changed to 60");
+		}
+	}
+
+	// ---------------------------------------------------------
+	// LÓGICA CORREGIDA DE LA TECLA ESCAPE
+	// (Debe estar al final y fuera de otros ifs)
+	// ---------------------------------------------------------
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
+	{
+		// Caso A: Estamos jugando (Nivel 1 o 2) -> Volver al Menú
+		if (currentScene == SceneID::LEVEL_1 || currentScene == SceneID::LEVEL_2) {
+			LOG("Escape presionado en nivel. Volviendo al Menú Principal...");
+			collectedIDs.clear();
+			ChangeScene(SceneID::MAIN_MENU);
+		}
+		// Caso B: Estamos en el Menú Principal o Intro -> Cerrar el juego
+		else if (currentScene == SceneID::MAIN_MENU || currentScene == SceneID::INTRO_SCR) {
+			LOG("Escape presionado en Menú. Cerrando juego.");
+			ret = false;
+		}
+		// Por defecto, cerrar si es otra escena
+		else {
+			ret = false;
+		}
+	}
+
+	return ret;
+
 
 
 	//----------------------------------------------------------------------------Currrent Scene-----------------------------------------------------------------------------------//
@@ -251,6 +380,10 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 	/*LOG("Click:%d",uiElement->id);*/
 	if (uiElement->id == 1) {
 		LOG("Start game");
+	}
+	if (uiElement->id == BTN_MAIN_MENU_EXIT) {
+		LOG("Exiting Application from Main Menu");
+		exitGameRequested = true; // Aquí SÍ cerramos la aplicación
 	}
 	//if (uiElement->id == 2) {
 	//	LOG("Go to settings");
@@ -346,8 +479,9 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 		}
 		else if (uiElement->id == EXIT_BTN_ID) {
 			// ?????????
-			LOG("Exiting Game...");
-			exitGameRequested = true;
+			LOG("Returning to Main Menu...");
+			Engine::GetInstance().scene->collectedIDs.clear();
+			ChangeScene(SceneID::MAIN_MENU);
 		
 		}
 	}
@@ -357,8 +491,9 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 			ChangeScene(SceneID::LEVEL_2); // <--- 确保这里重启的是 Level 2
 		}
 		else if (uiElement->id == EXIT_BTN_ID) {
-			LOG("Exiting Game...");
-			exitGameRequested = true;
+			LOG("Returning to Main Menu...");
+			ChangeScene(SceneID::MAIN_MENU);
+			//exitGameRequested = true;
 		}
 	}
 
@@ -450,6 +585,9 @@ void Scene::LoadMainMenu() {//cargar audio en aqui
 
 	// 【修改】创建并保存 Settings 按钮
 	mainMenuSettingBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_MAIN_MENU_SETTINGS, "Setting", { 575, 380, 120, 20 }, this);
+
+	mainMenuExitBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_MAIN_MENU_EXIT, "Exit Game", { 575, 410, 120, 20 }, this);
+
 	showSettingsUI = false;
 
 }
@@ -462,6 +600,7 @@ void Scene::UnloadMainMenu() {
 	//
 	mainMenuStartBtn = nullptr;
 	mainMenuSettingBtn = nullptr;
+	mainMenuExitBtn = nullptr;
 	showSettingsUI = false;
 }
 void Scene::UpdateMainMenu(float dt) {
@@ -495,6 +634,7 @@ void Scene::CreateSettingsUI() {
 	// 【新增】隐藏主菜单按钮
 	if (mainMenuStartBtn != nullptr) mainMenuStartBtn->visible = false;
 	if (mainMenuSettingBtn != nullptr) mainMenuSettingBtn->visible = false;
+	if (mainMenuExitBtn != nullptr) mainMenuExitBtn->visible = false;
 
 	// Fullscreen Toggle
 	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::TOGGLE, TOGGLE_FULLSCREEN_ID, "Fullscreen", { centerX - 50, centerY - 120, 100, 30 }, this);
@@ -521,6 +661,7 @@ void Scene::DestroySettingsUI() {
 	// 【新增】重新显示主菜单按钮
 	if (mainMenuStartBtn != nullptr) mainMenuStartBtn->visible = true;
 	if (mainMenuSettingBtn != nullptr) mainMenuSettingBtn->visible = true;
+	if (mainMenuExitBtn != nullptr) mainMenuExitBtn->visible = true;
 }
 // *********************************************
 // Level 1 functions

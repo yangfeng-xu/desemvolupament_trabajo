@@ -107,12 +107,14 @@ private:
 	const int EXIT_BTN_ID = 102;
 	bool exitGameRequested = false;
 	bool gameOverShown = false;
-
 	
 	SDL_Texture* iconPause = nullptr; // 暂停图标 (游戏进行时显示)
 	SDL_Texture* iconPlay = nullptr;  // 播放/继续图标 (游戏暂停时显示)
 	// 定义一个 ID 给暂停按钮
 	const int PAUSE_TOGGLE_ID = 200;
+
+	const int BTN_MAIN_MENU_EXIT = 3;
+	std::shared_ptr<UIElement> mainMenuExitBtn;
 
 	// 【新增】保存主菜单按钮的指针
 	std::shared_ptr<UIElement> mainMenuStartBtn;
