@@ -192,11 +192,9 @@ void Engine::FinishUpdate()
         PerfTimer delayTimer = PerfTimer();
         SDL_Delay(delay);
         //Measure accurately the amount of time SDL_Delay() actually waits compared to what was expected
-        //LOG("We waited for %I32u ms and got back in %f ms",delay,delayTimer.ReadMs()); // Uncomment this line to see the results
     }
 
 	// L2: TODO 4: Calculate:
-	
     // Amount of frames since startup
     frameCount++;
 

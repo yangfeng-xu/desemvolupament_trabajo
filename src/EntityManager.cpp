@@ -47,7 +47,7 @@ bool EntityManager::CleanUp()
         ret = entity->CleanUp();
     }
     entities.clear();
-    entitiesToDestroy.clear(); // Limpiamos también la lista de pendientes
+    entitiesToDestroy.clear();
     return ret;
 }
 
@@ -82,7 +82,7 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 
 void EntityManager::DestroyEntity(std::shared_ptr<Entity> entity)
 {
-    // Evitar duplicados
+    // Avoid duplicates
     for (const auto& e : entitiesToDestroy) {
         if (e == entity) return;
     }
@@ -112,17 +112,17 @@ bool EntityManager::Update(float dt)
 
 bool EntityManager::PostUpdate()
 {
-    // Borramos las entidades pendientes de forma segura
+    // Securely delete pending entities
     for (const auto& entity : entitiesToDestroy)
     {
-        // 1. Limpiamos sus recursos internos
+        // 1. Clean up your internal resources
         entity->CleanUp();
 
-        // 2. La quitamos de la lista principal
+        // 2. Removal from the main list
         entities.remove(entity);
     }
 
-    // 3. Vaciamos la lista de pendientes
+    // 3. Empty the to-do list
     entitiesToDestroy.clear();
 
     return true;
@@ -141,7 +141,7 @@ void EntityManager::DestroyEntitiesForReload()
         }
     }
 
-    // Marcarlas para destruir
+    // Mark them for destruction
     for (const auto& entity : entitiesToKill)
     {
         DestroyEntity(entity);

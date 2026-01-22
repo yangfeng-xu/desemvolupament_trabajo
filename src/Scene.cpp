@@ -32,8 +32,6 @@ bool Scene::Awake()
 {
 	LOG("Loading Scene");
 	bool ret = true;
-	/*LoadScene(currentScene);*/
-
 	collectedIDs.clear();
 	return ret;
 }
@@ -44,7 +42,6 @@ bool Scene::Start()
 	srand(time(NULL));
 	collectedIDs.clear();
 	Engine::GetInstance().entityManager->CleanUp();
-	/*Engine::GetInstance().map->Load("Assets/Maps/MapTemplate.tmx");*/
 	LoadScene(currentScene);
 	Engine::GetInstance().entityManager->Start();
 
@@ -88,12 +85,12 @@ bool Scene::Update(float dt)
 		int w, h;
 		Engine::GetInstance().window->GetWindowSize(w, h);
 
-		// 1. Dibujamos el fondo de Settings (Tu código existente)
+		// 1. We draw the background of Settings
 		SDL_Rect bg = { w / 2 - 150, h / 2 - 200, 300, 400 };
 		Engine::GetInstance().render->DrawRectangle(bg, 50, 50, 50, 240, true, false);
 		Engine::GetInstance().render->DrawRectangle(bg, 255, 255, 255, 255, false, false);
 
-		// Si NO estamos en créditos, mostramos el título normal y volumen
+		// If we are NOT in the credits, we show the normal title and volume
 		if (!showCreditsUI) {
 			Engine::GetInstance().render->DrawText("SETTINGS", w / 2 - 40, h / 2 - 180, 80, 30, { 255,255,255,255 });
 
@@ -102,9 +99,9 @@ bool Scene::Update(float dt)
 			Engine::GetInstance().render->DrawText(volText.c_str(), w / 2 - 40, h / 2 + 20, 80, 20, { 255,255,255,255 });
 		}
 
-		// 2. LÓGICA DE CRÉDITOS (SE DIBUJA ENCIMA)
+		// 2. CREDIT LOGIC
 		else {
-			// Fondo oscuro (un poco más grande para que quepa todo)
+			// Dark background (a little bigger so everything fits)
 			SDL_Rect creditsBg = { w / 2 + 200, h / 2 - 200, 320, 420 };
 			Engine::GetInstance().render->DrawRectangle(creditsBg, 20, 20, 20, 255, true, false);
 			Engine::GetInstance().render->DrawRectangle(creditsBg, 255, 255, 255, 255, false, false); // Borde blanco
@@ -114,25 +111,25 @@ bool Scene::Update(float dt)
 
 			int creditsX = centerX + 350;
 
-			// --- TÍTULO ---
+			// --- TITLE ---
 			Engine::GetInstance().render->DrawText("CREDITS", creditsX - 50, centerY - 170, 100, 30, { 255, 255, 0, 255 });
 
-			// --- SECCIÓN 1: Game Designer ---
+			// --- SECTION 1: Game Designer ---
 			Engine::GetInstance().render->DrawText("Game Designer", creditsX - 60, centerY - 120, 120, 20, { 200, 200, 200, 255 });
 			Engine::GetInstance().render->DrawText("Yangfeng Xu and Bole Wu", creditsX - 95, centerY - 90, 220, 20, { 255, 255, 255, 255 });
 
-			// --- SECCIÓN 2: Programmer ---
+			// --- SECTION 2: Programmer ---
 			Engine::GetInstance().render->DrawText("Programmer", creditsX - 50, centerY - 40, 100, 20, { 200, 200, 200, 255 });
 			Engine::GetInstance().render->DrawText("Yangfeng Xu and Bole Wu", creditsX - 95, centerY - 10, 220, 20, { 255, 255, 255, 255 });
 
-			// --- SECCIÓN 3: Assets ---
+			// --- SECTION 3: Assets ---
 			Engine::GetInstance().render->DrawText("Assets & Audio", creditsX - 60, centerY + 40, 120, 20, { 200, 200, 200, 255 });
 			Engine::GetInstance().render->DrawText("Free License", creditsX - 50, centerY + 70, 100, 20, { 255, 255, 255, 255 });
 
-			// --- INSTRUCCIÓN SALIDA ---
+			// --- EXIT INSTRUCTION ---
 			Engine::GetInstance().render->DrawText("[Click to Close]", creditsX - 70, centerY + 150, 140, 20, { 150, 150, 150, 255 });
 
-			// Lógica para cerrar al hacer clic
+			// Logic to close on click
 			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_DOWN) {
 				showCreditsUI = false;
 			}
@@ -144,14 +141,14 @@ bool Scene::Update(float dt)
 
 bool Scene::PostUpdate()
 {
-	// 1. Cerrar Settings si se ha solicitado
+	// 1. Close Settings if prompted
 	if (settingsCloseRequested) {
 		DestroySettingsUI();
 		settingsCloseRequested = false;
 		showSettingsUI = false;
 	}
 
-	// 2. Gestión de cambio de escena
+	// 2. Scene change management
 	if (sceneChangeRequested)
 	{
 		UnloadCurrentScene();
@@ -162,14 +159,14 @@ bool Scene::PostUpdate()
 		exitGameRequested = false;
 	}
 
-	// 3. Salida del juego solicitada por botón UI
+	// 3. Exiting the game requested by UI button
 	if (exitGameRequested) {
 		return false;
 	}
 
 	bool ret = true;
 
-	// 4. Dibujar Menú de Ayuda (sin lógica de salir aquí dentro)
+	// 4. Draw Help Menu (without logic to exit from here)
 	if (showHelpMenu)
 	{
 		int windowWidth, windowHeight;
@@ -192,7 +189,7 @@ bool Scene::PostUpdate()
 	}
 
 	// ---------------------------------------------------------
-	// Gestión de Escenas
+	//Scene Management
 	// ---------------------------------------------------------
 	switch (currentScene) {
 	case SceneID::MAIN_MENU:
@@ -208,7 +205,7 @@ bool Scene::PostUpdate()
 	}
 
 	// ---------------------------------------------------------
-	// Teclas de función (F5, F6, F11)
+	// Function keys (F5, F6, F11)
 	// ---------------------------------------------------------
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
 		Engine::GetInstance().map->LoadEntities(player);
@@ -232,24 +229,21 @@ bool Scene::PostUpdate()
 		}
 	}
 
-	// ---------------------------------------------------------
-	// LÓGICA CORREGIDA DE LA TECLA ESCAPE
-	// (Debe estar al final y fuera de otros ifs)
-	// ---------------------------------------------------------
+	// ESC
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
 	{
-		// Caso A: Estamos jugando (Nivel 1 o 2) -> Volver al Menú
+		// Case A: We are playing (Level 1 or 2) -> Back to Menu
 		if (currentScene == SceneID::LEVEL_1 || currentScene == SceneID::LEVEL_2) {
 			LOG("Escape presionado en nivel. Volviendo al Menú Principal...");
 			collectedIDs.clear();
 			ChangeScene(SceneID::MAIN_MENU);
 		}
-		// Caso B: Estamos en el Menú Principal o Intro -> Cerrar el juego
+		// Case B: We are on the Main Menu or Enter screen -> Close the game
 		else if (currentScene == SceneID::MAIN_MENU) {
 			LOG("Escape presionado en Menú. Cerrando juego.");
 			ret = false;
 		}
-		// Por defecto, cerrar si es otra escena
+		// By default, close if it's another scene
 		else {
 			ret = false;
 		}
@@ -277,7 +271,7 @@ switch (currentScene) {
 	//----------------------------------------------------------------------------F5-----------------------------------------------------------------------------------//
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
 
-		// 2. Cargamos las entidades (esto crear?nuevas y mover?al Player)
+		// 2. We load the entities (this will create new ones and move the Player)
 		Engine::GetInstance().map->LoadEntities(player);
 
 		reloadCooldown = 500.0f;
@@ -285,7 +279,7 @@ switch (currentScene) {
 
 	//----------------------------------------------------------------------------F6-----------------------------------------------------------------------------------//
 	//L15 TODO 5: Call the function to save entities from the map
-	//pulso f6 para guardar donde quiero que el player se vuelve,luego pulsamos f5 para valve ese punto
+	// I press F6 to save where I want the player to turn, then I press F5 to save that point
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
 		Engine::GetInstance().map->SaveEntities(player);
 		Engine::GetInstance().audio->PlayFx(saveFxId);
@@ -330,62 +324,58 @@ Vector2D Scene::GetPlayerPosition()
 bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 {
 	// L16: TODO 5: Implement the OnGuiMouseClickEvent method
-	/*LOG("Click:%d",uiElement->id);*/
 	if (uiElement->id == 1) {
 		LOG("Start game");
 	}
 	if (uiElement->id == BTN_MAIN_MENU_EXIT) {
 		LOG("Exiting Application from Main Menu");
-		exitGameRequested = true; // Aquí SÍ cerramos la aplicación
+		exitGameRequested = true; 
 	}
 
 	if (uiElement->id == BTN_SETTINGS_CREDITS) {
 	LOG("Opening Credits UI");
-	showCreditsUI = true; // Activamos la pantalla de créditos
+	showCreditsUI = true; 
 	}
 
 	if (uiElement->id == BTN_SETTINGS_RETURN_MENU) {
 		LOG("Returning to Main Menu from Pause Settings");
 
-		// 1. Es importante despausar el juego para que la lógica de la siguiente escena funcione bien
+		// 1. It is important to unpause the game so that the logic of the next scene works properly
 		isGamePaused = false;
 		Engine::GetInstance().audio->ResumeMusic();
 
-		// 2. Cerramos la UI de settings (limpieza interna)
+		// 2. We close the settings UI (internal cleaning)
 		settingsCloseRequested = true;
 		showSettingsUI = false;
 
-		// 3. Limpiamos items recolectados si es necesario
+		// 3. We clean up collected items if necessary
 		collectedIDs.clear();
 
-		// 4. Cambiamos a la escena del menú
+		// 4. We switch to the menu scene
 		ChangeScene(SceneID::MAIN_MENU);
 
 		return true;
 	}
 
-// --- AÑADIR ESTO PARA PODER CERRAR CRÉDITOS AL CERRAR SETTINGS ---
 	if (uiElement->id == BTN_SETTINGS_CLOSE) {
 	settingsCloseRequested = true;
-	showCreditsUI = false; // Aseguramos que se cierren también
+	showCreditsUI = false; 
 	}
-	// ID 2: Settings 按钮 (Main Menu)
-	// 【修正点】：这里之前只 Log 了，现在加上打开界面的逻辑
-	if (uiElement->id == BTN_MAIN_MENU_SETTINGS) { // 也就是 ID 2
+	if (uiElement->id == BTN_MAIN_MENU_SETTINGS) { 
 		LOG("Opening Settings from Main Menu");
 		if (!showSettingsUI) {
 			CreateSettingsUI();
 			showSettingsUI = true;
 		}
 	}
-	// 【NUEVO】Lógica para el botón de Salir en la pantalla de Victoria
+	// Logic for the Exit button on the Victoria screen
 	if (uiElement->id == BTN_WIN_EXIT) {
 		LOG("Victory! Returning to Main Menu...");
 
-		// Limpiamos la lista de IDs recolectados
+		// We cleaned the list of collected IDs
 		collectedIDs.clear();
 
-		// Reseteamos el estado de victoria para que no se quede "pegado"
+		// We reset the victory state so that it doesn't get "stuck".
 		isGameWon = false;
 
 		// Volvemos al menú principal
@@ -396,8 +386,7 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 	// ---------------------- SETTINGS PANEL EVENTS ---------------------- //
 	if (uiElement->id == BTN_SETTINGS_CLOSE) {
 		LOG("Closing Settings");
-		settingsCloseRequested = true; // 在 PostUpdate 中销毁
-		// 如果是在游戏中暂停打开的，关闭设置同时是否要取消暂停？通常保持暂停比较好。
+		settingsCloseRequested = true; 
 	}
 
 	if (uiElement->id == TOGGLE_FULLSCREEN_ID) {
@@ -406,14 +395,14 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 	}
 
 	if (uiElement->id == TOGGLE_MUSIC_ID) {
-		// 简单的音乐开关 (静音/恢复)
+		// Simple music switch (mute/restore)
 		float currentVol = Engine::GetInstance().audio->GetMusicVolume();
 		if (currentVol > 0.0f) {
-			Engine::GetInstance().audio->SetMusicVolume(0.0f); // 关
+			Engine::GetInstance().audio->SetMusicVolume(0.0f); // off
 			LOG("Music OFF");
 		}
 		else {
-			Engine::GetInstance().audio->SetMusicVolume(1.0f); // 开（恢复最大）
+			Engine::GetInstance().audio->SetMusicVolume(1.0f); // on
 			LOG("Music ON");
 		}
 	}
@@ -437,7 +426,6 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 
 	if (uiElement->id == PAUSE_TOGGLE_ID)
 	{
-		// 使用 dynamic_cast 将基类指针转为子类指针
 		UIToggle* toggle = dynamic_cast<UIToggle*>(uiElement);
 
 		if (toggle != nullptr) {
@@ -454,7 +442,7 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 			}
 			else {
 				Engine::GetInstance().audio->ResumeMusic();
-				// 恢复时自动关闭设置界面
+				// Automatically close the settings interface upon restoration
 				if (showSettingsUI) {
 					settingsCloseRequested = true;
 				}
@@ -472,7 +460,6 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 			ChangeScene(SceneID::LEVEL_1);		
 		}
 		else if (uiElement->id == EXIT_BTN_ID) {
-			// ?????????
 			LOG("Returning to Main Menu...");
 			Engine::GetInstance().scene->collectedIDs.clear();
 			ChangeScene(SceneID::MAIN_MENU);
@@ -482,12 +469,11 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 	else if (currentScene == SceneID::LEVEL_2 && isGameOver) {
 		if (uiElement->id == RESUME_BTN_ID) {
 			LOG("Restarting Level 2...");
-			ChangeScene(SceneID::LEVEL_2); // <--- 确保这里重启的是 Level 2
+			ChangeScene(SceneID::LEVEL_2); 
 		}
 		else if (uiElement->id == EXIT_BTN_ID) {
 			LOG("Returning to Main Menu...");
 			ChangeScene(SceneID::MAIN_MENU);
-			//exitGameRequested = true;
 		}
 	}
 
@@ -513,7 +499,7 @@ switch (currentScene) {
 // *********************************************
 
 // L17 TODO 2: Define functions to handle scene changes
-void Scene::LoadScene(SceneID newScene) {//despues de implementar hay que llamar en aqui
+void Scene::LoadScene(SceneID newScene) {
 switch (newScene) {
 	case SceneID::MAIN_MENU:
 		LoadMainMenu();
@@ -544,11 +530,9 @@ switch (currentScene) {
 	}
 }
 void Scene::ChangeScene(SceneID newScene) {
-	/*UnloadCurrentScene();*/
+
 	sceneChangeRequested = true;
 	nextScene = newScene;
-	/*currentScene = newScene;*/
-	/*LoadScene(currentScene);*/
 }
 
 // *********************************************
@@ -556,18 +540,15 @@ void Scene::ChangeScene(SceneID newScene) {
 // *********************************************
 
 // L17 TODO 3: Define specific function for main menu scene: Load, Unload, Handle UI events
-void Scene::LoadMainMenu() {//cargar audio en aqui
+void Scene::LoadMainMenu() {
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/retro-gaming-short-248416.wav");
 	Engine::GetInstance().render->camera.x = 0;
 	Engine::GetInstance().render->camera.y = 0;
+
+
 	mainMenuBackground = Engine::GetInstance().textures->Load("Assets/Textures/menu_resized.png");
-
-	// 【修改】创建并保存 Start 按钮
 	mainMenuStartBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "Start", { 575,350,120,20 }, this);
-
-	// 【修改】创建并保存 Settings 按钮
 	mainMenuSettingBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_MAIN_MENU_SETTINGS, "Setting", { 575, 380, 120, 20 }, this);
-
 	mainMenuExitBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_MAIN_MENU_EXIT, "Exit Game", { 575, 410, 120, 20 }, this);
 
 	showSettingsUI = false;
@@ -588,7 +569,6 @@ void Scene::UnloadMainMenu() {
 }
 void Scene::UpdateMainMenu(float dt) {
 	if (mainMenuBackground != nullptr) {
-		// speed = 0.0f 确保背景固定
 		Engine::GetInstance().render->DrawTexture(mainMenuBackground, 0, 0, nullptr, 0.0f);
 	}
 }
@@ -614,7 +594,6 @@ void Scene::CreateSettingsUI() {
 	int centerX = w / 2;
 	int centerY = h / 2;
 
-	// 【新增】隐藏主菜单按钮
 	if (mainMenuStartBtn != nullptr) mainMenuStartBtn->visible = false;
 	if (mainMenuSettingBtn != nullptr) mainMenuSettingBtn->visible = false;
 	if (mainMenuExitBtn != nullptr) mainMenuExitBtn->visible = false;
@@ -642,7 +621,7 @@ void Scene::CreateSettingsUI() {
 			UIElementType::BUTTON,
 			BTN_SETTINGS_RETURN_MENU,
 			"Main Menu",
-			{ centerX - 60, centerY + 140, 120, 30 }, // Un poco más abajo del botón Close
+			{ centerX - 60, centerY + 140, 120, 30 }, 
 			this
 		);
 	}
@@ -652,7 +631,7 @@ void Scene::CreateSettingsUI() {
 }
 
 void Scene::DestroySettingsUI() {
-	// 销毁所有设置界面相关的元素
+	// Destroy all elements related to the settings interface
 	Engine::GetInstance().uiManager->DestroyUIElement(TOGGLE_FULLSCREEN_ID);
 	Engine::GetInstance().uiManager->DestroyUIElement(TOGGLE_MUSIC_ID);
 	Engine::GetInstance().uiManager->DestroyUIElement(BTN_VOL_PLUS);
@@ -661,7 +640,7 @@ void Scene::DestroySettingsUI() {
 	Engine::GetInstance().uiManager->DestroyUIElement(BTN_SETTINGS_CREDITS);
 	Engine::GetInstance().uiManager->DestroyUIElement(BTN_SETTINGS_RETURN_MENU);
 
-	// 【新增】重新显示主菜单按钮
+	
 	if (mainMenuStartBtn != nullptr) mainMenuStartBtn->visible = true;
 	if (mainMenuSettingBtn != nullptr) mainMenuSettingBtn->visible = true;
 	if (mainMenuExitBtn != nullptr) mainMenuExitBtn->visible = true;
@@ -671,46 +650,38 @@ void Scene::DestroySettingsUI() {
 // *********************************************
 
 // L17 TODO 4: Define specific functions for level1 scene: Load, Unload, Update, PostUpdate
-void Scene::LoadLevel1() {//cargar mapa ,textura,audio
+void Scene::LoadLevel1() {//load map, texture, audio
 	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Level.wav");
 
 	Engine::GetInstance().render->camera.x = 0;
 	Engine::GetInstance().render->camera.y = 0;
 	isGameOver = false;
 	gameOverShown = false;
-	showSettingsUI = false; // 确保重置
+	showSettingsUI = false;
+
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
-
 	int windowW, windowH;
 	Engine::GetInstance().window->GetWindowSize(windowW, windowH);
-
-	int iconSize = 32; // 你设置的图标大小
-	int margin = 20;   // 离边缘的距离
-
-	// 计算坐标: X = 屏幕宽 - 图标宽 - 边距
+	int iconSize = 32; 
+	int margin = 20;
 	int posX = windowW - iconSize - margin;
-	int posY = margin; // 离顶部一点距离
+	int posY = margin; 
 
 	iconPause = Engine::GetInstance().textures->Load("Assets/Textures/Pause.png");
 	iconPlay = Engine::GetInstance().textures->Load("Assets/Textures/Resume.png");
 
-	// 2. 创建 Toggle
-	// 位置 { 10, 50, 32, 32 } 根据你的图标大小调整
+	// Create Toggle
 	auto pauseToggle = Engine::GetInstance().uiManager->CreateUIElement(
 		UIElementType::TOGGLE,
 		PAUSE_TOGGLE_ID,
 		"",
-		{ posX, posY, iconSize, iconSize }, // 使用计算好的右上角坐标
+		{ posX, posY, iconSize, iconSize }, 
 		this
 	);
 
-	// 3. 将其转换为 UIToggle 指针并设置图片
-	// 注意：dynamic_pointer_cast 用于将基类 UIElement 转为子类 UIToggle
 	auto togglePtr = std::dynamic_pointer_cast<UIToggle>(pauseToggle);
 	if (togglePtr) {
-		// 参数1(Off): 游戏没暂停时显示的图 -> 暂停键
-		// 参数2(On): 游戏暂停时显示的图 -> 播放键
 		togglePtr->SetTextures(iconPause, iconPlay);
 	}
 
@@ -723,17 +694,14 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 	loseGameFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/lose_game.wav");
 	saveFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/autosave.wav");
 	levelTimer = 60.0f * 1000.0f;
-	//Engine::GetInstance().entityManager->Start();
-	
 }
-void Scene::UnloadLevel1() {//limpia la mapa y entity
+void Scene::UnloadLevel1() {//cleans the map and entity
 	Engine::GetInstance().uiManager->CleanUp();
 	showSettingsUI = false;
-	player.reset();//eliminar player para verificar que todo esta eliminado//opcional
+	player.reset();
 	Engine::GetInstance().entityManager->CleanUp();
 	Engine::GetInstance().map->CleanUp();
 
-	// 卸载暂停/播放图标
 	if (iconPause != nullptr) {
 		Engine::GetInstance().textures->UnLoad(iconPause);
 		iconPause = nullptr;
@@ -744,16 +712,15 @@ void Scene::UnloadLevel1() {//limpia la mapa y entity
 	}
 	isGameOver = false;
 	gameOverShown = false;
-	levelTimer = 60.0f * 1000.0f; // ????
+	levelTimer = 60.0f * 1000.0f; 
 	
 }
-void Scene::UpdateLevel1(float dt) {//para poder cambiar la escena a nivell 2
+void Scene::UpdateLevel1(float dt) {//to be able to change the scene to level 2
 
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F2) == KEY_DOWN) {
 		ChangeScene(SceneID::LEVEL_2);
 	}
-	/*Engine::GetInstance().uiManager->Update(dt);*/
-	// 2. 如果游戏暂停了，直接 return，不执行下面的逻辑
+	// If the game is paused, return directly without executing the following logic.
 	if (isGamePaused) {
 		return;
 	}
@@ -762,13 +729,12 @@ void Scene::UpdateLevel1(float dt) {//para poder cambiar la escena a nivell 2
 	{
 		Vector2D pos = player->GetPosition();
 
-		// 【修改这里】：设置你的终点范围
-		// 假设终点平台在 X=3050, Y=200 左右
-		float targetX_Min = 1950.0f; // 区域左边界
-		float targetX_Max = 2000.0f; // 区域右边界
-		float targetY_Max = 160.0f;  // 区域下边界 (Y越小越高，所以只要小于这个值就是在上面)
+		//Level 1 finish line
+		float targetX_Min = 1950.0f; 
+		float targetX_Max = 2000.0f; 
+		float targetY_Max = 160.0f;  
 
-		// 同时满足：X在范围内 且 Y足够高
+		
 		if (pos.getX() > targetX_Min && pos.getX() < targetX_Max && pos.getY() < targetY_Max)
 		{
 			LOG("Reached the top platform! Loading Level 2...");
@@ -788,10 +754,10 @@ void Scene::UpdateLevel1(float dt) {//para poder cambiar la escena a nivell 2
 	}
 
 
-	// 【修改】如果游戏结束，显示 UI 并停止本函数后续逻辑
+	
 	if (isGameOver) {
 		if (!gameOverShown) {
-			// ... (保留原本创建 UI 的代码: RESUME_BTN_ID, EXIT_BTN_ID) ...
+			
 			int w, h;
 			Engine::GetInstance().window->GetWindowSize(w, h);
 			int centerX = w / 2;
@@ -802,10 +768,11 @@ void Scene::UpdateLevel1(float dt) {//para poder cambiar la escena a nivell 2
 
 			gameOverShown = true;
 		}
-		return; // 【关键】直接返回，不再执行后续代码
+		return; 
 	}
 }
 void Scene::PostUpdateLevel1() {//code especifico de level 1
+
 	//L15 TODO 3: Call the function to load entities from the map
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
 		Engine::GetInstance().map->LoadEntities(player);
@@ -817,24 +784,20 @@ void Scene::PostUpdateLevel1() {//code especifico de level 1
 	}
 
 	if (player != nullptr) {
-		// Mostrar Puntuación (Debajo del tiempo)
+
 		std::string scoreStr = "Score: " + std::to_string(player->score);
 		Engine::GetInstance().render->DrawText(scoreStr.c_str(), 20, 80, 100, 30, { 255, 255, 0, 255 }); // Color amarillo
 
-		// Mostrar Munición (Debajo de la puntuación)
 		std::string ammoStr = "Ammo: " + std::to_string(player->ammo);
 		Engine::GetInstance().render->DrawText(ammoStr.c_str(), 20, 110, 100, 30, { 0, 255, 255, 255 }); // Color cian
 	}
 
 	
 	int secondsLeft = (int)(levelTimer / 1000.0f);
-
 	std::string timeText = "Time: " + std::to_string(secondsLeft);
 
-	
 	Engine::GetInstance().render->DrawText(timeText.c_str(), 20, 50, 100, 30, { 255, 255, 255, 255 });
 
-	// ????????????????? "GAME OVER" ???
 	if (isGameOver) {
 		Engine::GetInstance().render->DrawText("GAME OVER", 550, 200, 200, 50, { 255, 0, 0, 255 });
 	}
@@ -855,47 +818,37 @@ void Scene::LoadLevel2() {
 	showSettingsUI = false;
 	winButton = nullptr;
 	isBossMusicPlaying = false;
+
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate2.tmx");
+
 	//L15 TODO 3: Call the function to load entities from the map
 	Engine::GetInstance().map->LoadEntities(player);
-	//Engine::GetInstance().uiManager->CreateUIElement(UIElementType::TOGGLE, 100, "FullScreen", { 10, 10, 100, 30 }, this);
 	levelTimer = 60.0f * 1000.0f;
 
 	//--------------------------------------------------------------------------------win-----------------------------------------------------------------------------------//
-	// 1. 初始化变量
 	isGameWon = false;
 	bossReference = nullptr;
-	// ------------------------------------------------------------------------
-	// 【关键修改】遍历实体列表，找到地图生成的 Boss 并赋值给 bossReference
-	// ------------------------------------------------------------------------
-	// 注意：这里假设 EntityManager 中的 list 叫 entities，如果是其他名字请修改 (如 entitiesList)
 	for (const auto& entity : Engine::GetInstance().entityManager->entities) {
-		// 判断是否是敌人
+		
 		if (entity->type == EntityType::ENEMY) {
-			// 尝试转换为 Enemy 指针
+			
 			std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(entity);
 
-			// 如果转换成功，并且类型是 BOSS
 			if (enemy != nullptr && enemy->enemyType == EnemyType::BOSS) {
-				bossReference = enemy; // 【成功连接引用】
+				bossReference = enemy;
 				LOG("Boss loaded from Map and connected to Logic!");
-				break; // 找到了就退出循环
+				break; 
 			}
 		}
 	}
 
-
-	// 2. 加载胜利画面资源 (确保你有一张图片叫 win_screen.png 或者你可以暂时用 menu.png 代替)
-	winScreenTexture = Engine::GetInstance().textures->Load("Assets/Textures/menu_resized.png"); // 这里替换成你的胜利图片路径
-	winFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/game_win.wav"); // 加载你文件列表中有的胜利音效
+	winScreenTexture = Engine::GetInstance().textures->Load("Assets/Textures/menu_resized.png");
+	winFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/game_win.wav"); 
 	bossAttackFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/boss_atack.wav");
 	loseGameFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/lose_game.wav");
 
-	// ... 地图加载代码 ...
-
-
-	// --- AÑADIR ESTO: Lógica del Botón de Pausa ---
+	// --- Pause Button Logic ---
 	int windowW, windowH;
 	Engine::GetInstance().window->GetWindowSize(windowW, windowH);
 
@@ -904,11 +857,11 @@ void Scene::LoadLevel2() {
 	int posX = windowW - iconSize - margin;
 	int posY = margin;
 
-	// Cargar texturas (reutilizamos las variables de la clase Scene)
+	// Load textures (we reuse the variables from the Scene class)
 	iconPause = Engine::GetInstance().textures->Load("Assets/Textures/Pause.png");
 	iconPlay = Engine::GetInstance().textures->Load("Assets/Textures/Resume.png");
 
-	// Crear el Toggle
+	// Create the Toggle
 	auto pauseToggle = Engine::GetInstance().uiManager->CreateUIElement(
 		UIElementType::TOGGLE,
 		PAUSE_TOGGLE_ID,
@@ -917,7 +870,7 @@ void Scene::LoadLevel2() {
 		this
 	);
 
-	// Configurar texturas del Toggle
+	// Configure toggle textures
 	auto togglePtr = std::dynamic_pointer_cast<UIToggle>(pauseToggle);
 	if (togglePtr) {
 		togglePtr->SetTextures(iconPause, iconPlay);
@@ -928,7 +881,7 @@ void Scene::LoadLevel2() {
 void Scene::UnloadLevel2() {
 	Engine::GetInstance().uiManager->CleanUp();
 	showSettingsUI = false;
-	player.reset();//eliminar player para verificar que todo esta eliminado//opcional
+	player.reset();
 	Engine::GetInstance().entityManager->CleanUp();
 	Engine::GetInstance().map->CleanUp();
 	isGameOver = false;
@@ -951,36 +904,32 @@ void Scene::UnloadLevel2() {
 	bossReference = nullptr; 
 	isGameWon = false;
 }
-void Scene::UpdateLevel2(float dt) {//cambiar a nivell 1
+void Scene::UpdateLevel2(float dt) {//change to level 1
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN) {
 		ChangeScene(SceneID::LEVEL_1);
 	}
 
+
 	// ------------------------------------------------------------------------
-	// 1. 胜利状态逻辑 (游戏静止)
+	// 1. Victory State Logic (Game at Rest)
 	// ------------------------------------------------------------------------
 	if (isGameWon) {
-		return; // 直接返回，停止后续所有逻辑 (计时器、移动等)
+		return; // Return immediately, stopping all subsequent logic (timers, movement, etc.)
 	}
 
-	// 2. 暂停状态逻辑
+	// 2. Pause State Logic
 	if (isGamePaused) {
 		return;
 	}
 
 	if (player != nullptr && bossReference != nullptr && !isBossMusicPlaying) {
 
-		// Calculamos distancia
+		// We calculate distance
 		float distanceX = abs(bossReference->position.getX() - player->GetPosition().getX());
-
-		// Si estamos a menos de 800 píxeles...
 		if (distanceX < 800.0f) {
 			LOG("Entering Boss Battle Zone!");
-
-			// CAMBIO AQUÍ: Reproducir "boss_battle.wav"
 			Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/boss_battle.wav");
-
-			// Marcamos como true para que no se reinicie en cada frame
+			// We mark it as true so that it doesn't restart on every frame
 			isBossMusicPlaying = true;
 		}
 	}
@@ -994,25 +943,22 @@ void Scene::UpdateLevel2(float dt) {//cambiar a nivell 1
 			LOG("Game Over!!! Time's Up");
 		}
 	}
-	//// 1. 如果游戏暂停 OR 已经胜利，直接 return，实现画面静止
-	// 2. 检测 Boss 是否死亡
-	if (bossReference != nullptr && !bossReference->active) { // 假设 active 为 false 代表死亡/消失，或者用 bossReference->isDead
-		// 注意：你需要确保 Enemy 类中有 isDead 属性且在死亡时设为 true
-		// 如果 Enemy.h 中 isDead 是 private，你需要加一个 Getter，或者直接判断 active
-
-		// 触发胜利
+	// 1. If the game is paused or a victory has been achieved, return immediately to freeze the screen.
+	// 2. Detect if the Boss is dead.
+	if (bossReference != nullptr && !bossReference->active) { 
+		// Trigger victory
 		isGameWon = true;
 		LOG("BOSS DEFEATED! YOU WIN!");
 
-		// 播放胜利音效
+		// Play victory sound effect
 		Engine::GetInstance().audio->PlayFx(winFxId);
-		Engine::GetInstance().audio->PauseMusic(); // 停止背景音乐
+		Engine::GetInstance().audio->PauseMusic(); // Stop background music
 
-		// 创建 UI (显示 "Exit Game" 按钮)
+		// Create UI (display the "Exit Game" button)
 		int w, h;
 		Engine::GetInstance().window->GetWindowSize(w, h);
 
-		// 在屏幕下方创建退出按钮 (复用 BTN_WIN_EXIT ID)
+		// Create an exit button at the bottom of the screen (reuse the BTN_WIN_EXIT ID)
 		winButton=Engine::GetInstance().uiManager->CreateUIElement(
 			UIElementType::BUTTON,
 			BTN_WIN_EXIT,
@@ -1021,13 +967,13 @@ void Scene::UpdateLevel2(float dt) {//cambiar a nivell 1
 			this
 		);
 
-		return; // 立即停止本帧后续逻辑
+		return; // Immediately stop subsequent logic in this frame
 	}
 
-	// 【修改】如果游戏结束，显示 UI 并停止本函数后续逻辑
+
 	if (isGameOver) {
 		if (!gameOverShown) {
-			// ... (保留原本创建 UI 的代码: RESUME_BTN_ID, EXIT_BTN_ID) ...
+
 			int w, h;
 			Engine::GetInstance().window->GetWindowSize(w, h);
 			int centerX = w / 2;
@@ -1038,10 +984,11 @@ void Scene::UpdateLevel2(float dt) {//cambiar a nivell 1
 
 			gameOverShown = true;
 		}
-		return; // 【关键】直接返回，不再执行后续代码
+		return; 
 	}
 }
 void Scene::PostUpdateLevel2() {
+
 	//L15 TODO 3: Call the function to load entities from the map
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
 		Engine::GetInstance().map->LoadEntities(player);
@@ -1051,40 +998,34 @@ void Scene::PostUpdateLevel2() {
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
 		Engine::GetInstance().map->SaveEntities(player);
 	}
-	// ------------------------------------------------------------------------
-	// 【新增】绘制胜利画面 (这一层会盖住地图和Player)
-	// ------------------------------------------------------------------------
+
+	// Win scene
 	if (isGameWon) {
 		int w, h;
 		Engine::GetInstance().window->GetWindowSize(w, h);
 
-		// 1. 绘制半透明黑色遮罩 (全屏)
 		SDL_Rect screenRect = { 0, 0, w, h };
 		Engine::GetInstance().render->DrawRectangle(screenRect, 0, 0, 0, 150, true, false);
-
-		// 2. 绘制胜利图片 (全屏覆盖或居中)
 		if (winScreenTexture != nullptr) {
 			Engine::GetInstance().render->DrawTexture(winScreenTexture, 0, 0, nullptr, 0.0f);
 		}
 
-		// 3. 绘制胜利文字
 		Engine::GetInstance().render->DrawText("MISSION ACCOMPLISHED", w / 2 - 150, h / 2 - 50, 300, 50, { 0, 255, 0, 255 });
 		Engine::GetInstance().render->DrawText("Boss Defeated!", w / 2 - 80, h / 2, 160, 30, { 255, 255, 255, 255 });
 
 		if (winButton != nullptr) {
-			winButton->Render(); // ¡Ahora sí funciona!
+			winButton->Render(); 
 		}
 	}
 
 	if (player != nullptr) {
-		// Mostrar Puntuación (Debajo del tiempo)
+		// Show Score (Below the time)
 		std::string scoreStr = "Score: " + std::to_string(player->score);
-		// Posición Y=80 (debajo del Time que está en 50)
+		// Position Y=80 (below the Time which is at 50)
 		Engine::GetInstance().render->DrawText(scoreStr.c_str(), 20, 80, 100, 30, { 255, 255, 0, 255 }); // Amarillo
-
-		// Mostrar Munición (Debajo de la puntuación)
+		// Show Ammunition (Below the score)
 		std::string ammoStr = "Ammo: " + std::to_string(player->ammo);
-		// Posición Y=110
+		// Position Y=110
 		Engine::GetInstance().render->DrawText(ammoStr.c_str(), 20, 110, 100, 30, { 0, 255, 255, 255 }); // Cian
 	}
 

@@ -21,7 +21,7 @@ void Animation::Reset() {
 }
 
 bool Animation::HasFinishedOnce() const { return finishedOnce_ && !loop_; }
-// 【新增实现】
+
 int Animation::GetCurrentFrameIndex() const {
     return currentIndex_;
 }

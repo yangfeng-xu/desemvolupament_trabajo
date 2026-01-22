@@ -3,7 +3,6 @@
 #include "Engine.h"
 #include "Input.h"
 
-// 构造函数实现
 UIToggle::UIToggle(int id, SDL_Rect bounds, const char* text, bool initialBufferState, Module* observer)
 	: UIElement(UIElementType::TOGGLE, id, bounds, text, observer), isOn(initialBufferState)
 {
@@ -25,10 +24,7 @@ bool UIToggle::Update(float dt)
 	}
 	if (state != UIElementState::DISABLED)
 	{
-		// 2. 【关键修复】如果正在冷却，直接跳过输入检测，只负责绘制
 		if (cooldown > 0.0f) {
-			// 依然需要绘制逻辑，不能直接 return
-			// 复制下方的绘制代码到这里，或者只让输入检测受冷却限制
 		}
 		else {
 			Vector2D mousePos = Engine::GetInstance().input->GetMousePosition();
@@ -45,14 +41,15 @@ bool UIToggle::Update(float dt)
 				if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP) {
 					isOn = !isOn;
 					cooldown = 200.0f;
-					NotifyObserver(); // 这里会调用 Scene::OnUIMouseClickEvent
+					NotifyObserver();
 				}
 			}
 			else {
 				state = UIElementState::NORMAL;
 			}
-		}
-		// 绘制
+		} 
+
+		// Draw
 		if (texOff != nullptr && texOn != nullptr) {
 			SDL_Texture* currentTex = isOn ? texOn : texOff;
 			Engine::GetInstance().render->DrawTexture(currentTex, bounds.x, bounds.y, nullptr, 0.0f);

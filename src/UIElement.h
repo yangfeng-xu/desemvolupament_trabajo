@@ -34,15 +34,13 @@ class UIElement : public std::enable_shared_from_this<UIElement>
 {
 public:
 	UIElement() {}
-
-	// 统一的构造函数
 	UIElement(UIElementType type, int id, SDL_Rect bounds, const char* text, Module* observer) :
 		type(type),
 		id(id),
 		state(UIElementState::NORMAL),
 		bounds(bounds),
 		text(text),
-		observer(observer) // 关键：保存 observer
+		observer(observer) 
 	{
 		color.r = 255; color.g = 255; color.b = 255; color.a = 255;
 		texture = nullptr;
@@ -78,7 +76,6 @@ public:
 	int id;
 	UIElementType type;
 	UIElementState state;
-	// 【新增】可见性标志，默认为 true
 	bool visible = true;
 
 	std::string text;
@@ -88,5 +85,5 @@ public:
 	SDL_Texture* texture = nullptr;
 	SDL_Rect section;
 
-	Module* observer = nullptr; // 默认为空
+	Module* observer = nullptr; 
 };

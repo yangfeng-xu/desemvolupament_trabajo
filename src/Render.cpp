@@ -309,7 +309,6 @@ bool Render::DrawText(const char* text, int x, int y, int w, int h, SDL_Color co
 		return false;
 	}
 
-	// Optional but often needed when using alpha/text
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
 	// If w/h are 0, use the text’s natural size

@@ -8,11 +8,11 @@
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
-#include "Animation.h" // AÑADIDO
+#include "Animation.h"
 #include "Map.h"
 #include "Player.h"
 
-Item::Item() : Entity(EntityType::ITEM) // Se crea inicialmente como ITEM
+Item::Item() : Entity(EntityType::ITEM) // It is initially created as ITEM
 {
     name = "item";
     pbody = nullptr;
@@ -41,21 +41,21 @@ bool Item::Start() {
     if (pbody != nullptr) return true;
     position = startPosition;
 
-    // 1. Detección de tipo y carga de ASSETS/PHYSICS
-    if (type == EntityType::SAVEPOINT) // Si Map::LoadEntities lo marcó como SAVEPOINT
+    // 1. Detection of ASSET/PHYSICS type and load
+    if (type == EntityType::SAVEPOINT) 
     {
-        // ASSETS y ANIMACIÓN del Savepoint
+        // ASSETS and ANIMATION of the Savepoint
         texture = Engine::GetInstance().textures->Load("Assets/Textures/savepoint_5espaciado.png");
 
         std::unordered_map<int, std::string> animNames = { {0,"save"} };
         anims.LoadFromTSX("Assets/Textures/savepoint_5espaciado.tsx", animNames);
         anims.SetCurrent("save");
 
-        // DIMENSIONES
+        // DIMENSIONS
         texW = 32;
         texH = 32;
 
-        // PHYSICS (Sensor estático)
+        // PHYSICS
         pbody = Engine::GetInstance().physics->CreateRectangleSensor(
             (int)position.getX() + texW / 2,
             (int)position.getY() + texH / 2,
@@ -65,29 +65,29 @@ bool Item::Start() {
 
     }
 
-    else // ITEMS RECOLECTABLES
+    else // COLLECTIBLE ITEMS
     {
         if (name == "Star") {
             isStar = true;
-            texture = Engine::GetInstance().textures->Load("Assets/Textures/resized-star.png"); // Asegúrate del nombre del archivo
+            texture = Engine::GetInstance().textures->Load("Assets/Textures/resized-star.png"); 
         }
         else {
             isCoin = true; // Por defecto
             texture = Engine::GetInstance().textures->Load("Assets/Textures/goldCoin.png");
         }
 
-        // DIMENSIONES
-        int radius = 16; // Radio por defecto por seguridad
+        // DIMENSIONS
+        int radius = 16; // Radio set by default for security
         if (texture != nullptr) {
             Engine::GetInstance().textures.get()->GetSize(texture, texW, texH);
             radius = texW / 2;
         }
         else {
-            texW = 32; texH = 32; // Evitar crash si no carga textura
+            texW = 32; texH = 32; // Avoid crash if texture fails to load
         }
 
-        // PHYSICS (Sensor estático para que no caiga y se pueda atravesar)
-        // Usamos STATIC para que flote en el aire, si quieres que caiga usa DYNAMIC
+        // PHYSICS (Static sensor to prevent it from falling and allow passage)
+        // We use STATIC to make it float in the air; if you want it to fall, use DYNAMIC
         pbody = Engine::GetInstance().physics->CreateCircleSensor(
             (int)position.getX() + radius,
             (int)position.getY() + radius,
@@ -105,43 +105,43 @@ bool Item::Update(float dt)
     if (!active) return true;
 
     if (isPicked) {
-        CleanUp();   // Esto borrará el pbody y la textura
-        active = false; // Desactiva la entidad para siempre
+        CleanUp(); 
+        active = false;
         return true;
     }
 
-    // 3. Inicializamos variables
+    // 3. Initialize variables
     int x = (int)position.getX();
     int y = (int)position.getY();
     SDL_Rect* srcRect = NULL;
 
     if (pbody != nullptr)
     {
-        // 1. Obtener la posición física
+        // 1. Obtain the physical position
         pbody->GetPosition(x, y);
 
-        // 2. Lógica específica para SAVEPOINT
+        // 2. Specific logic for SAVEPOINT
         if (type == EntityType::SAVEPOINT)
         {
-            // Actualizar animación
+            // Update animation
             anims.Update(dt);
             srcRect = (SDL_Rect*)&anims.GetCurrentFrame();
             x -= texW / 2;
             y -= texH / 2;
         }
-        else // Es una moneda (ITEM)
+        else // It is a coin (ITEM)
         {
-            // La moneda no tiene animación por defecto, solo actualiza la posición
+            // The coin has no default animation, it only updates its position
             position.setX((float)x);
             position.setY((float)y);
 
-            // Ajuste de centro de círculo a esquina superior izquierda para dibujo
+            // Adjust circle center to top left corner for drawing
             x -= texW / 2;
             y -= texH / 2;
         }
     }
 
-    // Dibujar la textura (con o sin frame de animación)
+    // Draw the texture (with or without an animation frame)
     Engine::GetInstance().render->DrawTexture(texture, x, y, srcRect);
 
     return true;
@@ -149,7 +149,7 @@ bool Item::Update(float dt)
 
 bool Item::CleanUp()
 {
-    // Limpieza de recursos
+    // Resource cleanup
     if (pbody) {
         pbody->listener = nullptr;
         Engine::GetInstance().physics->DeletePhysBody(pbody);
@@ -167,29 +167,31 @@ bool Item::Destroy()
 
 void Item::OnCollision(PhysBody* physA, PhysBody* physB) {
 
-    // Si ya está recogida, no hacemos nada
+    //If it's already been collected, we don't do anything.
     if (isPicked) return;
 
-    // Si choca con el JUGADOR
+    // If it collides with the PLAYER
     if (physB->ctype == ColliderType::PLAYER)
     {
         LOG("Item collected: %s", name.c_str());
 
-        // 1. Marcar como recogido
+        // 1. Mark as collected
         isPicked = true;
 
-        Player* player = (Player*)physB->listener; // Obtenemos el puntero al jugador
+        Player* player = (Player*)physB->listener; // We get the pointer to the player
         if (player != nullptr) {
             if (isStar) {
-                player->score += 100; // Sumar Puntos
+                player->score += 100; // Add Points
                 LOG("Star collected! Score: %d", player->score);
-                // Sonido estrella
+
+                // Star sound
                 Engine::GetInstance().audio->PlayFx(Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/star_collection.wav"));
             }
             else if (isCoin) {
-                player->ammo += 1;   // Sumar Balas
+                player->ammo += 1;   // Add Bullets
                 LOG("Coin collected! Ammo: %d", player->ammo);
-                // Sonido moneda
+
+                // Coin sound
                 Engine::GetInstance().audio->PlayFx(Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav"));
             }
         }
@@ -198,7 +200,7 @@ void Item::OnCollision(PhysBody* physA, PhysBody* physB) {
             Engine::GetInstance().scene->collectedIDs.push_back(id);
         }
 
-        // 2. Reproducir sonido
+        // 2. Play sound
         if (isCoin) {
             Engine::GetInstance().audio->PlayFx(Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav"));
         }

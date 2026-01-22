@@ -6,7 +6,7 @@ Audio::Audio() {
 }
 
 Audio::~Audio() {
-    // Make sure everything is freed in CleanUp
+
 }
 
 bool Audio::LoadWavFile(const char* path, SoundData& out) {
@@ -19,6 +19,7 @@ bool Audio::LoadWavFile(const char* path, SoundData& out) {
 }
 
 void Audio::FreeSound(SoundData& s) {
+
     if (s.buf) {
         SDL_free(s.buf);
         s.buf = nullptr;
@@ -28,6 +29,7 @@ void Audio::FreeSound(SoundData& s) {
 }
 
 bool Audio::EnsureDeviceOpen() {
+
     if (device_ != 0) return true;
 
     // Ask for a reasonable default device format (float32, stereo, 48k).
@@ -57,6 +59,7 @@ bool Audio::EnsureDeviceOpen() {
 }
 
 bool Audio::EnsureStreams() {
+
     if (!EnsureDeviceOpen()) return false;
 
     if (!music_stream_) {
@@ -78,8 +81,9 @@ bool Audio::EnsureStreams() {
 
 
 bool Audio::Awake() {
+
     LOG("Audio: initializing SDL3 audio");
-    if (SDL_InitSubSystem(SDL_INIT_AUDIO) != true /* SDL3 returns bool */) {
+    if (SDL_InitSubSystem(SDL_INIT_AUDIO) != true) {
         LOG("SDL_INIT_AUDIO failed: %s", SDL_GetError());
         active = false;
         return true; // don't hard-fail the app
@@ -94,6 +98,7 @@ bool Audio::Awake() {
 }
 
 bool Audio::CleanUp() {
+
     // If audio is inactive or already quit elsewhere, don't touch SDL objects.
     if (!active || !SDL_WasInit(SDL_INIT_AUDIO)) {
         music_stream_ = nullptr;
@@ -153,7 +158,7 @@ bool Audio::PlayMusic(const char* path, float fadeTime) {
         return false;
     }
 
-    // 确保播放新音乐时应用当前音量
+    // Make sure to apply the current volume when playing new music.
     SDL_SetAudioStreamGain(music_stream_, musicVolume);
 
     // Queue once (simple play). For looping, requeue when drained (TODO).
@@ -221,10 +226,8 @@ bool Audio::PlayFx(int id, int repeat, float rate) {
 }
 void Audio::PauseMusic()
 {
-    // 如果已经在暂停状态，或者没有音乐流，就不做任何事
+    // If the music is already paused or not streaming, do nothing.
     if (musicPaused || music_stream_ == nullptr) return;
-
-    // SDL3: 解绑音频流即“暂停” (停止向设备发送数据)
     SDL_UnbindAudioStream(music_stream_);
 
     musicPaused = true;
@@ -233,22 +236,19 @@ void Audio::PauseMusic()
 
 void Audio::ResumeMusic()
 {
-    // 如果没有暂停，或者没有音乐流，或者设备没打开，就不做任何事
+    // If there is no pause, no music streaming, or the device is not turned on, do nothing.
     if (!musicPaused || music_stream_ == nullptr || device_ == 0) return;
-
-    // 【修正点】SDL3 中成功返回 true (或者非0值)
-    // 直接把函数调用放在 if 里即可，或者写 == true
     if (SDL_BindAudioStream(device_, music_stream_)) {
         musicPaused = false;
         LOG("Audio: Music resumed (stream rebound)");
     }
     else {
-        // 只有真的失败了（返回 false）才会进这里
+       
         LOG("Audio: Failed to resume music: %s", SDL_GetError());
     }
 }
 
-// 新增：设置音量 (0.0f ~ 1.0f)
+
 void Audio::SetMusicVolume(float volume) {
     if (volume < 0.0f) volume = 0.0f;
     if (volume > 1.0f) volume = 1.0f;

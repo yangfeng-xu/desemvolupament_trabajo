@@ -21,19 +21,10 @@ Pathfinding::~Pathfinding() {
 
 }
 
-
-// 1. 修改 ComputeFullPathAStar 以接受并保存 destination
 void Pathfinding::ComputeFullPathAStar(Vector2D startPos, Vector2D targetPos, ASTAR_HEURISTICS heuristic) {
-    // 1. 清理并从当前位置开始
     ResetPath(startPos);
-
-    // 【新增】保存目标点到类成员变量 destination
-    // 注意：Pathfinding.h 里已经有 destination 变量了，我们直接用
     this->destination = targetPos;
-
     pathTiles.clear();
-
-    // 2. 循环传播
     int maxSteps = 500;
     int steps = 0;
 
@@ -43,19 +34,16 @@ void Pathfinding::ComputeFullPathAStar(Vector2D startPos, Vector2D targetPos, AS
     }
 }
 
-// 2. 修改 PropagateAStar 以使用 this->destination
 void Pathfinding::PropagateAStar(ASTAR_HEURISTICS heuristic) {
 
     ZoneScoped;
-    // 【修改】不再获取 Engine::GetPlayerPosition，而是直接使用 this->destination
-    // 因为 destination 已经是我们传入的“Boss脚下高度修正后的目标”了
     Vector2D targetTile = this->destination;
 
     bool foundDestination = false;
     if (frontierAStar.size() > 0) {
         Vector2D frontierTile = frontierAStar.top().second;
 
-        if (frontierTile == targetTile) { // 【修改】对比 targetTile
+        if (frontierTile == targetTile) { 
             foundDestination = true;
             ComputePath(frontierTile.getX(), frontierTile.getY());
         }
@@ -77,13 +65,13 @@ void Pathfinding::PropagateAStar(ASTAR_HEURISTICS heuristic) {
 
             switch (heuristic) {
             case ASTAR_HEURISTICS::MANHATTAN:
-                h = neighbor.distanceMahattan(targetTile); // 【修改】用 targetTile
+                h = neighbor.distanceMahattan(targetTile); 
                 break;
             case ASTAR_HEURISTICS::EUCLIDEAN:
-                h = neighbor.distanceEuclidean(targetTile); // 【修改】用 targetTile
+                h = neighbor.distanceEuclidean(targetTile); 
                 break;
             case ASTAR_HEURISTICS::SQUARED:
-                h = neighbor.distanceSquared(targetTile); // 【修改】用 targetTile
+                h = neighbor.distanceSquared(targetTile); 
                 break;
             }
 

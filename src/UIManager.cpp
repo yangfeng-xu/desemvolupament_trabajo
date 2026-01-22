@@ -19,14 +19,12 @@ bool UIManager::Start()
 
 std::shared_ptr<UIElement> UIManager::CreateUIElement(UIElementType type, int id, const char* text, SDL_Rect bounds, Module* observer, SDL_Rect sliderBounds)
 {
-
-	std::shared_ptr<UIElement> uiElement = nullptr; // 初始化为 nullptr
-
+	std::shared_ptr<UIElement> uiElement = nullptr; 
 	// L16: TODO 1: Implement CreateUIElement function that instantiates a new UIElement according to the UIElementType and add it to the list of UIElements
 	switch (type) {
 	case UIElementType::BUTTON:
 		uiElement = std::make_shared<UIButton>(id, bounds, text, observer);
-		uiElement->SetObserver(observer); // 额外确保设置
+		uiElement->SetObserver(observer); 
 		break;
 	case UIElementType::TOGGLE:
 		uiElement = std::make_shared<UIToggle>(id, bounds, text, false, observer);
@@ -66,9 +64,9 @@ std::shared_ptr<UIElement> UIManager::GetElement(int id)
 			return uiElement;
 		}
 	}
-	return nullptr; // 如果没找到，返回空指针
+	return nullptr; 
 }
-// 新增：根据 ID 销毁 UI 元素
+
 void UIManager::DestroyUIElement(int id)
 {
 	UIElementsList.remove_if([id](const std::shared_ptr<UIElement>& e) {

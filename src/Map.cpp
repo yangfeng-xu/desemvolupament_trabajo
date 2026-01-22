@@ -108,18 +108,11 @@ bool Map::CleanUp()
     }
     mapData.layers.clear();
 
-    // ELIMINADO: Limpieza de savepointTexture y anims
-    // El módulo Map ya no posee estos assets.
-
-     // ???????????
+    // REMOVED: Cleanup of savepointTexture and animatics
+    // The Map module no longer has these assets.
     for (const auto& body : mapBodies) {
-        // ??????????????????? Body
-        // ?? Physics ???? RemoveBody ???? delete (?????????)
-        // ?? PhysBody ??????????????? Box2D body?
         Engine::GetInstance().physics->DeletePhysBody(body);
 
-        // ???? Physics ??????????????:
-        // Engine::GetInstance().physics->RemoveBody(body);
     }
     mapBodies.clear();
     return true;
@@ -205,12 +198,12 @@ bool Map::Load(std::string path, std::string fileName)
                 LOG("Generado coliciones para la capa:%s", mapLayer->name.c_str());
                 for (int i = 0; i < mapData.width; i++) {
                     for (int j = 0; j < mapData.height; j++) {
-                        int gid = mapLayer->Get(i, j);//obtenimos id de los cuatros que hemos pintado en color rojo para identificar las coliciones, dende de
+                        int gid = mapLayer->Get(i, j);// We obtain the IDs of the four we have painted in red to identify collisions, from where
                         if (gid == 49) {
-                            Vector2D pos = MapToWorld(i, j);//mapa en pixel
+                            Vector2D pos = MapToWorld(i, j);// pixel map
                             PhysBody* colliderBody = Engine::GetInstance().physics.get()->CreateRectangle((int)pos.getX() + mapData.tileWidth / 2,
                                 (int)pos.getY() + mapData.tileHeight / 2, mapData.tileWidth, mapData.tileHeight, STATIC);
-                            colliderBody->ctype = ColliderType::PLATFORM;//para decir que es de tipo plataform donde el plater esta jugando sobre si
+                            colliderBody->ctype = ColliderType::PLATFORM;// To say that it's a platform type where the player is playing on itself
                             mapBodies.push_back(colliderBody);
                         }
                         else if (gid == 50) {
@@ -325,7 +318,7 @@ MapLayer* Map::GetNavigationLayer() {
 
 void Map::LoadEntities(std::shared_ptr<Player>& player) {
 
-    // ELIMINADO: Carga de textura y animación global del savepoint
+    // REMOVED: Global savepoint texture and animation loading
     Engine::GetInstance().entityManager->DestroyEntitiesForReload();
     for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup");
         objectGroupNode != NULL;
@@ -335,9 +328,9 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
                 objectNode != NULL;
                 objectNode = objectNode.next_sibling("object")) {
                 std::string entityType = objectNode.attribute("type").as_string();
-                std::string name = objectNode.attribute("name").as_string(); // Obtenemos el nombre del objeto
+                std::string name = objectNode.attribute("name").as_string(); // We get the object name
 
-                //sacar la informacion del Player
+                //extract information from the Player
                 if (entityType == std::string("Player")) {
                     float x = objectNode.attribute("x").as_float();
                     float y = objectNode.attribute("y").as_float();
@@ -352,28 +345,28 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
                     }
                 }
 
-                // --- Carga de ENEMIGOS --- 
+                // --- Enemy Charge ---
                 else if (entityType == std::string("Enemy")) {
                     float x = objectNode.attribute("x").as_float();
                     float y = objectNode.attribute("y").as_float();
 
-                    // Crear la entidad Enemigo a través del EntityManager
+                    // Create the Enemy entity through the EntityManager
                     std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
 
-                    // Asignar la posición leída del mapa
+                    // Assign the position read from the map
                     enemy->position = Vector2D(x, y);
 
-                    // Cargar propiedades personalizadas (por ejemplo, para saber si vuela)
+                    // Load custom properties (for example, to know if it flies)
                     if (name == "EnemyGround") {
                         enemy->SetEnemyType(EnemyType::GROUND);
                         LOG("Created Ground Enemy at x:%.2f y:%.2f", x, y);
                     }
-                    else if (name == "EnemyFlying") { // Asumiendo que llamarás as?al otro
+                    else if (name == "EnemyFlying") { 
                         enemy->SetEnemyType(EnemyType::FLYING);
                         LOG("Created Flying Enemy at x:%.2f y:%.2f", x, y);
                     }
                     else {
-                        // Por defecto si no coincide el nombre
+                        // Default if the name does not match
                         enemy->SetEnemyType(EnemyType::GROUND);
                         LOG("Created Default Enemy (Ground) at x:%.2f y:%.2f", x, y);
                     }
@@ -384,21 +377,12 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
 
                     float x = objectNode.attribute("x").as_float();
                     float y = objectNode.attribute("y").as_float();
-
-                    // 1. 【修正】使用 EntityManager 创建实体，确保它被系统管理
                     std::shared_ptr<Enemy> boss = std::dynamic_pointer_cast<Enemy>(
                         Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY)
                     );
 
-                    // 2. 设置位置 (注意：position 赋值通常要在 Start() 之前，
-                    //    或者你也可以用 SetPosition，但要确保物理身体还没创建或者创建时用了这个值)
                     boss->position = Vector2D(x, y);
-
-                    // 3. 关键：设置类型为 BOSS
                     boss->SetEnemyType(EnemyType::BOSS);
-
-                    // 4. 手动调用 Awake 和 Start (如果 EntityManager 没有自动在 Create 时调用的话)
-                    //    参考上面 Enemy 的写法，你也调用了 Awake 和 Start
                     boss->Awake();
                     boss->Start();
 
@@ -406,21 +390,21 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
               
                 }
 
-                // --- Carga de SAVEPOINTS ---
-                // Se cargan como entidades ITEM para aprovechar el sistema de entidades y colisionadores.
+                // --- Loading SAVEPOINTS ---
+                // These are loaded as ITEM entities to leverage the entity and collider system.
                 else if (name == "Save" && entityType == "Map") {
                     float x = objectNode.attribute("x").as_float();
                     float y = objectNode.attribute("y").as_float();
 
-                    // 1. Crear una entidad Item
+                    // 1. Create an Item entity
                     std::shared_ptr<Item> savepoint =
                         std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
 
-                    // 2. Establecer el tipo como SAVEPOINT (CRÍTICO para que Item::Start() lo inicialice correctamente)
+                    // 2. Set the type to SAVEPOINT (CRITICAL for Item::Start() to initialize it correctly)
                     savepoint->type = EntityType::SAVEPOINT;
 
-                    // 3. Asignar la posición con corrección de TMX: TMX da la base, ajustamos a la esquina superior izquierda.
-                    // Esto corrige que el dibujo aparezca más abajo.
+                    // 3. Assign the correct position using TMX: TMX provides the base; we adjust it to the top left corner.
+                    //This corrects the drawing appearing too low.
                     savepoint->startPosition = Vector2D(x, y - mapData.tileHeight);
 
                     LOG("Created Savepoint Entity at x:%.2f y:%.2f", x, y);
@@ -430,21 +414,13 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
                 }
                 else if (entityType == std::string("Item")) {
   
-                 // 1. Leer el ID único que le da Tiled al objeto
-                 // 1. PRIMERO LEEMOS EL ID
+                    // 1. Read the unique ID that Tiled assigns to the object
+                    // 1. FIRST WE READ THE ID
                     int id = objectNode.attribute("id").as_int();
 
-                    // --- DIAGNÓSTICO: Imprimir qué está pasando ---
+                    // --- DIAGNOSIS: Print out what's happening ---
                     bool foundInList = false;
                     LOG("--- PROCESANDO ITEM ID: %d ---", id);
-
-                    // Imprimir toda la lista para ver qué tenemos guardado
-                    /*Descomenta si quieres ver la lista completa:
-                    for (int savedId : Engine::GetInstance().scene->collectedIDs) {
-                        LOG("Lista tiene ID: %d", savedId);
-                    }
-                    */
-
                     for (int collectedId : Engine::GetInstance().scene->collectedIDs) {
                         if (collectedId == id) {
                             foundInList = true;
@@ -454,19 +430,16 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
 
                     if (foundInList) {
                         LOG(" -> ¡ENCONTRADO EN LISTA! No se crea.");
-                        continue; // Se salta la creación
+                        continue; // Skips creation
                     }
                     else {
                         LOG(" -> NO encontrado en lista. Creando objeto...");
                     }
-                    // ----------------------------------------------
 
-                    // Tu código normal de creación
                     float x = objectNode.attribute("x").as_float();
                     float y = objectNode.attribute("y").as_float();
-
                     std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
-                    item->id = id; // IMPORTANTE
+                    item->id = id; 
                     item->name = objectNode.attribute("name").as_string();
                     item->position = Vector2D(x, y - mapData.tileHeight);
                     item->startPosition = item->position;
@@ -489,7 +462,7 @@ void Map::SaveEntities(std::shared_ptr<Player>player) {
                 objectNode != NULL;
                 objectNode = objectNode.next_sibling("object")) {
                 std::string entityType = objectNode.attribute("type").as_string();
-                //Leer o modificar la informacion del Player
+                //Read or modify the Player information
                 if (entityType == std::string("Player")) {
                     Vector2D playerPos = player->GetPosition();
                     objectNode.attribute("x").set_value(playerPos.getX());

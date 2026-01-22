@@ -38,7 +38,7 @@ public:
     void PauseMusic();
     void ResumeMusic();
 
-    // 新增：设置和获取音乐音量
+    // Setting and getting music volume
     void SetMusicVolume(float volume);
     float GetMusicVolume() const;
 

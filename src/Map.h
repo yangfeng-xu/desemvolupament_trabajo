@@ -142,7 +142,7 @@ private:
     // L06: DONE 1: Declare a variable data of the struct MapData
     MapData mapData;
     pugi::xml_document mapFileXML;
-    SDL_Texture* savepointTexture = nullptr; // Textura
+    SDL_Texture* savepointTexture = nullptr; //Texture
     Vector2D savepointDrawPosition = { -1.0f, -1.0f };
     std::list<PhysBody*> mapBodies;
 };

@@ -64,11 +64,11 @@ SDL_Texture* const Textures::Load(const char* path)
 
 bool Textures::UnLoad(SDL_Texture* texture)
 {
-	// Usar un iterador para poder borrar el elemento de la lista
+	// Use an iterator to be able to delete the element from the list
 	for (auto it = textures.begin(); it != textures.end(); ++it) {
 		if (*it == texture) {
 			SDL_DestroyTexture(texture);
-			textures.erase(it); // <--- IMPORTANTE: Quitar el puntero de la lista
+			textures.erase(it); 
 			return true;
 		}
 	}

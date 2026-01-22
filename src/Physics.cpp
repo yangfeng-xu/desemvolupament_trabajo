@@ -223,7 +223,7 @@ bool Physics::PostUpdate()
             b2DebugDraw dd = {};
             dd.context = this;
 
-            // Enable only what you support (3.1 field names)
+            // Enable only what you support 
             dd.drawShapes = true;
             dd.drawContacts = true;   // contact points
 
@@ -235,7 +235,7 @@ bool Physics::PostUpdate()
             dd.DrawSolidCircleFcn = &Physics::DrawSolidCircleCb;
 
             // Defensive stubs (prevent nullptr calls inside Box2D)
-            dd.DrawSolidCapsuleFcn = &Physics::DrawSolidCapsuleStub; // correct 3.1 signature (p1,p2,radius,...) :contentReference[oaicite:1]{index=1}
+            dd.DrawSolidCapsuleFcn = &Physics::DrawSolidCapsuleStub; 
             dd.DrawPointFcn = &Physics::DrawPointStub;
             dd.DrawStringFcn = &Physics::DrawStringStub;
             dd.DrawTransformFcn = &Physics::DrawTransformStub;
@@ -244,8 +244,7 @@ bool Physics::PostUpdate()
         }
     }
 
-    //// Process bodies to delete after the world step
-    //bodiesToDelete.clear();
+    // Process bodies to delete after the world step
     if (!bodiesToDelete.empty())
     {
         for (auto body : bodiesToDelete)
@@ -266,17 +265,12 @@ bool Physics::PostUpdate()
 // Called before quitting
 bool Physics::CleanUp()
 {
- 
     LOG("Destroying physics world");
-
-    // 1. Limpiamos la lista de cuerpos pendientes de borrar para evitar
-    // que la nueva partida intente acceder a memoria de la partida vieja.
     for (auto body : bodiesToDelete) {
-        delete body; // Solo borramos el wrapper, el world se destruye abajo
+        delete body; 
     }
     bodiesToDelete.clear();
 
-    // 2. Destruimos el mundo (esto borra todos los b2Body internos)
     if (!B2_IS_NULL(world))
     {
         b2DestroyWorld(world);
@@ -321,30 +315,13 @@ void Physics::EndContact(b2ShapeId shapeA, b2ShapeId shapeB)
 
 void Physics::DeletePhysBody(PhysBody* physBody)
 {
-    //// Validación de seguridad
-    //if (physBody == nullptr) return;
-
-    //// Verificar si ya está en la lista para evitar duplicados
-    //for (auto& body : bodiesToDelete) {
-    //    if (body == physBody) return;
-    //}
-
-    //// En lugar de borrarlo aquí, lo añadimos a la lista de pendientes
-    //bodiesToDelete.push_back(physBody);
     if (physBody == nullptr) return;
-
-    // --- BLINDAJE ANTI-CRASH ---
-    // Cortamos la comunicación inmediatamente. Si Box2D intenta llamar al listener
-    // después de esto, se encontrará con nullptr y no hará nada, evitando el error 0xFF...
     physBody->listener = nullptr;
-    // ---------------------------
 
-    // Verificar si ya está en la lista para evitar duplicados
     for (auto& body : bodiesToDelete) {
         if (body == physBody) return;
     }
 
-    // En lugar de borrarlo aquí, lo añadimos a la lista de pendientes
     bodiesToDelete.push_back(physBody);
 }
 

@@ -22,20 +22,20 @@ bool UIButton::Update(float dt)
 	if (state != UIElementState::DISABLED)
 	{
 		// L16: TODO 3: Update the state of the GUiButton according to the mouse position
-		Vector2D mousePos = Engine::GetInstance().input->GetMousePosition();//retornar la posición del ratón
+		Vector2D mousePos = Engine::GetInstance().input->GetMousePosition();// return mouse position
 		//
 		if (mousePos.getX() > bounds.x && mousePos.getX() < bounds.x + bounds.w &&
 			mousePos.getY() > bounds.y && mousePos.getY() < bounds.y + bounds.h) {
 
 			state = UIElementState::FOCUSED;
 		
-			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {//constante mientra que esta pretando el boton
+			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {//constant while pressing the button
 				state = UIElementState::PRESSED;
 			}
 			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP) {
 				NotifyObserver();
 			}
-		}///asegurar de que el mouse esta dentro del limite
+		}///make sure the mouse is within the limit
 		else {
 			state = UIElementState::NORMAL;
 		}
@@ -52,7 +52,7 @@ bool UIButton::Update(float dt)
 			Engine::GetInstance().render->DrawRectangle(bounds, 0, 0, 20, 255, true, false);
 			break;
 		case UIElementState::PRESSED:
-			Engine::GetInstance().render->DrawRectangle(bounds, 0, 255, 0, 255, true, false);//false no se mueve con la camara
+			Engine::GetInstance().render->DrawRectangle(bounds, 0, 255, 0, 255, true, false);
 			break;
 		}
 		// L16: TODO 6: Draw text centered in the button
