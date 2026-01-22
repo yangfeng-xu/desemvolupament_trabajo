@@ -71,6 +71,7 @@ public:
 
 	// 在 Player.h 的 public: 区域加入这个函数
 	void TakeDamage(int damage) {
+		if (isGodMode) return;
 		if (invulnerabilityTimer <= 0.0f) {
 			lives -= damage;
 			invulnerabilityTimer = 2000.0f; // 受伤后无敌2秒
