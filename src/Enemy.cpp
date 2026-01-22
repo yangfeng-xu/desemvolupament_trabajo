@@ -11,6 +11,7 @@
 #include "EntityManager.h"
 #include "Map.h"
 #include "Player.h"
+#include "Scene.h"
 
 Enemy::Enemy() : Entity(EntityType::ENEMY) {
 	name = "Enemy";
@@ -678,6 +679,7 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 				if (health <= 0) {
 					active = false;
 					isDead = true;
+					Engine::GetInstance().scene->deadEnemyIDs.push_back(this->id);
 					Engine::GetInstance().audio->PlayFx(deathFxId, 0, 5.0f);
 					anims.SetCurrent("death");
 				}
@@ -685,6 +687,7 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 			// If normal enemy, die instantly (Keep original logic)
 			else {
 				isDead = true;
+				Engine::GetInstance().scene->deadEnemyIDs.push_back(this->id);
 				Engine::GetInstance().audio->PlayFx(deathFxId, 0, 5.0f);
 				if (enemyType == EnemyType::FLYING) {
 					Engine::GetInstance().entityManager->DestroyEntity(shared_from_this());
@@ -698,6 +701,7 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 	else if (physB->ctype == ColliderType::DEATH) {
 		if (!isDead) {
 			isDead = true;
+			Engine::GetInstance().scene->deadEnemyIDs.push_back(this->id);
 			if (enemyType == EnemyType::FLYING) {
 				Engine::GetInstance().entityManager->DestroyEntity(shared_from_this());
 			}

@@ -4,6 +4,8 @@
 #include "Player.h"
 #include "UIButton.h"
 #include "Enemy.h"
+#include <fstream>
+#include <list>
 struct SDL_Texture;
 
 // Enum to identify different game scenes
@@ -43,6 +45,13 @@ public:
 
 	int saveFxId = 0;
 
+	void SaveGame();
+	void LoadGame();
+	bool loadFromSave = false;   // para saber si estamos cargando partida
+	Vector2D savedPlayerPos;     // Posición cargada
+	int savedScore = 0;
+	int savedAmmo = 0;
+
 	// Return the player position
 	Vector2D GetPlayerPosition();
 
@@ -71,6 +80,7 @@ public:
 	// Bandera para asegurar que la música del boss solo empiece una vez
 	bool isBossMusicPlaying = false;
 	std::list<int> collectedIDs;
+	std::list<int> deadEnemyIDs;
 	std::shared_ptr<Player> player;
 	
 	// Reference to the Boss enemy to check health/death status
@@ -134,6 +144,11 @@ private:
 	SDL_Texture* iconPause = nullptr; 
 	SDL_Texture* iconPlay = nullptr; 
 	const int PAUSE_TOGGLE_ID = 200;
+	//------------------------------------
+	const int BTN_MAIN_MENU_CONTINUE = 5; // Botón "Continuar" en el menú principal
+	const int BTN_SETTINGS_SAVE = 306;    // Botón "Guardar" en el menú de pausa
+	//-------------------------------------------
+	std::shared_ptr<UIElement> mainMenuContinueBtn;
 	
 	// Main Menu Buttons
 	const int BTN_MAIN_MENU_EXIT = 3;

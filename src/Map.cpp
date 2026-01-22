@@ -318,63 +318,78 @@ MapLayer* Map::GetNavigationLayer() {
 
 void Map::LoadEntities(std::shared_ptr<Player>& player) {
 
-    // REMOVED: Global savepoint texture and animation loading
     Engine::GetInstance().entityManager->DestroyEntitiesForReload();
+
     for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup");
         objectGroupNode != NULL;
         objectGroupNode = objectGroupNode.next_sibling("objectgroup")) {
+
         if (objectGroupNode.attribute("name").as_string() == std::string("Entities")) {
             for (pugi::xml_node objectNode = objectGroupNode.child("object");
                 objectNode != NULL;
                 objectNode = objectNode.next_sibling("object")) {
-                std::string entityType = objectNode.attribute("type").as_string();
-                std::string name = objectNode.attribute("name").as_string(); // We get the object name
 
-                //extract information from the Player
+                std::string entityType = objectNode.attribute("type").as_string();
+                std::string name = objectNode.attribute("name").as_string();
+
+                // LEER EL ID AQUÍ PARA TODOS (Es común a todos los objetos de Tiled)
+                int id = objectNode.attribute("id").as_int();
+
+                // ---------------- PLAYER ----------------
                 if (entityType == std::string("Player")) {
                     float x = objectNode.attribute("x").as_float();
                     float y = objectNode.attribute("y").as_float();
-                    //if player not exist
                     if (player == NULL) {
                         player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
                         player->position = Vector2D(x, y);
-                        player->Start();//L17
+                        player->id = id; // Asignar ID
+                        player->Start();
                     }
                     else {
                         player->SetPosition(Vector2D(x, y));
+                        player->id = id; // Asignar ID
                     }
                 }
 
-                // --- Enemy Charge ---
+                // ---------------- ENEMY ----------------
                 else if (entityType == std::string("Enemy")) {
+                    // 1. Verificar si este enemigo ya fue matado
+                    bool isDead = false;
+                    for (int deadId : Engine::GetInstance().scene->deadEnemyIDs) {
+                        if (deadId == id) {
+                            isDead = true;
+                            break;
+                        }
+                    }
+
+                    if (isDead) {
+                        LOG("Enemy ID %d is dead. Skipping creation.", id);
+                        continue; // Si está muerto, no lo creamos
+                    }
+
                     float x = objectNode.attribute("x").as_float();
                     float y = objectNode.attribute("y").as_float();
 
-                    // Create the Enemy entity through the EntityManager
                     std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
 
-                    // Assign the position read from the map
                     enemy->position = Vector2D(x, y);
+                    enemy->id = id; // --- ¡IMPORTANTE! ASIGNAR EL ID ---
 
-                    // Load custom properties (for example, to know if it flies)
                     if (name == "EnemyGround") {
                         enemy->SetEnemyType(EnemyType::GROUND);
-                        LOG("Created Ground Enemy at x:%.2f y:%.2f", x, y);
                     }
-                    else if (name == "EnemyFlying") { 
+                    else if (name == "EnemyFlying") {
                         enemy->SetEnemyType(EnemyType::FLYING);
-                        LOG("Created Flying Enemy at x:%.2f y:%.2f", x, y);
                     }
                     else {
-                        // Default if the name does not match
                         enemy->SetEnemyType(EnemyType::GROUND);
-                        LOG("Created Default Enemy (Ground) at x:%.2f y:%.2f", x, y);
                     }
                     enemy->Awake();
                     enemy->Start();
                 }
-                else if (entityType == std::string("Boss")) {
 
+                // ---------------- BOSS ----------------
+                else if (entityType == std::string("Boss")) {
                     float x = objectNode.attribute("x").as_float();
                     float y = objectNode.attribute("y").as_float();
                     std::shared_ptr<Enemy> boss = std::dynamic_pointer_cast<Enemy>(
@@ -382,45 +397,39 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
                     );
 
                     boss->position = Vector2D(x, y);
+                    boss->id = id; // --- ¡IMPORTANTE! ASIGNAR EL ID ---
                     boss->SetEnemyType(EnemyType::BOSS);
                     boss->Awake();
                     boss->Start();
 
-                    LOG("Created BOSS at x:%.2f y:%.2f", x, y);
-              
+                    LOG("Created BOSS at x:%.2f y:%.2f with ID: %d", x, y, id);
                 }
 
-                // --- Loading SAVEPOINTS ---
-                // These are loaded as ITEM entities to leverage the entity and collider system.
+                // ---------------- SAVEPOINT ----------------
                 else if (name == "Save" && entityType == "Map") {
                     float x = objectNode.attribute("x").as_float();
                     float y = objectNode.attribute("y").as_float();
 
-                    // 1. Create an Item entity
-                    std::shared_ptr<Item> savepoint =
-                        std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
+                    // 1. Crear la entidad como ITEM (ya que usas Item para el savepoint)
+                    std::shared_ptr<Item> savepoint = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
 
-                    // 2. Set the type to SAVEPOINT (CRITICAL for Item::Start() to initialize it correctly)
-                    savepoint->type = EntityType::SAVEPOINT;
+                    // 2. Configurar tipo y posición
+                    savepoint->type = EntityType::SAVEPOINT; // ¡Importante!
+                    savepoint->position = Vector2D(x, y - mapData.tileHeight); // Ajuste de coordenada Y de Tiled
+                    savepoint->startPosition = savepoint->position;
 
-                    // 3. Assign the correct position using TMX: TMX provides the base; we adjust it to the top left corner.
-                    //This corrects the drawing appearing too low.
-                    savepoint->startPosition = Vector2D(x, y - mapData.tileHeight);
-
-                    LOG("Created Savepoint Entity at x:%.2f y:%.2f", x, y);
-
+                    // 3. Inicializar
                     savepoint->Awake();
                     savepoint->Start();
-                }
-                else if (entityType == std::string("Item")) {
-  
-                    // 1. Read the unique ID that Tiled assigns to the object
-                    // 1. FIRST WE READ THE ID
-                    int id = objectNode.attribute("id").as_int();
 
-                    // --- DIAGNOSIS: Print out what's happening ---
+                    LOG("Savepoint created correctly at x:%.2f y:%.2f", x, y);
+                }
+
+                // ---------------- ITEM ----------------
+                else if (entityType == std::string("Item")) {
+
+                    // Lógica para verificar si ya fue recogido
                     bool foundInList = false;
-                    LOG("--- PROCESANDO ITEM ID: %d ---", id);
                     for (int collectedId : Engine::GetInstance().scene->collectedIDs) {
                         if (collectedId == id) {
                             foundInList = true;
@@ -429,18 +438,15 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
                     }
 
                     if (foundInList) {
-                        LOG(" -> ¡ENCONTRADO EN LISTA! No se crea.");
-                        continue; // Skips creation
-                    }
-                    else {
-                        LOG(" -> NO encontrado en lista. Creando objeto...");
+                        continue; // Si ya lo tenemos, saltar creación
                     }
 
                     float x = objectNode.attribute("x").as_float();
                     float y = objectNode.attribute("y").as_float();
                     std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
-                    item->id = id; 
-                    item->name = objectNode.attribute("name").as_string();
+
+                    item->id = id; // Ya lo tenías, ahora funcionará porque está en Entity.h
+                    item->name = name;
                     item->position = Vector2D(x, y - mapData.tileHeight);
                     item->startPosition = item->position;
                     item->Awake();
@@ -449,7 +455,6 @@ void Map::LoadEntities(std::shared_ptr<Player>& player) {
             }
         }
     }
-
 }
 
 void Map::SaveEntities(std::shared_ptr<Player>player) {

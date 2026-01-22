@@ -327,6 +327,31 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 	if (uiElement->id == 1) {
 		LOG("Start game");
 	}
+
+	if (uiElement->id == 1) {
+		LOG("Start New Game");
+		loadFromSave = false; // Importante: resetear bandera
+		collectedIDs.clear(); // Limpiar items recogidos
+		deadEnemyIDs.clear(); // <--- ¡AÑADIR ESTO! Limpiar enemigos muertos
+		ChangeScene(SceneID::LEVEL_1);
+	}
+
+	// --- AÑADIR ESTO: Lógica Botón Continuar ---
+	if (uiElement->id == BTN_MAIN_MENU_CONTINUE) {
+		LOG("Continue Game Requested");
+		collectedIDs.clear();
+		LoadGame(); // Esto lee el archivo y cambia de escena
+		return true;
+	}
+
+	// --- AÑADIR ESTO: Lógica Botón Guardar (en Pausa) ---
+	if (uiElement->id == BTN_SETTINGS_SAVE) {
+		LOG("Saving Game...");
+		SaveGame();
+		Engine::GetInstance().audio->PlayFx(saveFxId); // Sonido de guardado
+		return true;
+	}
+
 	if (uiElement->id == BTN_MAIN_MENU_EXIT) {
 		LOG("Exiting Application from Main Menu");
 		exitGameRequested = true; 
@@ -550,6 +575,23 @@ void Scene::LoadMainMenu() {
 	mainMenuStartBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "Start", { 575,350,120,20 }, this);
 	mainMenuSettingBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_MAIN_MENU_SETTINGS, "Setting", { 575, 380, 120, 20 }, this);
 	mainMenuExitBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_MAIN_MENU_EXIT, "Exit Game", { 575, 410, 120, 20 }, this);
+	mainMenuStartBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "New Game", { 575,350,120,20 }, this);
+
+	std::ifstream file("savegame.txt");
+	if (file.good()) {
+		// Si existe, creamos el botón CONTINUE
+		mainMenuContinueBtn = Engine::GetInstance().uiManager->CreateUIElement(
+			UIElementType::BUTTON,
+			BTN_MAIN_MENU_CONTINUE,
+			"Continue",
+			{ 575, 320, 120, 20 }, // Un poco más arriba que Start
+			this
+		);
+		file.close();
+	}
+	else {
+		mainMenuContinueBtn = nullptr;
+	}
 
 	showSettingsUI = false;
 	showCreditsUI = false;
@@ -566,6 +608,7 @@ void Scene::UnloadMainMenu() {
 	mainMenuSettingBtn = nullptr;
 	mainMenuExitBtn = nullptr;
 	showSettingsUI = false;
+	mainMenuContinueBtn = nullptr;
 }
 void Scene::UpdateMainMenu(float dt) {
 	if (mainMenuBackground != nullptr) {
@@ -626,6 +669,27 @@ void Scene::CreateSettingsUI() {
 		);
 	}
 
+	if (currentScene != SceneID::MAIN_MENU) {
+
+		// Botón Return to Menu (que ya hiciste)
+		Engine::GetInstance().uiManager->CreateUIElement(
+			UIElementType::BUTTON,
+			BTN_SETTINGS_RETURN_MENU,
+			"Main Menu",
+			{ centerX - 60, centerY + 140, 120, 30 },
+			this
+		);
+
+		// Botón SAVE GAME (Nuevo) - Lo ponemos encima de "Main Menu" o donde quepa
+		Engine::GetInstance().uiManager->CreateUIElement(
+			UIElementType::BUTTON,
+			BTN_SETTINGS_SAVE,
+			"Save Game",
+			{ centerX - 60, centerY + 180, 120, 30 }, // Ajusta la posición Y según necesites
+			this
+		);
+	}
+
 	// Close Button
 	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_SETTINGS_CLOSE, "Close", { centerX - 50, centerY + 100, 100, 30 }, this);
 }
@@ -639,6 +703,7 @@ void Scene::DestroySettingsUI() {
 	Engine::GetInstance().uiManager->DestroyUIElement(BTN_SETTINGS_CLOSE);
 	Engine::GetInstance().uiManager->DestroyUIElement(BTN_SETTINGS_CREDITS);
 	Engine::GetInstance().uiManager->DestroyUIElement(BTN_SETTINGS_RETURN_MENU);
+	Engine::GetInstance().uiManager->DestroyUIElement(BTN_SETTINGS_SAVE);
 
 	
 	if (mainMenuStartBtn != nullptr) mainMenuStartBtn->visible = true;
@@ -670,7 +735,7 @@ void Scene::LoadLevel1() {//load map, texture, audio
 
 	iconPause = Engine::GetInstance().textures->Load("Assets/Textures/Pause.png");
 	iconPlay = Engine::GetInstance().textures->Load("Assets/Textures/Resume.png");
-
+	
 	// Create Toggle
 	auto pauseToggle = Engine::GetInstance().uiManager->CreateUIElement(
 		UIElementType::TOGGLE,
@@ -686,6 +751,60 @@ void Scene::LoadLevel1() {//load map, texture, audio
 	}
 
 	Engine::GetInstance().map->LoadEntities(player);
+
+	if (loadFromSave) {
+		LOG("Loading Game Data in Level 1...");
+
+		// A) Restaurar posición y datos del Player
+		if (player != nullptr) {
+			player->SetPosition(savedPlayerPos);
+			player->score = savedScore;
+			player->ammo = savedAmmo;
+
+			// Ajustar la cámara a la posición cargada
+			int w, h;
+			Engine::GetInstance().window->GetWindowSize(w, h);
+			Engine::GetInstance().render->camera.x = -player->GetPosition().getX() + (w / 2);
+		}
+
+		// B) Eliminar entidades que ya no deberían existir (Items recogidos y Enemigos muertos)
+		auto& entities = Engine::GetInstance().entityManager->entities;
+
+		for (auto it = entities.begin(); it != entities.end(); ) {
+			bool shouldRemove = false;
+
+			// Verificar si es un ITEM recogido
+			if ((*it)->type == EntityType::ITEM) {
+				for (int id : collectedIDs) {
+					if ((*it)->id == id) {
+						shouldRemove = true;
+						break;
+					}
+				}
+			}
+			// Verificar si es un ENEMIGO muerto
+			else if ((*it)->type == EntityType::ENEMY) {
+				for (int id : deadEnemyIDs) {
+					if ((*it)->id == id) {
+						shouldRemove = true;
+						break;
+					}
+				}
+			}
+
+			if (shouldRemove) {
+				// Borrar de la lista y actualizar el iterador
+				it = entities.erase(it);
+			}
+			else {
+				++it;
+			}
+		}
+
+		// Resetear la bandera para que no afecte a futuros reinicios
+		loadFromSave = false;
+	}
+
 	// Texture to highligh mouse position 
 	mouseTileTex = Engine::GetInstance().textures->Load("Assets/Maps/MapMetadata.png");
 	helpMenuTexture = Engine::GetInstance().textures->Load("Assets/Maps/menu.png");
@@ -875,6 +994,59 @@ void Scene::LoadLevel2() {
 	if (togglePtr) {
 		togglePtr->SetTextures(iconPause, iconPlay);
 	}
+
+	if (loadFromSave) {
+		LOG("Loading Game Data in Level 1...");
+
+		// A) Restaurar posición y datos del Player
+		if (player != nullptr) {
+			player->SetPosition(savedPlayerPos);
+			player->score = savedScore;
+			player->ammo = savedAmmo;
+
+			// Ajustar la cámara a la posición cargada
+			int w, h;
+			Engine::GetInstance().window->GetWindowSize(w, h);
+			Engine::GetInstance().render->camera.x = -player->GetPosition().getX() + (w / 2);
+		}
+
+		// B) Eliminar entidades que ya no deberían existir (Items recogidos y Enemigos muertos)
+		auto& entities = Engine::GetInstance().entityManager->entities;
+
+		for (auto it = entities.begin(); it != entities.end(); ) {
+			bool shouldRemove = false;
+
+			// Verificar si es un ITEM recogido
+			if ((*it)->type == EntityType::ITEM) {
+				for (int id : collectedIDs) {
+					if ((*it)->id == id) {
+						shouldRemove = true;
+						break;
+					}
+				}
+			}
+			// Verificar si es un ENEMIGO muerto
+			else if ((*it)->type == EntityType::ENEMY) {
+				for (int id : deadEnemyIDs) {
+					if ((*it)->id == id) {
+						shouldRemove = true;
+						break;
+					}
+				}
+			}
+
+			if (shouldRemove) {
+				// Borrar de la lista y actualizar el iterador
+				it = entities.erase(it);
+			}
+			else {
+				++it;
+			}
+		}
+
+		// Resetear la bandera para que no afecte a futuros reinicios
+		loadFromSave = false;
+	}
 	
 	
 }
@@ -987,6 +1159,7 @@ void Scene::UpdateLevel2(float dt) {//change to level 1
 		return; 
 	}
 }
+
 void Scene::PostUpdateLevel2() {
 
 	//L15 TODO 3: Call the function to load entities from the map
@@ -1041,6 +1214,70 @@ void Scene::PostUpdateLevel2() {
 	// GAME OVER
 	if (isGameOver) {
 		Engine::GetInstance().render->DrawText("GAME OVER", 550, 200, 200, 50, { 255, 0, 0, 255 });
+	}
+}
+
+void Scene::SaveGame() {
+	if (player != nullptr && (currentScene == SceneID::LEVEL_1 || currentScene == SceneID::LEVEL_2)) {
+		std::ofstream file("savegame.txt");
+		if (file.is_open()) {
+			// 1. Datos básicos
+			file << (int)currentScene << " "
+				<< player->GetPosition().getX() << " "
+				<< player->GetPosition().getY() << " "
+				<< player->score << " "
+				<< player->ammo << " "; // Añadir un espacio al final
+
+			// 2. Guardar Items recogidos
+			file << collectedIDs.size() << " ";
+			for (int id : collectedIDs) file << id << " ";
+
+			// 3. Guardar Enemigos muertos
+			file << deadEnemyIDs.size() << " ";
+			for (int id : deadEnemyIDs) file << id << " ";
+
+			file.close();
+			LOG("GAME SAVED SUCCESSFULLY with Items and Enemies!");
+		}
+	}
+}
+
+void Scene::LoadGame() {
+	std::ifstream file("savegame.txt");
+	if (file.is_open()) {
+		int sceneInt;
+		float pX, pY;
+
+		// 1. Leer datos básicos
+		file >> sceneInt >> pX >> pY >> savedScore >> savedAmmo;
+		savedPlayerPos = Vector2D(pX, pY);
+
+		// 2. Limpiar listas actuales para evitar duplicados
+		collectedIDs.clear();
+		deadEnemyIDs.clear();
+
+		// 3. Leer Items recogidos
+		int collectedCount = 0;
+		file >> collectedCount;
+		for (int i = 0; i < collectedCount; i++) {
+			int id;
+			file >> id;
+			collectedIDs.push_back(id);
+		}
+
+		// 4. Leer Enemigos muertos
+		int deadCount = 0;
+		file >> deadCount;
+		for (int i = 0; i < deadCount; i++) {
+			int id; file >> id;
+			deadEnemyIDs.push_back(id);
+		}
+
+		file.close();
+
+		loadFromSave = true;
+		LOG("GAME LOADED! Enemies and Items synced.");
+		ChangeScene((SceneID)sceneInt);
 	}
 }
 

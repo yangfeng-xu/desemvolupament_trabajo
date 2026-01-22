@@ -81,4 +81,5 @@ public:
 	bool active = true;
 	Vector2D position;
 	bool renderable = true;
+	int id = -1;
 };
