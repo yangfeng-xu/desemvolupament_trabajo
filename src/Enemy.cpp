@@ -712,6 +712,7 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 				// Engine::GetInstance().audio->PlayFx(hitFxId); 
 
 				if (health <= 0) {
+					active = false;
 					isDead = true;
 					Engine::GetInstance().audio->PlayFx(deathFxId, 0, 5.0f);
 					//Engine::GetInstance().physics->DeletePhysBody(pbody);

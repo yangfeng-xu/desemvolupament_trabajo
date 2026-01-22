@@ -3,6 +3,7 @@
 #include "Module.h"
 #include "Player.h"
 #include "UIButton.h"
+#include "Enemy.h"
 struct SDL_Texture;
 
 enum class SceneID
@@ -59,6 +60,8 @@ public:
 
 	std::list<int> collectedIDs;
 	std::shared_ptr<Player> player;
+	// 【新增】用于存储 Boss 的指针，以便我们在 Update 中检查它的血量
+	std::shared_ptr<Enemy> bossReference = nullptr;
 private:
 	// L17 TODO 3: Define specific function for main menu scene: Load, Unload, Handle UI events
 	void LoadMainMenu();
@@ -134,5 +137,17 @@ private:
 	bool showSettingsUI = false;
 	bool settingsCloseRequested = false; // 用于安全关闭
 
+
+	// 【新增】胜利状态标记
+	bool isGameWon = false;
+
+	// 【新增】胜利画面的背景图
+	SDL_Texture* winScreenTexture = nullptr;
+
+	// 【新增】胜利界面的退出按钮 ID
+	const int BTN_WIN_EXIT = 400;
+
+	// 【新增】胜利音效 ID
+	int winFxId = 0;
 
 };

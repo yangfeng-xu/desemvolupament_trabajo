@@ -470,7 +470,20 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 			showSettingsUI = true;
 		}
 	}
+	// 【NUEVO】Lógica para el botón de Salir en la pantalla de Victoria
+	if (uiElement->id == BTN_WIN_EXIT) {
+		LOG("Victory! Returning to Main Menu...");
 
+		// Limpiamos la lista de IDs recolectados
+		collectedIDs.clear();
+
+		// Reseteamos el estado de victoria para que no se quede "pegado"
+		isGameWon = false;
+
+		// Volvemos al menú principal
+		ChangeScene(SceneID::MAIN_MENU);
+		return true;
+	}
 
 	// ---------------------- SETTINGS PANEL EVENTS ---------------------- //
 	if (uiElement->id == BTN_SETTINGS_CLOSE) {
@@ -800,47 +813,6 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 	helpMenuTexture = Engine::GetInstance().textures->Load("Assets/Maps/menu.png");
 
 	saveFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/autosave.wav");
-
-
-	//// L16: TODO 2: Instantiate a new GuiControlButton in the Scene
-	//uiBt1 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, std::string("Start").c_str(), { 0,0,100,20 }, this));
-	//uiBt2 = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 2, std::string("Setting").c_str(), { 0,50,100,20 }, this));
-	////full sreen
-	//Engine::GetInstance().uiManager->CreateUIElement(UIElementType::TOGGLE, 100, "FullScreen", { 10, 10, 100, 30 }, this);
-
-
-	//L08: TODO 4: Create a new item using the entity manager and set the position to (200, 672) to test
-	//std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
-	//item->position = Vector2D(200, 672);
-	//item->Start();//!!!
-	////Create a new enemy 
-	//std::shared_ptr<Enemy> enemy1 = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
-	//enemy1->position = Vector2D(384, 672);
-	//enemy1->Start();//importante!!!, tenemos que credar nosotros 
-	//este escena no vaterner el botton por lo tanto podemos quitar
-	 //================== 【新增：生成测试 Boss】 ==================
-	//std::shared_ptr<Enemy> boss = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
-
-	//if (boss != nullptr) {
-	//	// 1. 【重要】先设置类型为 BOSS，这样 Start() 里才会跑 Boss 的加载逻辑
-	//	boss->SetEnemyType(EnemyType::BOSS);
-
-	//	// 2. 设置位置 (建议设置在主角附近，比如 X=500, Y=600)
-	//	// 注意：确保这个坐标不在墙里，而在你的地图可视范围内
-	//	boss->position = Vector2D(700, 710);
-
-	//	// 3. 启动！(这会调用你刚才写的加载图片和动画的代码)
-	//	boss->Start();
-
-	//	LOG("Testing Boss Created!");
-	//}
-	//// ==========================================================
-
-
-
-
-
-
 	levelTimer = 60.0f * 1000.0f;
 	//Engine::GetInstance().entityManager->Start();
 	
@@ -987,6 +959,37 @@ void Scene::LoadLevel2() {
 	//Engine::GetInstance().uiManager->CreateUIElement(UIElementType::TOGGLE, 100, "FullScreen", { 10, 10, 100, 30 }, this);
 	levelTimer = 60.0f * 1000.0f;
 
+	//--------------------------------------------------------------------------------win-----------------------------------------------------------------------------------//
+	// 1. 初始化变量
+	isGameWon = false;
+	bossReference = nullptr;
+	// ------------------------------------------------------------------------
+	// 【关键修改】遍历实体列表，找到地图生成的 Boss 并赋值给 bossReference
+	// ------------------------------------------------------------------------
+	// 注意：这里假设 EntityManager 中的 list 叫 entities，如果是其他名字请修改 (如 entitiesList)
+	for (const auto& entity : Engine::GetInstance().entityManager->entities) {
+		// 判断是否是敌人
+		if (entity->type == EntityType::ENEMY) {
+			// 尝试转换为 Enemy 指针
+			std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(entity);
+
+			// 如果转换成功，并且类型是 BOSS
+			if (enemy != nullptr && enemy->enemyType == EnemyType::BOSS) {
+				bossReference = enemy; // 【成功连接引用】
+				LOG("Boss loaded from Map and connected to Logic!");
+				break; // 找到了就退出循环
+			}
+		}
+	}
+
+
+	// 2. 加载胜利画面资源 (确保你有一张图片叫 win_screen.png 或者你可以暂时用 menu.png 代替)
+	winScreenTexture = Engine::GetInstance().textures->Load("Assets/Textures/menu_resized.png"); // 这里替换成你的胜利图片路径
+	winFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/game_win.mp3"); // 加载你文件列表中有的胜利音效
+
+	// ... 地图加载代码 ...
+
+
 	// --- AÑADIR ESTO: Lógica del Botón de Pausa ---
 	int windowW, windowH;
 	Engine::GetInstance().window->GetWindowSize(windowW, windowH);
@@ -1025,7 +1028,7 @@ void Scene::UnloadLevel2() {
 	Engine::GetInstance().map->CleanUp();
 	isGameOver = false;
 	gameOverShown = false;
-	levelTimer = 60.0f * 1000.0f; // ????
+	levelTimer = 60.0f * 1000.0f; 
 	if (iconPause != nullptr) {
 		Engine::GetInstance().textures->UnLoad(iconPause);
 		iconPause = nullptr;
@@ -1034,6 +1037,14 @@ void Scene::UnloadLevel2() {
 		Engine::GetInstance().textures->UnLoad(iconPlay);
 		iconPlay = nullptr;
 	}
+
+	if (winScreenTexture != nullptr) {
+		Engine::GetInstance().textures->UnLoad(winScreenTexture);
+		winScreenTexture = nullptr;
+	}
+
+	bossReference = nullptr; 
+	isGameWon = false;
 }
 void Scene::UpdateLevel2(float dt) {//cambiar a nivell 1
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) {
@@ -1046,6 +1057,39 @@ void Scene::UpdateLevel2(float dt) {//cambiar a nivell 1
 			isGameOver = true;
 			LOG("Game Over!!! Time's Up");
 		}
+	}
+	// 1. 如果游戏暂停 OR 已经胜利，直接 return，实现画面静止
+	if (isGamePaused || isGameWon) {
+		return;
+	}
+
+	// 2. 检测 Boss 是否死亡
+	if (bossReference != nullptr && !bossReference->active) { // 假设 active 为 false 代表死亡/消失，或者用 bossReference->isDead
+		// 注意：你需要确保 Enemy 类中有 isDead 属性且在死亡时设为 true
+		// 如果 Enemy.h 中 isDead 是 private，你需要加一个 Getter，或者直接判断 active
+
+		// 触发胜利
+		isGameWon = true;
+		LOG("BOSS DEFEATED! YOU WIN!");
+
+		// 播放胜利音效
+		Engine::GetInstance().audio->PlayFx(winFxId);
+		Engine::GetInstance().audio->PauseMusic(); // 停止背景音乐
+
+		// 创建 UI (显示 "Exit Game" 按钮)
+		int w, h;
+		Engine::GetInstance().window->GetWindowSize(w, h);
+
+		// 在屏幕下方创建退出按钮 (复用 BTN_WIN_EXIT ID)
+		Engine::GetInstance().uiManager->CreateUIElement(
+			UIElementType::BUTTON,
+			BTN_WIN_EXIT,
+			"EXIT GAME",
+			{ w / 2 - 60, h / 2 + 50, 120, 30 },
+			this
+		);
+
+		return; // 立即停止本帧后续逻辑
 	}
 
 	// ??? isGameOver ?????????????
@@ -1082,6 +1126,28 @@ void Scene::PostUpdateLevel2() {
 	//L15 TODO 4: Call the function to save entities from the map
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
 		Engine::GetInstance().map->SaveEntities(player);
+	}
+	// 【新增】绘制胜利画面
+	if (isGameWon) {
+		int w, h;
+		Engine::GetInstance().window->GetWindowSize(w, h);
+
+		// 1. 绘制半透明黑色遮罩，让背景变暗
+		SDL_Rect screenRect = { 0, 0, w, h };
+		Engine::GetInstance().render->DrawRectangle(screenRect, 0, 0, 0, 150, true, false);
+
+		// 2. 绘制胜利图片 (如果有)
+		if (winScreenTexture != nullptr) {
+			// 居中显示图片
+			SDL_Rect texRect = { w / 2 - 200, h / 2 - 150, 400, 300 }; // 根据图片大小调整
+			// Engine::GetInstance().render->DrawTexture... 这里需要用 SDL_RenderCopy 或封装好的 DrawTexture
+			// 假设 DrawTexture 支持目标 Rect，如果只支持坐标:
+			Engine::GetInstance().render->DrawTexture(winScreenTexture, 0, 0, nullptr, 0.0f);
+		}
+
+		// 3. 绘制胜利文字 (如果图片里没文字)
+		Engine::GetInstance().render->DrawText("MISSION ACCOMPLISHED", w / 2 - 150, h / 2 - 50, 300, 50, { 0, 255, 0, 255 });
+		Engine::GetInstance().render->DrawText("Boss Defeated!", w / 2 - 80, h / 2, 160, 30, { 255, 255, 255, 255 });
 	}
 
 	if (player != nullptr) {
