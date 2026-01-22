@@ -63,7 +63,6 @@ bool UIButton::Update(float dt)
 	return false;
 }
 
-// --- NUEVA FUNCIÓN RENDER ---
 void UIButton::Render()
 {
 	switch (state)

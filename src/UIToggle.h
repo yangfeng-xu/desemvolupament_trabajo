@@ -5,7 +5,7 @@
 class UIToggle : public UIElement
 {
 public:
-	// 这一行必须包含 Module* observer
+	
 	UIToggle(int id, SDL_Rect bounds, const char* text, bool initialBufferState, Module* observer);
 	virtual ~UIToggle();
 

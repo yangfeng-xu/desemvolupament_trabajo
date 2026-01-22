@@ -98,7 +98,6 @@ void EntityManager::AddEntity(std::shared_ptr<Entity> entity)
 bool EntityManager::Update(float dt)
 {
     ZoneScoped;
-    // 【新增】如果 Scene 处于暂停状态，直接跳过所有实体的更新
     if (Engine::GetInstance().scene->isGamePaused) {
         return true;
     }

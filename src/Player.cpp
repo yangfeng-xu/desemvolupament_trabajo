@@ -142,26 +142,6 @@ bool Player::Update(float dt)
 	// Disparar con tecla F (por ejemplo)
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F) == KEY_DOWN && shootCooldown <= 0) {
 
-		//// Crear proyectil
-		//auto projectile = std::dynamic_pointer_cast<Projectile>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PROJECTILE));
-
-		//// Configurar posición inicial (centro del jugador)
-		//projectile->SetPosition(position);
-
-		//// Determinar dirección basada en hacia dónde mira el jugador (flipState)
-		//if (flipState == SDL_FLIP_NONE) {
-		//	projectile->SetVelocity(Vector2D(1, 0)); // Derecha
-		//}
-		//else {
-		//	projectile->SetVelocity(Vector2D(-1, 0)); // Izquierda
-		//}
-
-		//// Inicializar el proyectil
-		//projectile->Awake(); // EntityManager suele llamar awake, pero si lo creas en runtime asegúrate de su ciclo.
-		//projectile->Start(); // Importante llamarlo para crear su cuerpo físico
-
-		//shootCooldown = 500.0f;
-
 		if (ammo > 0) {
 
 			// Crear proyectil
@@ -219,11 +199,6 @@ bool Player::Update(float dt)
 			Engine::GetInstance().render->camera.y = 0;
 			std::cout << "YOU ARE DEAD";
 
-			/*for (const auto& entity : Engine::GetInstance().entityManager->entities) {
-				if (entity->type == EntityType::ITEM) {
-					entity->Enable();
-				}
-			}*/
 		}
 		velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
 		velocity.x = 0;
@@ -350,10 +325,9 @@ void Player::Draw() {
 	position.setX((float)x);
 	position.setY((float)y);
 
-	bool shouldDraw = true; // ??????
+	bool shouldDraw = true; 
 	if (invulnerabilityTimer > 0.0f) {
-		// ?????????????
-		// ?100ms????????100????????????
+	
 		if (((int)invulnerabilityTimer / 100) % 2 == 0) {
 			shouldDraw = false;
 		}
@@ -434,23 +408,15 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("Collision PLATFORM");
 	{
 		int x, y;
-		pbody->GetPosition(x, y); // ????????
-
-		// ?????????? ???? + ???? (?? 5??)
-		// ?? texH ? 32???? 16??????? 20 ????????
+		pbody->GetPosition(x, y); 
 		int distToCheck = texH / 2 + 5;
 
 		float normal_x = 0.0f;
 		float normal_y = 0.0f;
 
-		// RayCast ????? (x,y) ?? (x, y + distToCheck) ??
-		// ???RayCast ?? -1 ????????????
+	
 		int hitDist = pbody->RayCast(x, y, x, y + distToCheck, normal_x, normal_y);
 
-		// ????
-		// 1. ??????? (hitDist != -1)
-		// 2. ?????????? (normal_y < -0.5f) -> ????????????
-		// ????????
 		if (hitDist != -1 && normal_y < -0.5f) {
 			isJumping = false;
 		}
@@ -459,25 +425,6 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
-		//Engine::GetInstance().audio->PlayFx(pickCoinFxId);
-
-		//Item* item = (Item*)physB->listener;
-		//if (item != nullptr) {
-		//	if (item->isStar) {
-		//		score += 100; // Sumar 100 puntos
-		//		// Reproducir sonido de estrella (si no lo hace el Item.cpp)
-		//		Engine::GetInstance().audio->PlayFx(Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/star_collection.wav"));
-		//		LOG("Estrella recogida! Puntuación: %d", score);
-		//	}
-		//	else if (item->isCoin) {
-		//		ammo += 1; // Sumar 1 bala
-		//		// Reproducir sonido de moneda
-		//		Engine::GetInstance().audio->PlayFx(pickCoinFxId);
-		//		LOG("Moneda recogida! Munición: %d", ammo);
-		//	}
-		//}
-
-	/*	physB->listener->Destroy();*/
 		break;
 	case ColliderType::DEATH:
 		LOG("Collision DEATH");

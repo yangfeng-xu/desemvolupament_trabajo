@@ -21,22 +21,6 @@ Pathfinding::~Pathfinding() {
 
 }
 
-//void Pathfinding::ComputeFullPathAStar(Vector2D startPos, ASTAR_HEURISTICS heuristic) {
-//    // 1. Limpiar y reiniciar desde la posición actual
-//    ResetPath(startPos);
-//    pathTiles.clear();
-//
-//    // 2. Bucle para propagar hasta encontrar el destino o agotar pasos
-//    // (Ponemos un límite de 500 pasos para evitar que el juego se congele si no hay camino)
-//    int maxSteps = 500;
-//    int steps = 0;
-//
-//    // Mientras no tengamos un camino calculado (pathTiles vacío) y queden pasos
-//    while (pathTiles.empty() && steps < maxSteps && !frontierAStar.empty()) {
-//        PropagateAStar(heuristic);
-//        steps++;
-//    }
-//}
 
 // 1. 修改 ComputeFullPathAStar 以接受并保存 destination
 void Pathfinding::ComputeFullPathAStar(Vector2D startPos, Vector2D targetPos, ASTAR_HEURISTICS heuristic) {

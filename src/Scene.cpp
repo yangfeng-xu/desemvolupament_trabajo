@@ -338,10 +338,7 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 		LOG("Exiting Application from Main Menu");
 		exitGameRequested = true; // Aquí SÍ cerramos la aplicación
 	}
-	//if (uiElement->id == BTN_SETTINGS_CREDITS) {
-	//	LOG("CREDITS: Created by Yangfeng Xu and Bole Wu");
-	//	// Aquí podrías cambiar a una escena de créditos o mostrar una imagen
-	//}
+
 	if (uiElement->id == BTN_SETTINGS_CREDITS) {
 	LOG("Opening Credits UI");
 	showCreditsUI = true; // Activamos la pantalla de créditos
@@ -372,9 +369,6 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 	settingsCloseRequested = true;
 	showCreditsUI = false; // Aseguramos que se cierren también
 	}
-	//if (uiElement->id == 2) {
-	//	LOG("Go to settings");
-	//}
 	// ID 2: Settings 按钮 (Main Menu)
 	// 【修正点】：这里之前只 Log 了，现在加上打开界面的逻辑
 	if (uiElement->id == BTN_MAIN_MENU_SETTINGS) { // 也就是 ID 2
@@ -832,15 +826,12 @@ void Scene::PostUpdateLevel1() {//code especifico de level 1
 		Engine::GetInstance().render->DrawText(ammoStr.c_str(), 20, 110, 100, 30, { 0, 255, 255, 255 }); // Color cian
 	}
 
-	// ???????
+	
 	int secondsLeft = (int)(levelTimer / 1000.0f);
 
-	// ?????
 	std::string timeText = "Time: " + std::to_string(secondsLeft);
 
-	// ?????????? (?? x=10, y=10)
-	// ????? {255, 255, 255, 255}
-	// ???? DrawText ????
+	
 	Engine::GetInstance().render->DrawText(timeText.c_str(), 20, 50, 100, 30, { 255, 255, 255, 255 });
 
 	// ????????????????? "GAME OVER" ???
@@ -1097,10 +1088,10 @@ void Scene::PostUpdateLevel2() {
 		Engine::GetInstance().render->DrawText(ammoStr.c_str(), 20, 110, 100, 30, { 0, 255, 255, 255 }); // Cian
 	}
 
-	// ???????
+	
 	int secondsLeft = (int)(levelTimer / 1000.0f);
 
-	// ?????
+	
 	std::string timeText = "Time: " + std::to_string(secondsLeft);
 
 	//  DrawText 

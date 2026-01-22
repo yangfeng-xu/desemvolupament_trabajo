@@ -245,9 +245,6 @@ bool Physics::PostUpdate()
     }
 
     //// Process bodies to delete after the world step
-    //for (PhysBody* physBody : bodiesToDelete) {
-    //    b2DestroyBody(physBody->body);
-    //}
     //bodiesToDelete.clear();
     if (!bodiesToDelete.empty())
     {
@@ -269,15 +266,7 @@ bool Physics::PostUpdate()
 // Called before quitting
 bool Physics::CleanUp()
 {
-    //LOG("Destroying physics world");
-
-    //if (!B2_IS_NULL(world))
-    //{
-    //    b2DestroyWorld(world);
-    //    world = b2_nullWorldId;
-    //}
-
-    //return true;
+ 
     LOG("Destroying physics world");
 
     // 1. Limpiamos la lista de cuerpos pendientes de borrar para evitar
@@ -329,33 +318,6 @@ void Physics::EndContact(b2ShapeId shapeA, b2ShapeId shapeB)
     if (physA->listener && !IsPendingToDelete(physA)) physA->listener->OnCollisionEnd(physA, physB);
     if (physB->listener && !IsPendingToDelete(physB)) physB->listener->OnCollisionEnd(physB, physA);
 }
-
-
-
-//void Physics::DeletePhysBody(PhysBody* physBody)
-//{
-//    // 1. Seguridad básica
-//    if (physBody == nullptr) return;
-//
-//    for (auto it = bodiesToDelete.begin(); it != bodiesToDelete.end(); ) {
-//        if (*it == physBody) {
-//            it = bodiesToDelete.erase(it); // ????????????????
-//        }
-//        else {
-//            ++it;
-//        }
-//    }
-//    // 2. Si el cuerpo de Box2D es válido, lo destruimos
-//    if (!B2_IS_NULL(physBody->body) && b2Body_IsValid(physBody->body))
-//    {
-//        b2DestroyBody(physBody->body);
-//
-//        physBody->body = b2_nullBodyId;
-//    }
-//
-//    // 3. Ahora borramos el contenedor (wrapper) de memoria
-//    delete physBody;
-//}
 
 void Physics::DeletePhysBody(PhysBody* physBody)
 {

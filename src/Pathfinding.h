@@ -35,7 +35,7 @@ public:
     void PropagateAStar(ASTAR_HEURISTICS heuristic);
 
    /* void ComputeFullPathAStar(Vector2D startPos, ASTAR_HEURISTICS heuristic);*/
-    // 【修改】增加 destination 参数
+
     void ComputeFullPathAStar(Vector2D startPos, Vector2D targetPos, ASTAR_HEURISTICS heuristic);
 
 private:

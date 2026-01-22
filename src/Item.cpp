@@ -38,14 +38,6 @@ bool Item::Start() {
     isPicked = false;
     active = true;
 
-    //for (int collectedId : Engine::GetInstance().scene->collectedIDs) {
-    //    if (id != -1 && id == collectedId) {
-    //        // Si el ID coincide, desactivamos la entidad y no cargamos nada
-    //        active = false;
-    //        return true;
-    //    }
-    //}
-
     if (pbody != nullptr) return true;
     position = startPosition;
 
@@ -64,8 +56,6 @@ bool Item::Start() {
         texH = 32;
 
         // PHYSICS (Sensor estático)
-        // La posición 'position' (startPosition) ya viene ajustada para el dibujo (esquina superior izquierda).
-        // El centro para Box2D es la posición de dibujo + la mitad de las dimensiones.
         pbody = Engine::GetInstance().physics->CreateRectangleSensor(
             (int)position.getX() + texW / 2,
             (int)position.getY() + texH / 2,
@@ -73,32 +63,10 @@ bool Item::Start() {
 
         pbody->ctype = ColliderType::SAVEPOINT;
 
-        // No necesita listener.
     }
-    //else // Es una moneda (ITEM por defecto)
-    //{
-    //    // ASSETS de la Moneda
-    //    texture = Engine::GetInstance().textures->Load("Assets/Textures/goldCoin.png");
-
-    //    // DIMENSIONES
-    //    Engine::GetInstance().textures.get()->GetSize(texture, texW, texH);
-
-    //    // PHYSICS (Cuerpo dinámico para caer)
-    //    pbody = Engine::GetInstance().physics->CreateCircle(
-    //        (int)position.getX() + texH / 2,
-    //        (int)position.getY() + texH / 2,
-    //        texH / 2, bodyType::DYNAMIC);
-
-    //    pbody->ctype = ColliderType::ITEM;
-
-    //    // LISTENER para detectar colisión con el jugador
-    //    pbody->listener = this;
-    //}
 
     else // ITEMS RECOLECTABLES
     {
-        // --- CAMBIAR ESTO ---
-        // Determinar si es Star o Coin
         if (name == "Star") {
             isStar = true;
             texture = Engine::GetInstance().textures->Load("Assets/Textures/resized-star.png"); // Asegúrate del nombre del archivo
@@ -136,27 +104,16 @@ bool Item::Update(float dt)
 {
     if (!active) return true;
 
-   /* int x, y;
-    SDL_Rect* srcRect = NULL;*/
-
     if (isPicked) {
         CleanUp();   // Esto borrará el pbody y la textura
         active = false; // Desactiva la entidad para siempre
         return true;
     }
 
-    // 3. Inicializamos variables (¡ESTO FALTABA!)
+    // 3. Inicializamos variables
     int x = (int)position.getX();
     int y = (int)position.getY();
     SDL_Rect* srcRect = NULL;
-
-    // ... (El resto de tu código Update existente para Savepoints) ...
-
-    // Asegúrate de dibujar SOLO si no ha sido recogido (aunque el if(isPicked) de arriba ya lo evita)
-    //if (!isPicked && texture != nullptr) {
-    //    // Código de dibujo existente...
-    //    // Recuerda actualizar la posición del renderizado basada en pbody si es DYNAMIC
-    //}
 
     if (pbody != nullptr)
     {
@@ -169,14 +126,8 @@ bool Item::Update(float dt)
             // Actualizar animación
             anims.Update(dt);
             srcRect = (SDL_Rect*)&anims.GetCurrentFrame();
-
-            // La posición (x, y) de Box2D es el centro, ajustamos a la esquina superior izquierda
             x -= texW / 2;
             y -= texH / 2;
-
-            // La posición del Savepoint se actualizó en Map::LoadEntities con la corrección de TMX (y - height),
-            // por lo que position ahora es la esquina superior izquierda. La actualización del pbody
-            // solo es necesaria si fuera dinámico, pero aquí la usamos para obtener la posición si se moviera.
         }
         else // Es una moneda (ITEM)
         {
@@ -199,10 +150,6 @@ bool Item::Update(float dt)
 bool Item::CleanUp()
 {
     // Limpieza de recursos
-   /* if (texture) {
-        Engine::GetInstance().textures->UnLoad(texture);
-        texture = nullptr;
-    }*/
     if (pbody) {
         pbody->listener = nullptr;
         Engine::GetInstance().physics->DeletePhysBody(pbody);
@@ -258,8 +205,5 @@ void Item::OnCollision(PhysBody* physA, PhysBody* physB) {
         else if (isStar) {
             Engine::GetInstance().audio->PlayFx(Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/star_collection.wav"));
         }
-
-        // ¡IMPORTANTE!: NO borres pbody aquí (DeletePhysBody). Eso causa el crash.
-        // Lo borraremos en el Update().
     }
 }
