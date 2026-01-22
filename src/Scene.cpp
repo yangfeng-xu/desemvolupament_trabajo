@@ -745,7 +745,7 @@ void Scene::UnloadLevel1() {//limpia la mapa y entity
 }
 void Scene::UpdateLevel1(float dt) {//para poder cambiar la escena a nivell 2
 
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN) {
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F2) == KEY_DOWN) {
 		ChangeScene(SceneID::LEVEL_2);
 	}
 	/*Engine::GetInstance().uiManager->Update(dt);*/
@@ -953,7 +953,7 @@ void Scene::UnloadLevel2() {
 	isGameWon = false;
 }
 void Scene::UpdateLevel2(float dt) {//cambiar a nivell 1
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) {
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN) {
 		ChangeScene(SceneID::LEVEL_1);
 	}
 
