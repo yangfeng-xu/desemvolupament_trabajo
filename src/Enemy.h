@@ -11,12 +11,13 @@
 
 struct SDL_Texture;
 
+// Finite State Machine (FSM) for the Boss logic
 enum class BossState {
-	IDLE_CHASE,     // 空闲或追逐玩家
-	ATTACK_NORMAL,  // 普通攻击中
-	SKILL_PRE,      // 大招前摇
-	SKILL_MID,      // 大招中段
-	SKILL_END       // 大招后摇
+	IDLE_CHASE,     
+	ATTACK_NORMAL, 
+	SKILL_PRE,     
+	SKILL_MID,     
+	SKILL_END     
 };
 
 enum class EnemyType {
@@ -24,6 +25,7 @@ enum class EnemyType {
 	FLYING,
 	BOSS
 };
+
 class Enemy : public Entity
 {
 public:
@@ -42,23 +44,27 @@ public:
 	SDL_FlipMode flipState = SDL_FLIP_NONE;
 	std::unordered_map<std::string, SDL_Texture*> bossTextures;
 
-	// === Boss 核心属性 ===
+	// === Boss Core Attributes ===
 	int health = 10;
 	int maxHealth = 10;
-	float detectionRange = 15.0f; // 追踪范围
-	float attackRange = 100.0f;     // 攻击范围
+	float detectionRange = 15.0f; // Radius to start chasing the player
+	float attackRange = 100.0f;// Radius to start attacking the player
 private:
+
+	// === Pathfinding Logic ===
 	float pathfindingTimer = 0.0f;
 	float pathfindingInterval = 0.5f;//calcular la ruta de pathfinding cada 0,5 segundo
 	void PerformPathfinding(float dt);
 	void GetPhysicsValues();
+
+	// Movement Logic
 	void Move();
 	void MoveFlying(); 
 	void MoveBoss();
 	void ApplyPhysics();
 	void Draw(float dt);
 
-	// 辅助函数：处理 Boss 的逻辑
+	// Boss AI Helper: Manages state transitions (Idle -> Attack -> Skill)
 	void UpdateBossBehavior(float dt);
 public:
 
@@ -73,40 +79,33 @@ public:
 	int detectionRadius = 10;
 	EnemyType enemyType = EnemyType::GROUND;
 
-	//void SetBounds(int min, int max) {
-	//	minX = min;
-	//	maxX = max;
-	//	hasBounds = true;
-	//};
-	
 private:
 	b2Vec2 velocity;
 	AnimationSet anims;
-	std::shared_ptr<Pathfinding> pathfinding;
+	std::shared_ptr<Pathfinding> pathfinding;// Reference to Pathfinding module
 	bool isGrounded = false;
 	bool isDead = false;
-	int deathFxId = 0; //ID del efecto de sonido de muerte del enemigo
+	int deathFxId = 0; // Sound Effect ID for death
 
-
-	// === 新增：Boss 专用变量 ===
-	BossState bossState = BossState::IDLE_CHASE; // 当前状态
-	float normalAttackTimer = 0.0f;              // 普通攻击计时器
-	float skillTimer = 0.0f;                     // 大招计时器
-	bool isAttacking = false;                    // 是否正在执行攻击动作（用于阻止移动）
+	// === Boss Internal Variables ===
+	BossState bossState = BossState::IDLE_CHASE;// Current State
+	float normalAttackTimer = 0.0f;             // Timer for basic attacks
+	float skillTimer = 0.0f;                    // Timer for special skill duration
+	bool isAttacking = false;                   // Flag to lock movement during attacks
 
 	
-	// === 【新增】Boss 攻击逻辑控制 ===
-	bool hasDealtDamage = false;
-	float attackCooldownTimer = 0.0f;
-	float attackDurationTimer = 0.0f;
-	bool nextAttackIsOne = true;
-	float attackCooldown = 2.0f;
+	// === Boss Attack Logic Control ===
+	bool hasDealtDamage = false;// Prevents one attack from hitting multiple times
+	float attackCooldownTimer = 0.0f;// Time until next attack
+	float attackDurationTimer = 0.0f;// How long the hitbox is active
+	bool nextAttackIsOne = true;// Toggle between Attack 1 and Attack 2
+	float attackCooldown = 2.0f;// 2 seconds between attacks
 	int attackDamage = 1;
 
-	// Variables nuevas para el límite
-// ================== 【新增：Boss 活动范围限制】 ==================
-	bool hasBattleArea = false; // 是否启用战斗区域限制
-	int battleAreaMinX = 0;     // 左边界
-	int battleAreaMaxX = 0;     // 右边界
+	// === Boss Arena Limits ===
+	// Prevents the boss from walking out of the battle area
+	bool hasBattleArea = false; 
+	int battleAreaMinX = 0;// Left boundary    
+	int battleAreaMaxX = 0; // Right boundary
 
 };
