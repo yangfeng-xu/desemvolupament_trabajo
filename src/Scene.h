@@ -51,6 +51,8 @@ public:
 	Vector2D savedPlayerPos;     // Posición cargada
 	int savedScore = 0;
 	int savedAmmo = 0;
+	float savedLevelTimer = 0.0f;
+	int savedBossHealth = 0;
 
 	// Return the player position
 	Vector2D GetPlayerPosition();

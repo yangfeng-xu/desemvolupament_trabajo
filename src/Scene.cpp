@@ -752,6 +752,20 @@ void Scene::LoadLevel1() {//load map, texture, audio
 
 	Engine::GetInstance().map->LoadEntities(player);
 
+	levelTimer = 90.0f * 1000.0f;
+
+	// 2. BUSCAR AL BOSS AHORA (Necesitamos la referencia para cargar su vida)
+	bossReference = nullptr;
+	for (const auto& entity : Engine::GetInstance().entityManager->entities) {
+		if (entity->type == EntityType::ENEMY) {
+			std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(entity);
+			if (enemy != nullptr && enemy->enemyType == EnemyType::BOSS) {
+				bossReference = enemy;
+				break;
+			}
+		}
+	}
+
 	if (loadFromSave) {
 		LOG("Loading Game Data in Level 1...");
 
@@ -765,6 +779,17 @@ void Scene::LoadLevel1() {//load map, texture, audio
 			int w, h;
 			Engine::GetInstance().window->GetWindowSize(w, h);
 			Engine::GetInstance().render->camera.x = -player->GetPosition().getX() + (w / 2);
+
+			if (Engine::GetInstance().render->camera.x > 0) {
+				Engine::GetInstance().render->camera.x = 0;
+			}
+		}
+
+		levelTimer = savedLevelTimer;
+
+		if (bossReference != nullptr && savedBossHealth > 0) {
+			bossReference->health = savedBossHealth;
+			LOG("Restored Boss Health to: %d", savedBossHealth);
 		}
 
 		// B) Eliminar entidades que ya no deberían existir (Items recogidos y Enemigos muertos)
@@ -812,7 +837,6 @@ void Scene::LoadLevel1() {//load map, texture, audio
 	levelUpFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/level_up.wav");
 	loseGameFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/lose_game.wav");
 	saveFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/autosave.wav");
-	levelTimer = 60.0f * 1000.0f;
 }
 void Scene::UnloadLevel1() {//cleans the map and entity
 	Engine::GetInstance().uiManager->CleanUp();
@@ -943,7 +967,7 @@ void Scene::LoadLevel2() {
 
 	//L15 TODO 3: Call the function to load entities from the map
 	Engine::GetInstance().map->LoadEntities(player);
-	levelTimer = 60.0f * 1000.0f;
+	levelTimer = 120.0f * 1000.0f;
 
 	//--------------------------------------------------------------------------------win-----------------------------------------------------------------------------------//
 	isGameWon = false;
@@ -995,6 +1019,24 @@ void Scene::LoadLevel2() {
 		togglePtr->SetTextures(iconPause, iconPlay);
 	}
 
+	Engine::GetInstance().map->LoadEntities(player);
+
+	// Valor por defecto del tiempo
+	levelTimer = 120.0f * 1000.0f;
+
+	// 2. BUSCAR AL BOSS AHORA (Necesitamos la referencia para cargar su vida)
+	bossReference = nullptr;
+	for (const auto& entity : Engine::GetInstance().entityManager->entities) {
+		if (entity->type == EntityType::ENEMY) {
+			std::shared_ptr<Enemy> enemy = std::dynamic_pointer_cast<Enemy>(entity);
+			if (enemy != nullptr && enemy->enemyType == EnemyType::BOSS) {
+				bossReference = enemy;
+				// LOG("Boss Reference found in LoadLevel2"); 
+				break;
+			}
+		}
+	}
+
 	if (loadFromSave) {
 		LOG("Loading Game Data in Level 1...");
 
@@ -1008,6 +1050,20 @@ void Scene::LoadLevel2() {
 			int w, h;
 			Engine::GetInstance().window->GetWindowSize(w, h);
 			Engine::GetInstance().render->camera.x = -player->GetPosition().getX() + (w / 2);
+
+			if (Engine::GetInstance().render->camera.x > 0) {
+				Engine::GetInstance().render->camera.x = 0;
+			}
+		}
+
+		levelTimer = savedLevelTimer;
+
+		if (bossReference != nullptr && savedBossHealth > 0) {
+			bossReference->health = savedBossHealth;
+			LOG("BOSS HEALTH RESTORED TO: %d", savedBossHealth);
+		}
+		else {
+			LOG("Cannot restore Boss health (Ref null or hp 0)");
 		}
 
 		// B) Eliminar entidades que ya no deberían existir (Items recogidos y Enemigos muertos)
@@ -1221,12 +1277,21 @@ void Scene::SaveGame() {
 	if (player != nullptr && (currentScene == SceneID::LEVEL_1 || currentScene == SceneID::LEVEL_2)) {
 		std::ofstream file("savegame.txt");
 		if (file.is_open()) {
+
+			int currentBossHealth = 0;
+			// Solo si estamos en Nivel 2 y el boss existe y está vivo
+			if (bossReference != nullptr && bossReference->active) {
+				currentBossHealth = bossReference->health;
+			}
+
 			// 1. Datos básicos
 			file << (int)currentScene << " "
 				<< player->GetPosition().getX() << " "
 				<< player->GetPosition().getY() << " "
 				<< player->score << " "
-				<< player->ammo << " "; // Añadir un espacio al final
+				<< player->ammo << " " 
+				<< levelTimer << " "          
+				<< currentBossHealth << " ";
 
 			// 2. Guardar Items recogidos
 			file << collectedIDs.size() << " ";
@@ -1249,7 +1314,7 @@ void Scene::LoadGame() {
 		float pX, pY;
 
 		// 1. Leer datos básicos
-		file >> sceneInt >> pX >> pY >> savedScore >> savedAmmo;
+		file >> sceneInt >> pX >> pY >> savedScore >> savedAmmo >> savedLevelTimer >> savedBossHealth;
 		savedPlayerPos = Vector2D(pX, pY);
 
 		// 2. Limpiar listas actuales para evitar duplicados
