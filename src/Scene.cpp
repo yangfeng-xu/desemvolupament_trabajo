@@ -142,106 +142,10 @@ bool Scene::Update(float dt)
 			}
 		}
 
-		// 绘制 Settings 背景 (如果在显示状态)
-		//if (showSettingsUI) {
-		//int w, h;
-		//Engine::GetInstance().window->GetWindowSize(w, h);
-		//// 简单的半透明黑色背景遮罩
-		//SDL_Rect bg = { w / 2 - 150, h / 2 - 200, 300, 400 };
-		//Engine::GetInstance().render->DrawRectangle(bg, 50, 50, 50, 240, true, false); // 深灰色背景
-		//Engine::GetInstance().render->DrawRectangle(bg, 255, 255, 255, 255, false, false); // 白色边框
-
-		//// 绘制标题
-		//Engine::GetInstance().render->DrawText("SETTINGS", w / 2 - 40, h / 2 - 180, 80, 30, { 255,255,255,255 });
-
-		//// 绘制音量数值
-		//float vol = Engine::GetInstance().audio->GetMusicVolume();
-		//std::string volText = "Vol: " + std::to_string((int)(vol * 100)) + "%";
-		//Engine::GetInstance().render->DrawText(volText.c_str(), w / 2 - 40, h / 2 + 20, 80, 20, { 255,255,255,255 });
-		//}
-		//return true;
 	}
 	return true;
 }
 
-// Called each loop iteration
-//bool Scene::PostUpdate()
-//{
-//	// 安全关闭设置界面（防止在 Update 循环中删除 UI 导致崩溃）
-//	if (settingsCloseRequested) {
-//		DestroySettingsUI();
-//		settingsCloseRequested = false;
-//		showSettingsUI = false;
-//	}
-//
-//	if (sceneChangeRequested)
-//	{
-//		UnloadCurrentScene();
-//		currentScene = nextScene;
-//		LoadScene(currentScene);
-//		sceneChangeRequested = false;
-//		isGameOver = false;
-//		exitGameRequested = false;
-//	}
-//
-//	if (exitGameRequested) {
-//		return false; // ???? false ??? Engine ???????????????
-//	}
-//	bool ret = true;
-//	//L15 TODO 3: Call the function to load entities from the map
-//	if (showHelpMenu)
-//	{
-//		int windowWidth, windowHeight;
-//		Engine::GetInstance().window->GetWindowSize(windowWidth, windowHeight);
-//
-//		// CALCULAR POSICIÓN Y TAMAÑO CENTRADO (2/3 de la pantalla)
-//		int menuWidth = windowWidth * 2 / 3;
-//		int menuHeight = windowHeight * 2 / 3;
-//
-//		int menuX = (windowWidth - menuWidth) / 2;
-//		int menuY = (windowHeight - menuHeight) / 2;
-//
-//		//Dibuja un fondo oscuro para asegurar que el área est?definida.
-//		SDL_Rect backgroundRect = { menuX, menuY, menuWidth, menuHeight };
-//		Engine::GetInstance().render->DrawRectangle(backgroundRect, 0, 0, 0, 200, true, false);
-//
-//		// 2. DIBUJA LA IMAGEN DEL MEN?("menu.png")
-//		if (helpMenuTexture != nullptr)
-//		{
-//			// Usamos las coordenadas de inicio del men?(menuX, menuY)
-//			// speed = 0.0f asegura que la imagen no se mueva con el offset de la cámara.
-//			Engine::GetInstance().render->DrawTexture(
-//				helpMenuTexture,
-//				menuX,
-//				menuY,
-//				nullptr, // section: Dibuja la textura completa
-//				0.0f,    // speed: 0.0f (sin movimiento de cámara)
-//				0.0,     // angle
-//				INT_MAX, // pivotX 
-//				INT_MAX  // pivotY 
-//			);
-//
-//			if (currentScene == SceneID::LEVEL_1) PostUpdateLevel1();
-//		}
-//
-//		//Dibuja un borde blanco.
-//		Engine::GetInstance().render->DrawRectangle(backgroundRect, 255, 255, 255, 255, false, false);
-//
-//		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)//para salir el juego
-//			//ret = false;
-//			// Si estamos jugando (Nivel 1 o 2), volvemos al Menú Principal
-//        if (currentScene == SceneID::LEVEL_1 || currentScene == SceneID::LEVEL_2) {
-//            collectedIDs.clear();       // Limpiamos datos temporales si es necesario
-//            ChangeScene(SceneID::MAIN_MENU);
-//        }
-//        // Si estamos en el Menú Principal (o Intro), entonces sí cerramos el juego
-//        else if (currentScene == SceneID::MAIN_MENU || currentScene == SceneID::INTRO_SCR) {
-//            ret = false; 
-//        }
-//        else {
-//            ret = false;
-//        }
-//	}
 bool Scene::PostUpdate()
 {
 	// 1. Cerrar Settings si se ha solicitado
@@ -1158,19 +1062,6 @@ void Scene::PostUpdateLevel2() {
 		Engine::GetInstance().render->DrawText("MISSION ACCOMPLISHED", w / 2 - 150, h / 2 - 50, 300, 50, { 0, 255, 0, 255 });
 		Engine::GetInstance().render->DrawText("Boss Defeated!", w / 2 - 80, h / 2, 160, 30, { 255, 255, 255, 255 });
 
-		//// 4. 【关键】手动绘制按钮的视觉效果
-		//// 因为背景可能盖住了 UIManager 画的按钮，我们在这里手动再画一次，确保它在最上面
-		//// 按钮位置: { w / 2 - 60, h / 2 + 50, 120, 30 }
-		//SDL_Rect btnRect = { w / 2 - 60, h / 2 + 50, 120, 30 };
-
-		//// 画按钮背景 (深灰色)
-		//Engine::GetInstance().render->DrawRectangle(btnRect, 50, 50, 50, 255, true, false);
-		//// 画按钮边框 (白色)
-		//Engine::GetInstance().render->DrawRectangle(btnRect, 255, 255, 255, 255, false, false);
-		//// 画按钮文字 (居中微调)
-		//Engine::GetInstance().render->DrawText("EXIT GAME", w / 2 - 40, h / 2 + 55, 80, 20, { 255, 255, 255, 255 });
-		// 4. 【关键修改】让按钮自己画自己 (这样才有特效！)
-		// 删除原来的 DrawRectangle 代码，替换为下面这行：
 		if (winButton != nullptr) {
 			winButton->Render(); // ¡Ahora sí funciona!
 		}
