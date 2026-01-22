@@ -826,6 +826,7 @@ void Enemy::UpdateBossBehavior(float dt) {
 		if (randomAttack == 0) {
 			anims.SetCurrent("attack1");
 			bossState = BossState::ATTACK_NORMAL;
+			Engine::GetInstance().audio->PlayFx(Engine::GetInstance().scene->bossAttackFxId);
 			LOG("BOSS USES: ATTACK 1");
 		}
 		else {

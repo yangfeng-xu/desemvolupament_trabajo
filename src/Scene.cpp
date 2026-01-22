@@ -347,6 +347,26 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 	showCreditsUI = true; // Activamos la pantalla de créditos
 	}
 
+	if (uiElement->id == BTN_SETTINGS_RETURN_MENU) {
+		LOG("Returning to Main Menu from Pause Settings");
+
+		// 1. Es importante despausar el juego para que la lógica de la siguiente escena funcione bien
+		isGamePaused = false;
+		Engine::GetInstance().audio->ResumeMusic();
+
+		// 2. Cerramos la UI de settings (limpieza interna)
+		settingsCloseRequested = true;
+		showSettingsUI = false;
+
+		// 3. Limpiamos items recolectados si es necesario
+		collectedIDs.clear();
+
+		// 4. Cambiamos a la escena del menú
+		ChangeScene(SceneID::MAIN_MENU);
+
+		return true;
+	}
+
 // --- AÑADIR ESTO PARA PODER CERRAR CRÉDITOS AL CERRAR SETTINGS ---
 	if (uiElement->id == BTN_SETTINGS_CLOSE) {
 	settingsCloseRequested = true;
@@ -623,6 +643,16 @@ void Scene::CreateSettingsUI() {
 		this
 	);
 
+	if (currentScene != SceneID::MAIN_MENU) {
+		Engine::GetInstance().uiManager->CreateUIElement(
+			UIElementType::BUTTON,
+			BTN_SETTINGS_RETURN_MENU,
+			"Main Menu",
+			{ centerX - 60, centerY + 140, 120, 30 }, // Un poco más abajo del botón Close
+			this
+		);
+	}
+
 	// Close Button
 	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_SETTINGS_CLOSE, "Close", { centerX - 50, centerY + 100, 100, 30 }, this);
 }
@@ -635,6 +665,7 @@ void Scene::DestroySettingsUI() {
 	Engine::GetInstance().uiManager->DestroyUIElement(BTN_VOL_MINUS);
 	Engine::GetInstance().uiManager->DestroyUIElement(BTN_SETTINGS_CLOSE);
 	Engine::GetInstance().uiManager->DestroyUIElement(BTN_SETTINGS_CREDITS);
+	Engine::GetInstance().uiManager->DestroyUIElement(BTN_SETTINGS_RETURN_MENU);
 
 	// 【新增】重新显示主菜单按钮
 	if (mainMenuStartBtn != nullptr) mainMenuStartBtn->visible = true;
@@ -694,6 +725,8 @@ void Scene::LoadLevel1() {//cargar mapa ,textura,audio
 	mouseTileTex = Engine::GetInstance().textures->Load("Assets/Maps/MapMetadata.png");
 	helpMenuTexture = Engine::GetInstance().textures->Load("Assets/Maps/menu.png");
 
+	levelUpFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/level_up.wav");
+	loseGameFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/lose_game.wav");
 	saveFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/autosave.wav");
 	levelTimer = 60.0f * 1000.0f;
 	//Engine::GetInstance().entityManager->Start();
@@ -745,6 +778,7 @@ void Scene::UpdateLevel1(float dt) {//para poder cambiar la escena a nivell 2
 		if (pos.getX() > targetX_Min && pos.getX() < targetX_Max && pos.getY() < targetY_Max)
 		{
 			LOG("Reached the top platform! Loading Level 2...");
+			Engine::GetInstance().audio->PlayFx(levelUpFxId);
 			ChangeScene(SceneID::LEVEL_2);
 		}
 	}
@@ -754,6 +788,7 @@ void Scene::UpdateLevel1(float dt) {//para poder cambiar la escena a nivell 2
 		if (levelTimer <= 0.0f) {
 			levelTimer = 0.0f;
 			isGameOver = true;
+			Engine::GetInstance().audio->PlayFx(loseGameFxId);
 			LOG("Game Over!!! Time's Up");
 		}
 	}
@@ -820,7 +855,7 @@ void Scene::PostUpdateLevel1() {//code especifico de level 1
 // L17 TODO 5: Define specific functions for level2 scene: Load, Unload, Update
 void Scene::LoadLevel2() {
 
-	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/that-8-bit-music-322062.wav");
+	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Level.wav");
 	Engine::GetInstance().render->camera.x = 0;
 	Engine::GetInstance().render->camera.y = 0;
 
@@ -828,6 +863,7 @@ void Scene::LoadLevel2() {
 	gameOverShown = false;
 	showSettingsUI = false;
 	winButton = nullptr;
+	isBossMusicPlaying = false;
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate2.tmx");
 	//L15 TODO 3: Call the function to load entities from the map
@@ -861,7 +897,9 @@ void Scene::LoadLevel2() {
 
 	// 2. 加载胜利画面资源 (确保你有一张图片叫 win_screen.png 或者你可以暂时用 menu.png 代替)
 	winScreenTexture = Engine::GetInstance().textures->Load("Assets/Textures/menu_resized.png"); // 这里替换成你的胜利图片路径
-	winFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/game_win.mp3"); // 加载你文件列表中有的胜利音效
+	winFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/game_win.wav"); // 加载你文件列表中有的胜利音效
+	bossAttackFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/boss_atack.wav");
+	loseGameFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Music/lose_game.wav");
 
 	// ... 地图加载代码 ...
 
@@ -938,12 +976,30 @@ void Scene::UpdateLevel2(float dt) {//cambiar a nivell 1
 	if (isGamePaused) {
 		return;
 	}
+
+	if (player != nullptr && bossReference != nullptr && !isBossMusicPlaying) {
+
+		// Calculamos distancia
+		float distanceX = abs(bossReference->position.getX() - player->GetPosition().getX());
+
+		// Si estamos a menos de 800 píxeles...
+		if (distanceX < 800.0f) {
+			LOG("Entering Boss Battle Zone!");
+
+			// CAMBIO AQUÍ: Reproducir "boss_battle.wav"
+			Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/boss_battle.wav");
+
+			// Marcamos como true para que no se reinicie en cada frame
+			isBossMusicPlaying = true;
+		}
+	}
 	
 	if (!isGameOver) {
 		levelTimer -= dt;
 		if (levelTimer <= 0.0f) {
 			levelTimer = 0.0f;
 			isGameOver = true;
+			Engine::GetInstance().audio->PlayFx(loseGameFxId);
 			LOG("Game Over!!! Time's Up");
 		}
 	}
