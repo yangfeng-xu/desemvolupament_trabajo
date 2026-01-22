@@ -21,12 +21,12 @@ The game involves you being a ghost and wanting to explore the forest you are in
 ## Debug keys
 
 - F1 : Start from the first level
+- F2 : Go directly to the second level
 - F5 : Save the current game state
 - F6 : Load the previous state
 - F9 : Show collisions/Pathfinding routes
 - F10 : God mod
 - F11 : Enable/Disable FPS cap to 30
-- 2 : Go directly to the second level
 
 ## Game Objective:
 DODGE TRAPS AND ENEMYS, YOU CAN ALSO KILL THEM, JUMP OVER PITS, EXPLORE THE MAP!!!
@@ -47,6 +47,7 @@ In this release, the following features and improvements have been implemented:
 - Second level
 - Polish code
 - Profiling system
+- Load and save system
 
 ## Installation / Execution
 
