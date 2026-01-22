@@ -84,9 +84,11 @@ bool Scene::Update(float dt)
 	if (showSettingsUI) {
 		int w, h;
 		Engine::GetInstance().window->GetWindowSize(w, h);
+		SDL_Rect fullScreenRect = { 0, 0, w, h };
+		Engine::GetInstance().render->DrawRectangle(fullScreenRect, 0, 0, 0, 255, true, false);
 
 		// 1. We draw the background of Settings
-		SDL_Rect bg = { w / 2 - 150, h / 2 - 200, 300, 400 };
+		SDL_Rect bg = { w / 2 - 200, h / 2 - 275, 400, 500 };
 		Engine::GetInstance().render->DrawRectangle(bg, 50, 50, 50, 240, true, false);
 		Engine::GetInstance().render->DrawRectangle(bg, 255, 255, 255, 255, false, false);
 
@@ -572,7 +574,7 @@ void Scene::LoadMainMenu() {
 
 
 	mainMenuBackground = Engine::GetInstance().textures->Load("Assets/Textures/menu_resized.png");
-	mainMenuStartBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "Start", { 575,350,120,20 }, this);
+	//mainMenuStartBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "Start", { 575,350,120,20 }, this);
 	mainMenuSettingBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_MAIN_MENU_SETTINGS, "Setting", { 575, 380, 120, 20 }, this);
 	mainMenuExitBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, BTN_MAIN_MENU_EXIT, "Exit Game", { 575, 410, 120, 20 }, this);
 	mainMenuStartBtn = Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "New Game", { 575,350,120,20 }, this);
@@ -640,6 +642,7 @@ void Scene::CreateSettingsUI() {
 	if (mainMenuStartBtn != nullptr) mainMenuStartBtn->visible = false;
 	if (mainMenuSettingBtn != nullptr) mainMenuSettingBtn->visible = false;
 	if (mainMenuExitBtn != nullptr) mainMenuExitBtn->visible = false;
+	if (mainMenuContinueBtn != nullptr) mainMenuContinueBtn->visible = false;
 
 	// Fullscreen Toggle
 	Engine::GetInstance().uiManager->CreateUIElement(UIElementType::TOGGLE, TOGGLE_FULLSCREEN_ID, "Fullscreen", { centerX - 50, centerY - 120, 100, 30 }, this);
