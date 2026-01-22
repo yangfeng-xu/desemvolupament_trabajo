@@ -58,6 +58,7 @@ In this release, the following features and improvements have been implemented:
 ## Known Issues
 
 - When the enemy falls off the cliff without dying, the game crashes(but we put traps in all the cliff avoiding this problem).
+- The life of the boss can not save and load after
 
 ## License
 
