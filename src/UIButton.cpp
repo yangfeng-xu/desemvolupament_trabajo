@@ -62,3 +62,25 @@ bool UIButton::Update(float dt)
 
 	return false;
 }
+
+// --- NUEVA FUNCIÓN RENDER ---
+void UIButton::Render()
+{
+	switch (state)
+	{
+	case UIElementState::DISABLED:
+		Engine::GetInstance().render->DrawRectangle(bounds, 200, 200, 200, 255, true, false);
+		break;
+	case UIElementState::NORMAL:
+		Engine::GetInstance().render->DrawRectangle(bounds, 0, 255, 255, 255, true, false);
+		break;
+	case UIElementState::FOCUSED:
+		Engine::GetInstance().render->DrawRectangle(bounds, 0, 0, 20, 255, true, false);
+		break;
+	case UIElementState::PRESSED:
+		Engine::GetInstance().render->DrawRectangle(bounds, 0, 255, 0, 255, true, false);
+		break;
+	}
+
+	Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y, bounds.w, bounds.h, { 255,255,255,255 });
+}

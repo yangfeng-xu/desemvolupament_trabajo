@@ -120,7 +120,7 @@ private:
 
 	const int BTN_MAIN_MENU_EXIT = 3;
 	std::shared_ptr<UIElement> mainMenuExitBtn;
-
+	std::shared_ptr<UIElement> winButton = nullptr;
 	// 【新增】保存主菜单按钮的指针
 	std::shared_ptr<UIElement> mainMenuStartBtn;
 	std::shared_ptr<UIElement> mainMenuSettingBtn;

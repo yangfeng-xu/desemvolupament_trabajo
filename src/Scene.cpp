@@ -15,6 +15,7 @@
 #include "UIManager.h"
 #include "UIToggle.h"
 #include <time.h>
+#include"UIButton.h"
 Scene::Scene() : Module()
 {
 	name = "scene";
@@ -952,6 +953,7 @@ void Scene::LoadLevel2() {
 	isGameOver = false;
 	gameOverShown = false;
 	showSettingsUI = false;
+	winButton = nullptr;
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate2.tmx");
 	//L15 TODO 3: Call the function to load entities from the map
@@ -1042,7 +1044,7 @@ void Scene::UnloadLevel2() {
 		Engine::GetInstance().textures->UnLoad(winScreenTexture);
 		winScreenTexture = nullptr;
 	}
-
+	winButton = nullptr;
 	bossReference = nullptr; 
 	isGameWon = false;
 }
@@ -1050,6 +1052,19 @@ void Scene::UpdateLevel2(float dt) {//cambiar a nivell 1
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) {
 		ChangeScene(SceneID::LEVEL_1);
 	}
+
+	// ------------------------------------------------------------------------
+	// 1. 胜利状态逻辑 (游戏静止)
+	// ------------------------------------------------------------------------
+	if (isGameWon) {
+		return; // 直接返回，停止后续所有逻辑 (计时器、移动等)
+	}
+
+	// 2. 暂停状态逻辑
+	if (isGamePaused) {
+		return;
+	}
+	
 	if (!isGameOver) {
 		levelTimer -= dt;
 		if (levelTimer <= 0.0f) {
@@ -1058,11 +1073,7 @@ void Scene::UpdateLevel2(float dt) {//cambiar a nivell 1
 			LOG("Game Over!!! Time's Up");
 		}
 	}
-	// 1. 如果游戏暂停 OR 已经胜利，直接 return，实现画面静止
-	if (isGamePaused || isGameWon) {
-		return;
-	}
-
+	//// 1. 如果游戏暂停 OR 已经胜利，直接 return，实现画面静止
 	// 2. 检测 Boss 是否死亡
 	if (bossReference != nullptr && !bossReference->active) { // 假设 active 为 false 代表死亡/消失，或者用 bossReference->isDead
 		// 注意：你需要确保 Enemy 类中有 isDead 属性且在死亡时设为 true
@@ -1081,7 +1092,7 @@ void Scene::UpdateLevel2(float dt) {//cambiar a nivell 1
 		Engine::GetInstance().window->GetWindowSize(w, h);
 
 		// 在屏幕下方创建退出按钮 (复用 BTN_WIN_EXIT ID)
-		Engine::GetInstance().uiManager->CreateUIElement(
+		winButton=Engine::GetInstance().uiManager->CreateUIElement(
 			UIElementType::BUTTON,
 			BTN_WIN_EXIT,
 			"EXIT GAME",
@@ -1127,27 +1138,42 @@ void Scene::PostUpdateLevel2() {
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
 		Engine::GetInstance().map->SaveEntities(player);
 	}
-	// 【新增】绘制胜利画面
+	// ------------------------------------------------------------------------
+	// 【新增】绘制胜利画面 (这一层会盖住地图和Player)
+	// ------------------------------------------------------------------------
 	if (isGameWon) {
 		int w, h;
 		Engine::GetInstance().window->GetWindowSize(w, h);
 
-		// 1. 绘制半透明黑色遮罩，让背景变暗
+		// 1. 绘制半透明黑色遮罩 (全屏)
 		SDL_Rect screenRect = { 0, 0, w, h };
 		Engine::GetInstance().render->DrawRectangle(screenRect, 0, 0, 0, 150, true, false);
 
-		// 2. 绘制胜利图片 (如果有)
+		// 2. 绘制胜利图片 (全屏覆盖或居中)
 		if (winScreenTexture != nullptr) {
-			// 居中显示图片
-			SDL_Rect texRect = { w / 2 - 200, h / 2 - 150, 400, 300 }; // 根据图片大小调整
-			// Engine::GetInstance().render->DrawTexture... 这里需要用 SDL_RenderCopy 或封装好的 DrawTexture
-			// 假设 DrawTexture 支持目标 Rect，如果只支持坐标:
 			Engine::GetInstance().render->DrawTexture(winScreenTexture, 0, 0, nullptr, 0.0f);
 		}
 
-		// 3. 绘制胜利文字 (如果图片里没文字)
+		// 3. 绘制胜利文字
 		Engine::GetInstance().render->DrawText("MISSION ACCOMPLISHED", w / 2 - 150, h / 2 - 50, 300, 50, { 0, 255, 0, 255 });
 		Engine::GetInstance().render->DrawText("Boss Defeated!", w / 2 - 80, h / 2, 160, 30, { 255, 255, 255, 255 });
+
+		//// 4. 【关键】手动绘制按钮的视觉效果
+		//// 因为背景可能盖住了 UIManager 画的按钮，我们在这里手动再画一次，确保它在最上面
+		//// 按钮位置: { w / 2 - 60, h / 2 + 50, 120, 30 }
+		//SDL_Rect btnRect = { w / 2 - 60, h / 2 + 50, 120, 30 };
+
+		//// 画按钮背景 (深灰色)
+		//Engine::GetInstance().render->DrawRectangle(btnRect, 50, 50, 50, 255, true, false);
+		//// 画按钮边框 (白色)
+		//Engine::GetInstance().render->DrawRectangle(btnRect, 255, 255, 255, 255, false, false);
+		//// 画按钮文字 (居中微调)
+		//Engine::GetInstance().render->DrawText("EXIT GAME", w / 2 - 40, h / 2 + 55, 80, 20, { 255, 255, 255, 255 });
+		// 4. 【关键修改】让按钮自己画自己 (这样才有特效！)
+		// 删除原来的 DrawRectangle 代码，替换为下面这行：
+		if (winButton != nullptr) {
+			winButton->Render(); // ¡Ahora sí funciona!
+		}
 	}
 
 	if (player != nullptr) {

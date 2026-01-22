@@ -13,7 +13,7 @@ public:
 
 	// Called each loop iteration
 	bool Update(float dt);
-
+	void Render() override;
 private:
 
 	bool canClick = true;

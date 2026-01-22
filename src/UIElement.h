@@ -52,7 +52,7 @@ public:
 	virtual ~UIElement() {}
 
 	virtual bool Update(float dt) { return true; }
-
+	virtual void Render() {}
 	void SetTexture(SDL_Texture* tex)
 	{
 		texture = tex;
