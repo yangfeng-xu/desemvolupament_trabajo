@@ -781,29 +781,22 @@ void Scene::UpdateLevel1(float dt) {//para poder cambiar la escena a nivell 2
 		}
 	}
 
-	// ??? isGameOver ?????????????
-	if (isGameOver && !gameOverShown) {
-		int w, h;
-		Engine::GetInstance().window->GetWindowSize(w, h);
-		int centerX = w / 2;
-		int centerY = h / 2;
 
-		Engine::GetInstance().uiManager->CreateUIElement(
-			UIElementType::BUTTON,
-			RESUME_BTN_ID,
-			"RESTART",
-			{ centerX - 70, centerY - 50, 140, 40 },
-			this
-		);
+	// 【修改】如果游戏结束，显示 UI 并停止本函数后续逻辑
+	if (isGameOver) {
+		if (!gameOverShown) {
+			// ... (保留原本创建 UI 的代码: RESUME_BTN_ID, EXIT_BTN_ID) ...
+			int w, h;
+			Engine::GetInstance().window->GetWindowSize(w, h);
+			int centerX = w / 2;
+			int centerY = h / 2;
 
-		Engine::GetInstance().uiManager->CreateUIElement(
-			UIElementType::BUTTON,
-			EXIT_BTN_ID,
-			"EXIT",
-			{ centerX - 70, centerY + 10, 140, 40 },
-			this
-		);
-		gameOverShown = true;
+			Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, RESUME_BTN_ID, "RESTART", { centerX - 70, centerY - 50, 140, 40 }, this);
+			Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, EXIT_BTN_ID, "EXIT", { centerX - 70, centerY + 10, 140, 40 }, this);
+
+			gameOverShown = true;
+		}
+		return; // 【关键】直接返回，不再执行后续代码
 	}
 }
 void Scene::PostUpdateLevel1() {//code especifico de level 1
@@ -1007,29 +1000,21 @@ void Scene::UpdateLevel2(float dt) {//cambiar a nivell 1
 		return; // 立即停止本帧后续逻辑
 	}
 
-	// ??? isGameOver ?????????????
-	if (isGameOver && !gameOverShown) {
-		int w, h;
-		Engine::GetInstance().window->GetWindowSize(w, h);
-		int centerX = w / 2;
-		int centerY = h / 2;
+	// 【修改】如果游戏结束，显示 UI 并停止本函数后续逻辑
+	if (isGameOver) {
+		if (!gameOverShown) {
+			// ... (保留原本创建 UI 的代码: RESUME_BTN_ID, EXIT_BTN_ID) ...
+			int w, h;
+			Engine::GetInstance().window->GetWindowSize(w, h);
+			int centerX = w / 2;
+			int centerY = h / 2;
 
-		Engine::GetInstance().uiManager->CreateUIElement(
-			UIElementType::BUTTON,
-			RESUME_BTN_ID,
-			"RESTART",
-			{ centerX - 70, centerY - 50, 140, 40 },
-			this
-		);
+			Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, RESUME_BTN_ID, "RESTART", { centerX - 70, centerY - 50, 140, 40 }, this);
+			Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, EXIT_BTN_ID, "EXIT", { centerX - 70, centerY + 10, 140, 40 }, this);
 
-		Engine::GetInstance().uiManager->CreateUIElement(
-			UIElementType::BUTTON,
-			EXIT_BTN_ID,
-			"EXIT",
-			{ centerX - 70, centerY + 10, 140, 40 },
-			this
-		);
-		gameOverShown = true;
+			gameOverShown = true;
+		}
+		return; // 【关键】直接返回，不再执行后续代码
 	}
 }
 void Scene::PostUpdateLevel2() {

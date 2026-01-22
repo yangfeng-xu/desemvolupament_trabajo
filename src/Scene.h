@@ -57,6 +57,8 @@ public:
 	void UnloadCurrentScene();
 	void ChangeScene(SceneID newScene);
 	bool isGamePaused = false; // 游戏是否暂停
+	// 【新增】添加这个 Getter 函数，让外部（如 Player）能知道游戏是否结束
+	bool IsGameOver() const { return isGameOver; }
 
 	std::list<int> collectedIDs;
 	std::shared_ptr<Player> player;

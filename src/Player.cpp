@@ -75,6 +75,17 @@ bool Player::Start() {
 bool Player::Update(float dt)
 {
 	ZoneScoped;
+	// 【新增】如果游戏结束，停止一切操控
+	if (Engine::GetInstance().scene->IsGameOver()) {
+		// 1. 停止物理移动 (防止惯性滑行)
+		b2Vec2 stopVel = { 0.0f, 0.0f };
+		b2Body_SetLinearVelocity(pbody->body, stopVel);
+
+		// 2. (可选) 设置为待机或死亡动画，或者保持当前帧不动
+		// anims.SetCurrent("idle"); 
+
+		return true; // 直接跳出，不执行后面的 Move() 或 Jump()
+	}
 	anims.Update(dt);
 	if (invulnerabilityTimer > 0.0f) {
 		invulnerabilityTimer -= dt;
