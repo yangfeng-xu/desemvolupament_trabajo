@@ -73,6 +73,11 @@ public:
 	int detectionRadius = 10;
 	EnemyType enemyType = EnemyType::GROUND;
 
+	//void SetBounds(int min, int max) {
+	//	minX = min;
+	//	maxX = max;
+	//	hasBounds = true;
+	//};
 	
 private:
 	b2Vec2 velocity;
@@ -97,4 +102,11 @@ private:
 	bool nextAttackIsOne = true;
 	float attackCooldown = 2.0f;
 	int attackDamage = 1;
+
+	// Variables nuevas para el límite
+// ================== 【新增：Boss 活动范围限制】 ==================
+	bool hasBattleArea = false; // 是否启用战斗区域限制
+	int battleAreaMinX = 0;     // 左边界
+	int battleAreaMaxX = 0;     // 右边界
+
 };

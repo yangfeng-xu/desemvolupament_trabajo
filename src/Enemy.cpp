@@ -79,10 +79,8 @@ bool Enemy::Start() {
 		}
 		anims.AddClip("idle", idleAnim);
 
-
-		// 3. 定义 ATTACK 动画 (必须设置为不循环！)
 		Animation attack1Anim;
-		attack1Anim.SetLoop(false); // 【新增】设置为不循环
+		attack1Anim.SetLoop(false);
 		for (int i = 0; i < frameCount2; i++) {
 			int currentX = i * frameWidth;
 			attack1Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 80);
@@ -90,7 +88,7 @@ bool Enemy::Start() {
 		anims.AddClip("attack1", attack1Anim);
 
 		Animation attack2Anim;
-		attack2Anim.SetLoop(false); // 【新增】设置为不循环
+		attack2Anim.SetLoop(false); 
 		for (int i = 0; i < frameCount3; i++) {
 			int currentX = i * frameWidth;
 			attack2Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 80);
@@ -99,7 +97,7 @@ bool Enemy::Start() {
 
 
 		Animation Preattack3Anim;
-		Preattack3Anim.SetLoop(false); // 【新增】设置为不循环
+		Preattack3Anim.SetLoop(false); 
 		for (int i = 0; i < frameCount6; i++) {
 			int currentX = i * frameWidth;
 			Preattack3Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 80);
@@ -108,7 +106,7 @@ bool Enemy::Start() {
 
 
 		Animation Midattack3Anim;
-		Midattack3Anim.SetLoop(false); // 【新增】设置为不循环
+		Midattack3Anim.SetLoop(false); 
 		for (int i = 0; i < frameCount5; i++) {
 			int currentX = i * frameWidth;
 			Midattack3Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 80);
@@ -117,7 +115,7 @@ bool Enemy::Start() {
 
 
 		Animation Endattack3Anim;
-		Endattack3Anim.SetLoop(false); // 【新增】设置为不循环
+		Endattack3Anim.SetLoop(false); 
 		for (int i = 0; i < frameCount7; i++) {
 			int currentX = i * frameWidth;
 			Endattack3Anim.AddFrame({ currentX, 0, frameWidth, frameHeight }, 80);
@@ -176,6 +174,19 @@ bool Enemy::Start() {
 		// === 新增/修改：设置 Boss 血量 ===
 		maxHealth = 20;  // 设置最大血量为 20
 		health = maxHealth; // 当前血量初始化
+
+	/*	SetBounds(1952, 736);*/
+
+		// ================== 【新增：设置 Level 2 Boss 决战圈】 ==================
+		// 这里的数值你需要修改成你地图里实际的像素坐标！
+		// 假设：Level 2 的决战空地是从 X=3000 到 X=3800
+
+		hasBattleArea = true;    // 开启限制
+		battleAreaMinX = 2048;   // 【请修改】空地最左边的 X 坐标
+		battleAreaMaxX = 2944;   // 【请修改】空地最右边的 X 坐标
+
+		// 提示：如果不确定，可以先填大概的数，运行游戏微调
+		// =================================================================
 		//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
 	}
@@ -518,6 +529,35 @@ void Enemy::MoveBoss() {
 		// 到达 X 轴目标，暂停水平移动
 		velocity.x = 0;
 	}
+
+	// ================== 【新增：强制限制 Boss 在决战圈内】 ==================
+	if (hasBattleArea) {
+		Vector2D currentPos = GetPosition();
+
+		// 1. 检查左边界
+		if (currentPos.getX() < battleAreaMinX) {
+			// 强制拉回到左边界
+			Vector2D fixedPos = currentPos;
+			fixedPos.setX((float)battleAreaMinX);
+			SetPosition(fixedPos); // 更新物理身体位置
+
+			// 如果它还在往左跑，把速度归零
+			if (velocity.x < 0) velocity.x = 0;
+		}
+
+		// 2. 检查右边界
+		else if (currentPos.getX() > battleAreaMaxX) {
+			// 强制拉回到右边界
+			Vector2D fixedPos = currentPos;
+			fixedPos.setX((float)battleAreaMaxX);
+			SetPosition(fixedPos); // 更新物理身体位置
+
+			// 如果它还在往右跑，把速度归零
+			if (velocity.x > 0) velocity.x = 0;
+		}
+	}
+	// ====================================================================
+
 
 	// 6. 简单的跳跃辅助
 	if (isGrounded && targetPos.getY() < currentPos.getY() - 32.0f) {
