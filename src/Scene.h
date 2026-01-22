@@ -56,100 +56,104 @@ public:
 	void LoadScene(SceneID newScene);
 	void UnloadCurrentScene();
 	void ChangeScene(SceneID newScene);
-	bool isGamePaused = false; // 游戏是否暂停
-	// 【新增】添加这个 Getter 函数，让外部（如 Player）能知道游戏是否结束
+	
+	// Game Paused State
+	bool isGamePaused = false; 
+	
+	// Getter to check if the game has ended (for Player control lock)
 	bool IsGameOver() const { return isGameOver; }
 
+	// Items collected in the scene
 	std::list<int> collectedIDs;
 	std::shared_ptr<Player> player;
-	// 【新增】用于存储 Boss 的指针，以便我们在 Update 中检查它的血量
+	
+	// Reference to the Boss enemy to check health/death status
 	std::shared_ptr<Enemy> bossReference = nullptr;
 private:
-	// L17 TODO 3: Define specific function for main menu scene: Load, Unload, Handle UI events
+//----------------------------------------------------------------------Scene-Specific Logic Methods---------------------------------------------------------------------------------------------------//
+	//main menu
 	void LoadMainMenu();
 	void UnloadMainMenu();
 	void UpdateMainMenu(float dt);
 	void HandleMainMenuUIVebets(UIElement* uiLement);
-	// L17 TODO 4: Define specific functions for level1 scene: Load, Unload, Update, PostUpdate
+	
+	//leve 1
 	void LoadLevel1();
 	void UnloadLevel1();
 	void UpdateLevel1(float dt);
 	void PostUpdateLevel1();
-	// L17 TODO 5: Define specific functions for level2 scene: Load, Unload, Update
+	
+	// level 2
 	void LoadLevel2();
 	void UnloadLevel2();
 	void UpdateLevel2(float dt);
 	void PostUpdateLevel2();
 
-	// 新增：设置界面相关函数
+	// Settings UI Management
 	void CreateSettingsUI();
 	void DestroySettingsUI();
 private:
 
-	//L03: TODO 3b: Declare a Player attribute
-
+	// UI and Assets
 	SDL_Texture* mouseTileTex = nullptr;
 	std::string tilePosDebug = "[0,0]";
 	bool showHelpMenu = false;
 	bool once = false;
 	float reloadCooldown = 0.0f;
 	SDL_Texture* helpMenuTexture = nullptr;
+	
 	// L16: TODO 2: Declare a UIButton 
 	std::shared_ptr<UIButton>uiBt1;
 	std::shared_ptr<UIButton>uiBt2;
-
 	bool showCreditsUI;
 
-	
 	// L17 TODO 1: Current scene attribute with initial value
 	bool sceneChangeRequested = false;
 	SceneID nextScene = SceneID::MAIN_MENU;
 	SceneID currentScene = SceneID::MAIN_MENU;
 	SDL_Texture* mainMenuBackground = nullptr;
-	//timer
+	
+	// timer
 	float levelTimer = 0.0f;
 	bool isGameOver = false;
-
+	
+	// UI Buttons and IDs
 	const int RESUME_BTN_ID = 101;
 	const int EXIT_BTN_ID = 102;
 	bool exitGameRequested = false;
 	bool gameOverShown = false;
 	
-	SDL_Texture* iconPause = nullptr; // 暂停图标 (游戏进行时显示)
-	SDL_Texture* iconPlay = nullptr;  // 播放/继续图标 (游戏暂停时显示)
-	// 定义一个 ID 给暂停按钮
+	// Pause Menu Icons
+	SDL_Texture* iconPause = nullptr; 
+	SDL_Texture* iconPlay = nullptr; 
 	const int PAUSE_TOGGLE_ID = 200;
-
+	
+	// Main Menu Buttons
 	const int BTN_MAIN_MENU_EXIT = 3;
 	std::shared_ptr<UIElement> mainMenuExitBtn;
 	std::shared_ptr<UIElement> winButton = nullptr;
-	// 【新增】保存主菜单按钮的指针
 	std::shared_ptr<UIElement> mainMenuStartBtn;
 	std::shared_ptr<UIElement> mainMenuSettingBtn;
-	// 新增：设置界面相关的 ID
-	const int BTN_MAIN_MENU_SETTINGS = 2; // 主菜单的 Setting 按钮 ID
-	const int SETTINGS_PANEL_BG_ID = 300; // 背景（可选，用 DrawRectangle 代替）
+	
+	// Settings Menu IDs
+	const int BTN_MAIN_MENU_SETTINGS = 2;
+	const int SETTINGS_PANEL_BG_ID = 300; 
 	const int BTN_SETTINGS_CLOSE = 301;
-	const int TOGGLE_FULLSCREEN_ID = 100; // 沿用之前的 ID
+	const int TOGGLE_FULLSCREEN_ID = 100; 
 	const int TOGGLE_MUSIC_ID = 302;
 	const int BTN_VOL_PLUS = 303;
 	const int BTN_VOL_MINUS = 304;
 	const int BTN_SETTINGS_CREDITS = 9;
 
+	// Flag to render settings overlay
 	bool showSettingsUI = false;
-	bool settingsCloseRequested = false; // 用于安全关闭
+	bool settingsCloseRequested = false; 
 
 
-	// 【新增】胜利状态标记
+	// Victory State
 	bool isGameWon = false;
-
-	// 【新增】胜利画面的背景图
 	SDL_Texture* winScreenTexture = nullptr;
-
-	// 【新增】胜利界面的退出按钮 ID
 	const int BTN_WIN_EXIT = 400;
-
-	// 【新增】胜利音效 ID
 	int winFxId = 0;
 
 };
