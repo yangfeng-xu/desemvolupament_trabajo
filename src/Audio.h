@@ -77,5 +77,5 @@ private:
     bool EnsureDeviceOpen();
     bool EnsureStreams();
     bool musicPaused = false;
-    float musicVolume = 1.0f; // 默认音量 1.0
+    float musicVolume = 1.0f;
 };
