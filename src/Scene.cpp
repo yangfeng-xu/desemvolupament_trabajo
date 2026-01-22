@@ -71,10 +71,6 @@ bool Scene::Update(float dt)
 		reloadCooldown -= dt;
 	}
 	switch (currentScene) {
-	case SceneID::INTRO_SCR:
-		//loadIntroScren();
-		break;
-
 	case SceneID::MAIN_MENU:
 		UpdateMainMenu(dt);
 		break;
@@ -199,8 +195,6 @@ bool Scene::PostUpdate()
 	// Gestión de Escenas
 	// ---------------------------------------------------------
 	switch (currentScene) {
-	case SceneID::INTRO_SCR:
-		break;
 	case SceneID::MAIN_MENU:
 		break;
 	case SceneID::LEVEL_1:
@@ -251,7 +245,7 @@ bool Scene::PostUpdate()
 			ChangeScene(SceneID::MAIN_MENU);
 		}
 		// Caso B: Estamos en el Menú Principal o Intro -> Cerrar el juego
-		else if (currentScene == SceneID::MAIN_MENU || currentScene == SceneID::INTRO_SCR) {
+		else if (currentScene == SceneID::MAIN_MENU) {
 			LOG("Escape presionado en Menú. Cerrando juego.");
 			ret = false;
 		}
@@ -268,12 +262,7 @@ bool Scene::PostUpdate()
 	//----------------------------------------------------------------------------Currrent Scene-----------------------------------------------------------------------------------//
 
 
-	switch (currentScene) {
-
-	case SceneID::INTRO_SCR:
-		//loadIntroScren();
-		break;
-
+switch (currentScene) {
 	case SceneID::MAIN_MENU:	
 		break;
 	case SceneID::LEVEL_1:
@@ -490,11 +479,7 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 
 
 	//----------------------------------------------------------------------------Current Scene-----------------------------------------------------------------------------------//
-	switch (currentScene) {
-	case SceneID::INTRO_SCR:
-		//loadIntroScren();
-		break;
-
+switch (currentScene) {
 	case SceneID::MAIN_MENU:
 		HandleMainMenuUIVebets(uiElement);
 		break;
@@ -515,11 +500,7 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 
 // L17 TODO 2: Define functions to handle scene changes
 void Scene::LoadScene(SceneID newScene) {//despues de implementar hay que llamar en aqui
-	switch (newScene) {
-	case SceneID::INTRO_SCR:
-		//loadIntroScren();
-		break;
-
+switch (newScene) {
 	case SceneID::MAIN_MENU:
 		LoadMainMenu();
 		break;
@@ -534,11 +515,7 @@ void Scene::LoadScene(SceneID newScene) {//despues de implementar hay que llamar
 	}
 }
 void Scene::UnloadCurrentScene() {
-	switch (currentScene) {
-	case SceneID::INTRO_SCR:
-		//loadIntroScren();
-		break;
-
+switch (currentScene) {
 	case SceneID::MAIN_MENU:
 		UnloadMainMenu();
 		break;

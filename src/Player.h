@@ -26,14 +26,14 @@ public:
 	void OnCollision(PhysBody* physA, PhysBody* physB);
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
 
-	Vector2D GetPosition();
+	Vector2D GetPosition();// Handles player death logic (reset level, game over screen)
 	void SetPosition(Vector2D pos);
 
 	void Die();
 	int GetLives() const { return lives; }
 
 private:
-
+	// Internal movement and drawing logic
 	void GetPhysicsValues();
 	void Move();
 	void Jump();
@@ -69,14 +69,14 @@ public:
 	float jumpForce = 2.5f; // The force to apply when jumping
 	bool isJumping = false; // Flag to check if the player is currently jumping
 
-	// 在 Player.h 的 public: 区域加入这个函数
+	// Function to handle taking damage
 	void TakeDamage(int damage) {
-		if (isGodMode) return;
+		if (isGodMode) return;// Ignore damage in God Mode
 		if (invulnerabilityTimer <= 0.0f) {
 			lives -= damage;
-			invulnerabilityTimer = 2000.0f; // 受伤后无敌2秒
+			invulnerabilityTimer = 2000.0f; // Give 2 seconds of invincibility
 			if (lives <= 0) {
-				Die();
+				Die();// Trigger death if no lives left
 			}
 		}
 	}
@@ -86,8 +86,9 @@ private:
 	Vector2D startPosition;
 	Vector2D savePosition;
 	bool IsDead;
-	float shootCooldown = 0.0f;
-	SDL_FlipMode flipState = SDL_FLIP_NONE;//FlipMode para invertir imagen
-	float invulnerabilityTimer = 0.0f;
+
+	float shootCooldown = 0.0f; //Timer to prevent spamming shots
+	SDL_FlipMode flipState = SDL_FLIP_NONE; //FlipMode para invertir imagen
+	float invulnerabilityTimer = 0.0f; // Timer for post-damage invincibility
 
 };

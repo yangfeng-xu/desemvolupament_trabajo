@@ -6,9 +6,9 @@
 #include "Enemy.h"
 struct SDL_Texture;
 
+// Enum to identify different game scenes
 enum class SceneID
 {
-	INTRO_SCR,
 	MAIN_MENU,
 	LEVEL_1,
 	LEVEL_2
