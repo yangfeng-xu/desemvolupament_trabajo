@@ -48,13 +48,6 @@ In this release, the following features and improvements have been implemented:
 - Polish code
 - Profiling system
 
-## COSAS QUE FALTAN POR HACER
-
-- BOSS EN EL SEGUNDO NIVEL, ASSET LISTO
-- TODOS LOS GUI, HUD DEL GAMEPLAY, PANTALLA DE SETTING, CONTROL DE AUDIOS Y FX, PANTALLA DE END O NIVEL PASADO
-- AUDIO DEL BOSS, COLLECTABLES YA SEA MONEDAS O ESTRELLA, Y DE GUI
-- OPCIONAL, PUNTUACION QUE LLEVAMOS
-
 ## Installation / Execution
 
 1. Download the latest `.zip` file from the [Releases](../../releases) section.  
