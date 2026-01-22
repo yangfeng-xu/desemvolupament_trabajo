@@ -16,7 +16,7 @@ The game involves you being a ghost and wanting to explore the forest you are in
 - **WSDA KEYS**: Walk.
 - **Spacebar**: jump.
 - **F KEY**: Shoot
-- **Esc**: Exit the game.
+- **Esc**: Return in the main menu and exit the game.
 
 ## Debug keys
 
@@ -26,6 +26,7 @@ The game involves you being a ghost and wanting to explore the forest you are in
 - F9 : Show collisions/Pathfinding routes
 - F10 : God mod
 - F11 : Enable/Disable FPS cap to 30
+- 2 : Go directly to the second level
 
 ## Game Objective:
 DODGE TRAPS AND ENEMYS, YOU CAN ALSO KILL THEM, JUMP OVER PITS, EXPLORE THE MAP!!!
@@ -34,14 +35,18 @@ DODGE TRAPS AND ENEMYS, YOU CAN ALSO KILL THEM, JUMP OVER PITS, EXPLORE THE MAP!
 
 In this release, the following features and improvements have been implemented:
 
-- Ground and fliying enemy
-- Enemy pathfinding system logic
-- Shooting system(the player shoot coins because we want coins became bullets, that the player need to collect them in the map)
-- Savepoints
+- Final Boss and their system
+- Collectible item star for add score/points and their HUD
+- Collectible item coin for add ammo for shooting and their HUD
+- Life system and their HUD
+- Timer system
+- Checkpoint for recover life
+- Map checkpoints teleportation
+- GUI of main menu, screen pause menu, credits menu,die screen, win screen
 - Audio feedback
-- Enemy dead system
-- New map
+- Second level
 - Polish code
+- Profiling system
 
 ## COSAS QUE FALTAN POR HACER
 
@@ -49,7 +54,6 @@ In this release, the following features and improvements have been implemented:
 - TODOS LOS GUI, HUD DEL GAMEPLAY, PANTALLA DE SETTING, CONTROL DE AUDIOS Y FX, PANTALLA DE END O NIVEL PASADO
 - AUDIO DEL BOSS, COLLECTABLES YA SEA MONEDAS O ESTRELLA, Y DE GUI
 - OPCIONAL, PUNTUACION QUE LLEVAMOS
-
 
 ## Installation / Execution
 
@@ -60,7 +64,6 @@ In this release, the following features and improvements have been implemented:
 ## Known Issues
 
 - When the enemy falls off the cliff without dying, the game crashes(but we put traps in all the cliff avoiding this problem).
-- Indifference between walls and platform, causing infinite wall jumping.
 
 ## License
 
