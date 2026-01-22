@@ -38,13 +38,14 @@ void Enemy::SetEnemyType(EnemyType type) {
 
 bool Enemy::Start() {
 
-	// load
+	
 	if (pbody != nullptr) return true;
-	// ================== 【BOSS 多图逻辑】 ==================
+	
+	// Load textures based on the enemy type
 	if (enemyType == EnemyType::BOSS) {
 		LOG("Loading BOSS with Multiple Textures");
 
-		// 1. 加载所有独立的图片
+		// Load specific textures for Boss states
 		bossTextures["idle"] = Engine::GetInstance().textures->Load("Assets/Textures/Bidle.png");
 		bossTextures["attack1"] = Engine::GetInstance().textures->Load("Assets/Textures/Boss_Attack_1.png");
 		bossTextures["attack2"] = Engine::GetInstance().textures->Load("Assets/Textures/Boss_Attack_2.png");
@@ -826,7 +827,6 @@ void Enemy::UpdateBossBehavior(float dt) {
 		if (randomAttack == 0) {
 			anims.SetCurrent("attack1");
 			bossState = BossState::ATTACK_NORMAL;
-			Engine::GetInstance().audio->PlayFx(Engine::GetInstance().scene->bossAttackFxId);
 			LOG("BOSS USES: ATTACK 1");
 		}
 		else {

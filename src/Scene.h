@@ -63,17 +63,13 @@ public:
 	// Getter to check if the game has ended (for Player control lock)
 	bool IsGameOver() const { return isGameOver; }
 
-<<<<<<< Updated upstream
 	// Items collected in the scene
-=======
 	int bossAttackFxId = 0;
 	int loseGameFxId = 0;
 	int levelUpFxId = 0;
 
 	// Bandera para asegurar que la música del boss solo empiece una vez
 	bool isBossMusicPlaying = false;
-
->>>>>>> Stashed changes
 	std::list<int> collectedIDs;
 	std::shared_ptr<Player> player;
 	
