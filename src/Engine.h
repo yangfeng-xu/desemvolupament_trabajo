@@ -7,6 +7,7 @@
 #include "PerfTimer.h"
 #include "pugixml.hpp"
 #include "Player.h"
+#include "tracy/Tracy.hpp"
 // Modules
 class Window;
 class Input;

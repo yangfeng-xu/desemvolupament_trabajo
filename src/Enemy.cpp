@@ -245,6 +245,7 @@ bool Enemy::Start() {
 
 bool Enemy::Update(float dt)
 {
+	ZoneScoped;
 
 	if (isDead && pbody != nullptr) {
 		Engine::GetInstance().physics->DeletePhysBody(pbody);
@@ -755,6 +756,7 @@ void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
 // === Boss 行为逻辑 ===
 // ================== 【优化后的 Boss 行为逻辑】 ==================
 void Enemy::UpdateBossBehavior(float dt) {
+	
 	Vector2D playerPos = Engine::GetInstance().scene->GetPlayerPosition();
 	Vector2D myPos = GetPosition();
 

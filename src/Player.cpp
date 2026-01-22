@@ -74,6 +74,7 @@ bool Player::Start() {
 
 bool Player::Update(float dt)
 {
+	ZoneScoped;
 	anims.Update(dt);
 	if (invulnerabilityTimer > 0.0f) {
 		invulnerabilityTimer -= dt;
