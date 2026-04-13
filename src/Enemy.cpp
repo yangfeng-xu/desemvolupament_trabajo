@@ -11,6 +11,7 @@
 #include "EntityManager.h"
 #include "Map.h"
 #include "Player.h"
+#include"Projectile.h"
 #include "Scene.h"
 
 Enemy::Enemy() : Entity(EntityType::ENEMY) {
@@ -256,13 +257,18 @@ bool Enemy::Update(float dt)
 	}
 
 	GetPhysicsValues();
+	if (enemyType == EnemyType::FLYING) {
+		if (shootCooldownTimer > 0.0f) {
+			shootCooldownTimer -= dt;
+		}
+	}
 
 	//Enemy move logic
 	// Update behavior state
 	if (enemyType == EnemyType::BOSS) {
 		UpdateBossBehavior(dt);
 	}
-
+	
 	// 2. Execute pathfinding
 	if (pathfinding != nullptr) {
 		PerformPathfinding(dt);
@@ -380,6 +386,50 @@ void Enemy::Move() {
 
 
 void Enemy::MoveFlying() {
+	Vector2D playerPos = Engine::GetInstance().scene->GetPlayerPosition();
+	Vector2D currentPos = GetPosition();
+
+	float dirX = playerPos.getX() - currentPos.getX();
+	float dirY = playerPos.getY() - currentPos.getY();
+	float distance = sqrt(dirX * dirX + dirY * dirY);
+
+	// ============================================
+	// 1. 攻击逻辑：如果进入了攻击距离
+	// ============================================
+	if (distance <= flyingAttackDistance) {
+		velocity.x = 0;
+		velocity.y = 0;
+
+		// 确保面朝玩家
+		flipState = (dirX > 0) ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
+
+		if (shootCooldownTimer <= 0.0f) {
+			// 开始前摇！不立刻射击，而是进入蓄力状态
+			isPreparingAttack = true;
+			attackWarningTimer = attackWarningDuration;
+			shootCooldownTimer = shootCooldown; // 重置冷却
+
+			// 如果你有蓄力动画，可以在这里播放：
+			// anims.SetCurrent("charge-attack"); 
+		}
+
+		// 如果正在蓄力前摇
+		if (isPreparingAttack) {
+			attackWarningTimer -= 0.016f; // 假设每帧 16ms，也可以传入 dt
+			if (attackWarningTimer <= 0.0f) {
+				// 前摇结束，真正发射！
+				ShootEnergyBall(playerPos);
+				isPreparingAttack = false;
+				if (anims.GetCurrentName() != "idleflying") anims.SetCurrent("idleflying");
+			}
+		}
+		return; // 结束移动逻辑
+	}
+
+	// ============================================
+	// 2. 移动逻辑（如果还没进入攻击距离）
+	// ============================================
+	isPreparingAttack = false; // 如果玩家跑出范围，取消蓄力
 
 	// Flying enemy movement logic (Direct vector movement)
 	if (pathfinding->pathTiles.size() < 2) {
@@ -396,15 +446,13 @@ void Enemy::MoveFlying() {
 	targetPos.setX(targetPos.getX() + 16);
 	targetPos.setY(targetPos.getY() + 16);
 
-	Vector2D currentPos = GetPosition();
+	float pathDirX = targetPos.getX() - currentPos.getX();
+	float pathDirY = targetPos.getY() - currentPos.getY();
+	float pathLength = sqrt(pathDirX * pathDirX + pathDirY * pathDirY);
 
-	float dirX = targetPos.getX() - currentPos.getX();
-	float dirY = targetPos.getY() - currentPos.getY();
-	float length = sqrt(dirX * dirX + dirY * dirY);
-
-	if (length > 0) {
-		velocity.x = (dirX / length) * speed;
-		velocity.y = (dirY / length) * speed;
+	if (pathLength > 0) {
+		velocity.x = (pathDirX / pathLength) * speed;
+		velocity.y = (pathDirY / pathLength) * speed;
 
 		if (velocity.x > 0) anims.SetCurrent("fly-right");
 		else anims.SetCurrent("fly-left");
@@ -780,6 +828,35 @@ void Enemy::UpdateBossBehavior(float dt) {
 	else {
 
 		bossState = BossState::IDLE_CHASE;
+	}
+}
+
+void Enemy::ShootEnergyBall(Vector2D targetPos) {
+	std::shared_ptr<Entity> entity = Engine::GetInstance().entityManager->CreateEntity(EntityType::PROJECTILE);
+	std::shared_ptr<Projectile> p = std::dynamic_pointer_cast<Projectile>(entity);
+
+	if (p != nullptr) {
+		p->SetAsEnemyProjectile();
+
+		Vector2D currentPos = GetPosition();
+		Vector2D direction(targetPos.getX() - currentPos.getX(), targetPos.getY() - currentPos.getY());
+
+		// 归一化方向向量
+		float length = sqrt(direction.getX() * direction.getX() + direction.getY() * direction.getY());
+		if (length > 0) {
+			direction.setX(direction.getX() / length);
+			direction.setY(direction.getY() / length);
+		}
+
+		// 【优化】计算出生成位置：往开火方向偏移 20 个像素
+		Vector2D spawnPos(currentPos.getX() + direction.getX() * 20.0f,
+			currentPos.getY() + direction.getY() * 20.0f);
+
+		p->SetPosition(spawnPos);  // 使用带有偏移的位置
+		p->SetVelocity(direction); // 设置速度
+
+		// 播放开火音效 (如果你有的话)
+		// Engine::GetInstance().audio->PlayFx(shootFxId); 
 	}
 }
 void Enemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB)

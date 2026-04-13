@@ -75,14 +75,35 @@ void Projectile::SetPosition(Vector2D pos) {
 
 void Projectile::SetVelocity(Vector2D vel) {
     velocity = vel * speed;
-}
-
-void Projectile::OnCollision(PhysBody* physA, PhysBody* physB) {
-    switch (physB->ctype) {
-    case ColliderType::PLATFORM:
-    case ColliderType::ENEMY:
-        // Destroy bullet on impact
-        Engine::GetInstance().entityManager->DestroyEntity(shared_from_this());
-        break;
+    // ?????????????????????? Box2D ????
+    if (pbody != nullptr) {
+        Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
     }
 }
+
+void Projectile::SetAsEnemyProjectile() {
+    isEnemyProyectile == true;
+    if (pbody != nullptr) {
+        pbody->ctype = ColliderType::ENEMY_PROJECTILE;
+    }
+
+    texture = Engine::GetInstance().textures->Load("Assets/Textures/goldCoin.png");
+}
+// ??????????????????????
+void Projectile::OnCollision(PhysBody* physA, PhysBody* physB) {
+    // ????/???????
+    if (physB->ctype == ColliderType::PLATFORM) {
+        Engine::GetInstance().entityManager->DestroyEntity(shared_from_this());
+    }
+
+    // ???????????????
+    if (!isEnemyProyectile && physB->ctype == ColliderType::ENEMY) {
+        Engine::GetInstance().entityManager->DestroyEntity(shared_from_this());
+    }
+
+    // ???????????????
+    if (isEnemyProyectile && physB->ctype == ColliderType::PLAYER) {
+        Engine::GetInstance().entityManager->DestroyEntity(shared_from_this());
+    }
+}
+

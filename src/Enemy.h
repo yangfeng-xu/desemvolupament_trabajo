@@ -108,4 +108,12 @@ private:
 	int battleAreaMinX = 0;// Left boundary    
 	int battleAreaMaxX = 0; // Right boundary
 
+	//-----enemy flying
+	float flyingAttackDistance = 120.0f; // 停下来攻击的距离 (玩家跳跃能打到的高度/距离)
+	float shootCooldownTimer = 0.0f;     // 射击冷却计时器
+	float shootCooldown = 2.0f;          // 每 2 秒发射一次能量球
+	bool isPreparingAttack = false;      // 是否正在蓄力前摇
+	float attackWarningTimer = 0.0f;     // 前摇计时器
+	float attackWarningDuration = 0.5f;  // 停下来 0.5 秒后再发射
+	void ShootEnergyBall(Vector2D targetPos); // 发射能量球的函数
 };

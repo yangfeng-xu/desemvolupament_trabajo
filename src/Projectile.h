@@ -13,15 +13,18 @@ public:
     bool Update(float dt);
     bool CleanUp();
 
+
     void SetPosition(Vector2D pos);
     void SetVelocity(Vector2D vel); // To shoot left or right
     void OnCollision(PhysBody* physA, PhysBody* physB);
-
+    bool isEnemyProyectile = false;
+    void SetAsEnemyProjectile();
 public:
     PhysBody* pbody;
     Vector2D velocity;
     float speed = 10.0f;
     float lifeTime = 2000.0f; // Milliseconds before disappearing if it doesn't collide
+
 
 private:
     SDL_Texture* texture = nullptr; // Direct initialization
